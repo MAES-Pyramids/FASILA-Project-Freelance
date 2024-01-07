@@ -1,6 +1,7 @@
 const path = require("path");
 const dotenv = require("dotenv");
 const { mongoConnect } = require("./utils/mongoDB");
+const bot = require("./utils/telegramBot");
 //------------------Config------------------//
 dotenv.config({ path: path.join(__dirname, "..", "config.env") });
 //------------------Listener-----------------//

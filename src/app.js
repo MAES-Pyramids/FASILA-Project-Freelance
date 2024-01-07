@@ -56,9 +56,6 @@ app.use(xss());
 //       "duration",
 //       "ratingsQuantity",
 //       "ratingsAverage",
-//       "maxGroupSize",
-//       "difficulty",
-//       "price",
 //     ],
 //   })
 // );

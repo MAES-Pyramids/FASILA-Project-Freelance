@@ -1,0 +1,39 @@
+const TelegramBot = require("node-telegram-bot-api");
+const token = "6428028423:AAG_-kilOIbmlfOPw-WTggvy7P9jQKm4QrE";
+const bot = new TelegramBot(token, { polling: true });
+
+bot.on("message", handleMessage);
+
+function handleMessage(msg) {
+  if (msg.text === "/start") {
+    sendWelcomeMessage(msg);
+  }
+}
+
+function sendWelcomeMessage(msg) {
+  const chatId = msg.chat.id;
+  const { first_name, last_name } = msg.chat;
+
+  const otpMessage = `Hello ${first_name}, we're glad you're here. Your Chat ID is ${chatId}, use it to complete registration.`;
+
+  bot
+    .sendMessage(chatId, otpMessage)
+    .then((sent) => {
+      logMessageSent(sent);
+    })
+    .catch((error) => {
+      logErrorMessage(error);
+    });
+}
+
+function logMessageSent(sent) {
+  console.log(
+    `OTP message sent successfully to ${sent.chat.first_name} ${sent.chat.last_name}`
+  );
+}
+
+function logErrorMessage(error) {
+  console.error("Error sending OTP message:", error);
+}
+
+module.exports = bot;
