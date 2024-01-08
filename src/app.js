@@ -27,14 +27,13 @@ app.options("*", cors());
 app.use(express.static(path.join(__dirname, "public")));
 
 // Development logging
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
-}
+app.use(
+  process.env.NODE_ENV === "development" ? morgan("dev") : morgan("combined")
+);
 
-// Implement a simple rate limiting
 const limiter = rateLimit({
   max: 100,
-  windowMs: 60 * 60 * 1000,
+  windowMs: 30 * 60 * 1000,
   message: "Too many requests from this IP, please try again in an hour!",
 });
 app.use("/api", limiter);
@@ -43,10 +42,7 @@ app.use("/api", limiter);
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 
-// Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
-
-// Data sanitization against XSS
 app.use(xss());
 
 // Prevent parameter pollution
@@ -60,7 +56,6 @@ app.use(xss());
 //   })
 // );
 
-// Compress all text sent to clients
 app.use(compression());
 //--------------Global Routing--------------//
 // app.use("/api/v1/bookings", bookingsRoutes);
