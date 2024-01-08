@@ -7,6 +7,7 @@ const studentSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
+    unique: true,
     required: [true, "Please provide phone"],
   },
   password: {
@@ -26,10 +27,9 @@ const studentSchema = new mongoose.Schema({
     type: String,
   },
   facultyCard: {
-    path: {
-      type: String,
-      required: true,
-    },
+    type: String,
+    required: true,
+    unique: true,
   },
   faculty: {
     type: mongoose.Schema.Types.ObjectId,
