@@ -31,6 +31,10 @@ const studentSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  wallet: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Wallet",
+  },
   faculty: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Faculty",
@@ -42,7 +46,11 @@ const studentSchema = new mongoose.Schema({
       ref: "Doctor",
     },
   ],
-  active: {
+  idStored: {
+    type: Boolean,
+    default: false,
+  },
+  verified: {
     type: Boolean,
     default: false,
   },

@@ -9,10 +9,18 @@ const otpSchema = new mongoose.Schema({
     ref: "Student",
     required: [true, "Please provide user"],
   },
+  OTPType: {
+    type: String,
+    enum: ["verify", "reset", "Force"],
+    required: [true, "Please provide type"],
+  },
   createdAt: {
     type: Date,
     default: Date.now(),
-    expires: 60 * 5,
+  },
+  expiresAt: {
+    type: Date,
+    default: Date.now() + 5 * 60 * 1000,
   },
 });
 

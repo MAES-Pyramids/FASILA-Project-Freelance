@@ -14,6 +14,8 @@ const mongoSanitize = require("express-mongo-sanitize");
 const AppError = require("./utils/appErrorsClass");
 const globalErrorHandler = require("./middlewares/errorHandler");
 
+const StudentRoutes = require("./routes/student.routes.js");
+
 //-------------------------------------------//
 const app = express();
 
@@ -58,7 +60,7 @@ app.use(xss());
 
 app.use(compression());
 //--------------Global Routing--------------//
-// app.use("/api/v1/bookings", bookingsRoutes);
+app.use("/api/v1/Students", StudentRoutes);
 
 // Handling invalid Routes
 app.all("*", (req, res, next) => {
