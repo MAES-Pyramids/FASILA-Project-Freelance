@@ -15,6 +15,8 @@ const AppError = require("./utils/appErrorsClass");
 const globalErrorHandler = require("./middlewares/errorHandler");
 
 const StudentRoutes = require("./routes/student.routes.js");
+const FacultyRoutes = require("./routes/faculty.routes.js");
+const universityRoutes = require("./routes/university.routes.js");
 
 //-------------------------------------------//
 const app = express();
@@ -61,6 +63,8 @@ app.use(xss());
 app.use(compression());
 //--------------Global Routing--------------//
 app.use("/api/v1/Students", StudentRoutes);
+app.use("/api/v1/Faculties", FacultyRoutes);
+app.use("/api/v1/Universities", universityRoutes);
 
 // Handling invalid Routes
 app.all("*", (req, res, next) => {
