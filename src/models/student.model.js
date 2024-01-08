@@ -25,6 +25,7 @@ const studentSchema = new mongoose.Schema({
   },
   telegramId: {
     type: String,
+    unique: [true, "Telegram ID already exist in another account"],
   },
   facultyCard: {
     type: String,
