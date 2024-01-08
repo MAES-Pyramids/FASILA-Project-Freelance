@@ -24,7 +24,6 @@ const studentSchema = new mongoose.Schema({
   },
   telegramId: {
     type: String,
-    required: [true, "Please provide telegramId"],
   },
   facultyCard: {
     path: {
@@ -32,18 +31,15 @@ const studentSchema = new mongoose.Schema({
       required: true,
     },
   },
-  walletId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "wallet",
-  },
   faculty: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "faculty",
+    ref: "Faculty",
+    required: [true, "Please provide faculty"],
   },
   favoritesDoctors: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "doctor",
+      ref: "Doctor",
     },
   ],
   active: {
@@ -56,4 +52,5 @@ const studentSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Student", studentSchema);
+const Student = mongoose.model("Student", studentSchema);
+module.exports = Student;
