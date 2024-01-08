@@ -12,7 +12,7 @@ const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
 
 const AppError = require("./utils/appErrorsClass");
-const globalErrorHandler = require("./controllers/controllerUtils/errorController");
+const globalErrorHandler = require("./middlewares/errorController");
 
 //-------------------------------------------//
 const app = express();
