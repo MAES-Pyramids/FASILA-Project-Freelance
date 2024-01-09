@@ -1,8 +1,12 @@
 const FacultyController = require("../controllers/faculty.controller");
 const FacultyJV = require("../validations/faculty.validation");
 
-const router = require("express").Router();
+const express = require("express");
+const router = express.Router({ mergeParams: true });
 
-router.route("/").get().post();
+router
+  .route("/")
+  .get(FacultyController.getALLFaculties)
+  .post(FacultyController.SetFacultyUniversityID, FacultyController.addFaculty);
 
 module.exports = router;
