@@ -1,4 +1,5 @@
 const FacultyModel = require("../models/faculty.model");
+const UniversityModel = require("../models/university.model");
 
 const AppError = require("../utils/appErrorsClass");
 const catchAsyncError = require("../utils/catchAsyncErrors");
@@ -9,7 +10,14 @@ class FacultyController {
     next();
   };
 
-  static getALLFaculties = catchAsyncError(async (req, res, next) => {});
+  static getALLFaculties = catchAsyncError(async (req, res, next) => {
+    const faculties = await FacultyModel.find();
+    res.json({
+      status: "success",
+      message: "Faculties fetched successfully",
+      data: faculties,
+    });
+  });
 
   static getFaculty = catchAsyncError(async (req, res, next) => {});
 

@@ -22,7 +22,7 @@ const universityRoutes = require("./routes/university.routes.js");
 const app = express();
 
 // Trust proxies
-app.enable("trust proxy");
+// app.enable("trust proxy");
 //------------Global middleware--------------//
 app.use(cors());
 app.options("*", cors());

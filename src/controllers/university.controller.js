@@ -4,7 +4,14 @@ const AppError = require("../utils/appErrorsClass");
 const catchAsyncError = require("../utils/catchAsyncErrors");
 
 class UniversityController {
-  static getALLUniversities = catchAsyncError(async (req, res, next) => {});
+  static getALLUniversities = catchAsyncError(async (req, res, next) => {
+    const universities = await UniversityModel.find();
+    res.json({
+      status: "success",
+      message: "Universities fetched successfully",
+      data: universities,
+    });
+  });
 
   static getUniversity = catchAsyncError(async (req, res, next) => {});
 
