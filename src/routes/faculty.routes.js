@@ -9,4 +9,6 @@ router
   .get(FacultyController.getALLFaculties)
   .post(FacultyController.SetFacultyUniversityID, FacultyController.addFaculty);
 
+router.route("/:id").get(FacultyController.getFaculty);
+
 module.exports = router;
