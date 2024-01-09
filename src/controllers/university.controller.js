@@ -8,7 +8,7 @@ class UniversityController {
     const universities = await UniversityModel.find();
     res.json({
       status: "success",
-      message: "Universities fetched successfully",
+      length: universities.length,
       data: universities,
     });
   });

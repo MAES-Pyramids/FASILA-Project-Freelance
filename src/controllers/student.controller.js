@@ -59,6 +59,7 @@ class StudentController {
     if (student.verified) return next(new AppError("Student is verified", 400));
 
     student.telegramId = telegramId;
+    student.idStored = true;
     await student.save();
 
     res.json({

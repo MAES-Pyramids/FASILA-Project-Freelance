@@ -14,7 +14,7 @@ class FacultyController {
     const faculties = await FacultyModel.find();
     res.json({
       status: "success",
-      message: "Faculties fetched successfully",
+      length: faculties.length,
       data: faculties,
     });
   });
