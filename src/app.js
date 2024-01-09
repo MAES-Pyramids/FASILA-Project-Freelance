@@ -22,7 +22,7 @@ const universityRoutes = require("./routes/university.routes.js");
 const app = express();
 
 // Trust proxies
-// app.enable("trust proxy");
+app.enable("trust proxy", 1);
 //------------Global middleware--------------//
 app.use(cors());
 app.options("*", cors());
@@ -65,6 +65,10 @@ app.use(compression());
 app.use("/api/v1/Students", StudentRoutes);
 app.use("/api/v1/Faculties", FacultyRoutes);
 app.use("/api/v1/Universities", universityRoutes);
+
+app.get("/ip", (req, res) => {
+  res.send(req.ip);
+});
 
 // Handling invalid Routes
 app.all("*", (req, res, next) => {
