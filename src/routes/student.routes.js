@@ -5,8 +5,12 @@ const validation = require("../middlewares/validation.js");
 const router = require("express").Router();
 
 router.post("/signup", StudentController.signUp);
-router.get("/SendOTP/:studentId", StudentController.SendOTP);
-router.post("/StoreID/:studentId", StudentController.SaveID);
-router.post("/verifyID/:studentId", StudentController.verifyID);
+
+router
+  .route("/:studentId/TelegramID")
+  .put(StudentController.SaveID)
+  .post(StudentController.verifyID);
+
+router.get("/:studentId/SendOTP", StudentController.SendOTP);
 
 module.exports = router;

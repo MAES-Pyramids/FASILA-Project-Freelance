@@ -5,7 +5,9 @@ const catchAsyncError = require("../utils/catchAsyncErrors");
 
 class UniversityController {
   static getALLUniversities = catchAsyncError(async (req, res, next) => {});
+
   static getUniversity = catchAsyncError(async (req, res, next) => {});
+
   static addUniversity = catchAsyncError(async (req, res, next) => {
     const { name } = req.body;
     if (!name) return next(new AppError("Missing required parameters", 400));
