@@ -34,7 +34,7 @@ class SessionController {
       type,
       user._id,
       req.get("user-agent") || ""
-    );
+    ); 
 
     // create an access token
     const accessToken = signJWT(
