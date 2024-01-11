@@ -39,6 +39,7 @@ class StudentController {
       data: newStudent,
     });
   });
+
   /**
    *  @description Store Telegram Chat ID for student
    *  @route /api/v1/student/SaveID:studentId

@@ -17,6 +17,7 @@ class SessionController {
    */
   static login = catchAsyncError(async (req, res, next) => {
     const { phone, password } = req.body;
+
     // Validate the user's password
     const [user, type] = await validatePassword(phone, password);
     if (!user) return next(new AppError("Invalid credentials", 401));
@@ -36,20 +37,21 @@ class SessionController {
 
     // create an access token
     const accessToken = signJWT(
-      { ...user, session: session._id },
+      { ...{ ...user, rol: type }, session: session._id },
       process.env.accessTokenPrivateKey,
       { expiresIn: process.env.accessTokenTtl }
     );
 
     // create a refresh token
     const refreshToken = signJWT(
-      { ...user, session: session._id },
+      { ...{ ...user, rol: type }, session: session._id },
       process.env.refreshTokenPrivateKey,
       { expiresIn: process.env.refreshTokenTtl }
     );
+
     // return access & refresh tokens
     // TODO: we still need to set cookies in the browser and check for the best way and what is the path used for
-    return res.send({ role: type, accessToken, refreshToken });
+    return res.send({ role: type, object: user, accessToken, refreshToken });
   });
 }
 

@@ -6,15 +6,6 @@ const catchAsyncError = require("../utils/catchAsyncErrors");
 
 class FacultyController {
   /**
-   * @description middleware to Set Faculty University ID if not provided in the request body
-   * @route /api/v1/Universities/:UniversityID//faculties
-   */
-  static SetFacultyUniversityID = (req, res, next) => {
-    if (!req.body.UniversityID) req.body.UniversityID = req.params.id;
-    next();
-  };
-
-  /**
    * @description Get all faculties
    * @route /api/v1/faculties
    * @method GET
