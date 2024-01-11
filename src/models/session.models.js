@@ -2,15 +2,25 @@ const mongoose = require("mongoose");
 //------------------------------------------//
 const sessionsSchema = new mongoose.Schema(
   {
-    user: {
+    Student: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: ["Student", "Doctor", "Owner", "library"],
-      required: true,
+      ref: "Student",
+    },
+    Doctor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Doctor",
+    },
+    Owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Owner",
+    },
+    Library: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Library",
     },
     createdAt: {
       type: Date,
       default: Date.now,
-      expires: process.env.SESSION_EXPIRATION || 60 * 60 * 24 * 30,
     },
     valid: {
       type: Boolean,
@@ -18,6 +28,11 @@ const sessionsSchema = new mongoose.Schema(
     },
     userAgent: {
       type: String,
+    },
+    type: {
+      type: String,
+      enum: ["Student", "Doctor", "Owner", "Library"],
+      required: true,
     },
   },
   {
@@ -28,18 +43,12 @@ const sessionsSchema = new mongoose.Schema(
 sessionsSchema.statics.invalidateSession = async function (sessionId) {
   await this.findOneAndUpdate({ _id: sessionId }, { valid: false });
 };
-sessionsSchema.statics.createSession = async function (userId) {
-  return await this.create({ user: userId });
+sessionsSchema.statics.deleteSession = async function (sessionId) {
+  await this.find(sessionId).deleteOne();
 };
 sessionsSchema.statics.checkSession = async function (sessionId) {
   const session = await this.findById(sessionId);
   return session.valid;
-};
-sessionsSchema.statics.deleteSession = async function (sessionId) {
-  await this.find(sessionId).deleteOne();
-};
-sessionsSchema.statics.invalidateAllUserSessions = async function (userId) {
-  await this.find({ user: userId, valid: true }).updateMany({ valid: false });
 };
 //-------------------------Export-----------------------//
 const Session = mongoose.model("Session", sessionsSchema);

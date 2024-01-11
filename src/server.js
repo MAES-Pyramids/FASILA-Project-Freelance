@@ -5,7 +5,7 @@ const logger = require("./utils/logger");
 const { mongoConnect, mongoDisconnect } = require("./utils/mongoDB");
 //------------------Config------------------//
 dotenv.config({ path: path.join(__dirname, "..", "config.env") });
-//------------------Listener-----------------//
+//------------------Listener----------------//
 const port = process.env.PORT || 3000;
 const app = require("./app");
 let server;

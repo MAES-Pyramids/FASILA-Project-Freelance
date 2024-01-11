@@ -1,4 +1,4 @@
-const studentModel = require("../models/student.model.js");
+const StudentModel = require("../models/student.model.js");
 const otpModel = require("../models/otp.model.js");
 const bcrypt = require("bcryptjs");
 const _ = require("lodash");
@@ -27,14 +27,10 @@ class StudentController {
     ]);
 
     // check if there account with same mobile number
-    const student = await studentModel.findOne({ phone: signUpData.phone });
+    const student = await StudentModel.findOne({ phone: signUpData.phone });
     if (student) next(new AppError("Existing account with same mobile number"));
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    signUpData.password = await bcrypt.hash(signUpData.password, salt);
-
-    let newStudent = await studentModel.create(signUpData);
+    let newStudent = await StudentModel.create(signUpData);
     newStudent = _.omit(newStudent.toObject(), ["password"]);
 
     res.json({
@@ -56,7 +52,7 @@ class StudentController {
     if (!telegramId || !studentId)
       return next(new AppError("Missing required parameters", 400));
 
-    const student = await studentModel.findById(studentId);
+    const student = await StudentModel.findById(studentId);
     if (!student) return next(new AppError("Student not found", 404));
     if (student.verified) return next(new AppError("Student is verified", 400));
 
@@ -86,7 +82,7 @@ class StudentController {
     if (!["verify", "reset", "Force"].includes(Type))
       return next(new AppError("Invalid OTP type"));
 
-    const student = await studentModel.findById(studentId);
+    const student = await StudentModel.findById(studentId);
     if (!student) return next(new AppError("Student not found", 404));
 
     // Check if there is OTP for this student
@@ -125,7 +121,7 @@ class StudentController {
     if (!studentId || !otp)
       return next(new AppError("Missing required parameters", 400));
 
-    const student = await studentModel.findById(studentId);
+    const student = await StudentModel.findById(studentId);
     if (!student) return next(new AppError("Student not found", 404));
     if (student.verified) return next(new AppError("Student is verified", 400));
 

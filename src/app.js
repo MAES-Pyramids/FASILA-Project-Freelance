@@ -14,6 +14,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const AppError = require("./utils/appErrorsClass");
 const globalErrorHandler = require("./middlewares/errorHandler");
 
+const SessionRoutes = require("./routes/session.routes.js");
 const StudentRoutes = require("./routes/student.routes.js");
 const FacultyRoutes = require("./routes/faculty.routes.js");
 const universityRoutes = require("./routes/university.routes.js");
@@ -59,6 +60,7 @@ app.use(xss());
 
 app.use(compression());
 //--------------Global Routing--------------//
+app.use("/api/v1/sessions", SessionRoutes);
 app.use("/api/v1/Students", StudentRoutes);
 app.use("/api/v1/Faculties", FacultyRoutes);
 app.use("/api/v1/Universities", universityRoutes);

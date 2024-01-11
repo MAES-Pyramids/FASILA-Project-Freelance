@@ -71,16 +71,15 @@ studentSchema.pre("save", async function (next) {
   let student = this;
   if (!student.isModified("password")) return next();
 
-  const salt = await bcrypt.genSalt(+process.env.SaltWorkFactor);
-  const hash = await bcrypt.hashSync(student.password, salt);
+  const salt = await bcrypt.genSalt(parseInt(process.env.SaltWorkFactor));
+  student.password = bcrypt.hashSync(student.password, salt);
 
-  student.password = hash;
   return next();
 });
 
-studentSchema.methods.comparePassword = async function (password) {
+studentSchema.methods.comparePassword = async function (inputPassword) {
   const student = this;
-  return bcrypt.compare(password, student.password).catch((e) => false);
+  return bcrypt.compare(inputPassword, student.password).catch((err) => false);
 };
 
 const Student = mongoose.model("Student", studentSchema);
