@@ -1,6 +1,6 @@
 const logger = require("./logger");
 const TelegramBot = require("node-telegram-bot-api");
-const token = "6428028423:AAG_-kilOIbmlfOPw-WTggvy7P9jQKm4QrE";
+const token = process.env.TELEGRAM_BOT_TOKEN;
 const bot = new TelegramBot(token, { polling: true });
 //------------------------------------------//
 function logMessageSent(sent) {
@@ -20,10 +20,10 @@ function handleMessage(msg) {
     sendWelcomeMessage(msg);
   }
 }
-
-function sendWelcomeMessage(msg) {
+//------------------------------------------//
+sendWelcomeMessage = (msg) => {
   const chatId = msg.chat.id;
-  const { first_name, last_name } = msg.chat;
+  const { first_name } = msg.chat;
 
   const otpMessage = `Hello ${first_name}, we're glad you're here. Your Chat ID is ${chatId}, use it to complete registration.`;
 
@@ -35,8 +35,8 @@ function sendWelcomeMessage(msg) {
     .catch((error) => {
       logErrorMessage(error);
     });
-}
-//------------------------------------------//
+};
+
 sendOTPMessage = (chatId, OTP) => {
   const message = `Your OTP Code is ${OTP}, it's valid for 5 minutes. Please don't share it with anyone.`;
   bot

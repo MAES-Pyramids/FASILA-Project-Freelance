@@ -1,7 +1,7 @@
 const path = require("path");
 const dotenv = require("dotenv");
 const logger = require("./utils/logger");
-const bot = require("./utils/telegramBot");
+
 const { mongoConnect, mongoDisconnect } = require("./utils/mongoDB");
 //------------------Config------------------//
 dotenv.config({ path: path.join(__dirname, "..", "config.env") });
@@ -11,6 +11,7 @@ const app = require("./app");
 let server;
 (async function startServer() {
   await mongoConnect();
+  const bot = require("./utils/telegramBot");
 
   server = app.listen(port, () => {
     logger.info(
@@ -29,7 +30,6 @@ process.on("unhandledRejection", (err) => {
 
 process.on("SIGTERM", async () => {
   logger.error("👋 SIGTERM RECEIVED. Shutting down gracefully");
-
   try {
     await new Promise((resolve) => {
       // we need to roll back any ongoing transactions
