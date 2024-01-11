@@ -27,17 +27,7 @@ const sessionsSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-//--------------------Static Methods--------------------//
-sessionsSchema.statics.invalidateSession = async function (sessionId) {
-  await this.findOneAndUpdate({ _id: sessionId }, { valid: false });
-};
-sessionsSchema.statics.deleteSession = async function (sessionId) {
-  await this.find(sessionId).deleteOne();
-};
-sessionsSchema.statics.checkSession = async function (sessionId) {
-  const session = await this.findById(sessionId);
-  return session.valid;
-};
+
 //-------------------------Export-----------------------//
 const Session = mongoose.model("Session", sessionsSchema);
 module.exports = Session;
