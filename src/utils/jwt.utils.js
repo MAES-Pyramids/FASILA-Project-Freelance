@@ -17,7 +17,6 @@ exports.verifyJWT = (token, publicSignedKey) => {
       decoded,
     };
   } catch (e) {
-    logger.error(e);
     return {
       valid: false,
       expired: e.message === "jwt expired",

@@ -13,7 +13,7 @@ exports.invalidateSession = async function (sessionId) {
 };
 
 exports.deleteSession = async function (sessionId) {
-  await SessionModel.find(sessionId).deleteOne();
+  await SessionModel.findById(sessionId).deleteOne();
 };
 
 exports.checkExistingSession = async function (userId) {

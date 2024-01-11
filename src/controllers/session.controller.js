@@ -2,6 +2,7 @@ const { signJWT } = require("../utils/jwt.utils");
 const { validatePassword } = require("../services/user.service");
 const {
   createSession,
+  deleteSession,
   checkExistingSession,
 } = require("../services/session.service");
 
@@ -52,6 +53,23 @@ class SessionController {
     // return access & refresh tokens
     // TODO: we still need to set cookies in the browser and check for the best way and what is the path used for
     return res.send({ role: type, object: user, accessToken, refreshToken });
+  });
+
+  /**
+   * @description Logout
+   * @route /api/v1/sessions/logout
+   * @method DELETE
+   * @access private
+   */
+  static logout = catchAsyncError(async (req, res, next) => {
+    const sessionId = res.locals.user.session;
+
+    await deleteSession(sessionId);
+
+    return res.send({
+      accessToken: "",
+      refreshToken: "",
+    });
   });
 }
 
