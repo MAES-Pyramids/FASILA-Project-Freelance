@@ -1,4 +1,5 @@
 const AppError = require("../utils/appErrorsClass");
+const logger = require("../utils/logger");
 //-------------------------------------------//
 const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}.`;
@@ -83,6 +84,6 @@ module.exports = (err, req, res, next) => {
   } else if (process.env.NODE_ENV.trim() === "test") {
     sendErrorTesting(err, req, res);
   } else {
-    console.log("Something went wrong on error handling middleware");
+    logger.error("Something went wrong on error handling middleware");
   }
 };

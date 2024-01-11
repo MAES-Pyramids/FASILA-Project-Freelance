@@ -20,17 +20,16 @@ const universityRoutes = require("./routes/university.routes.js");
 
 //-------------------------------------------//
 const app = express();
-
-// Trust proxies
-app.enable("trust proxy", 1);
 //------------Global middleware--------------//
+
+app.enable("trust proxy", 1);
+
 app.use(cors());
 app.options("*", cors());
 
 // Serve static content located in the "public" directory.
 app.use(express.static(path.join(__dirname, "public")));
 
-// Development logging
 app.use(
   process.env.NODE_ENV === "development" ? morgan("dev") : morgan("combined")
 );
@@ -49,6 +48,7 @@ app.use(cookieParser());
 app.use(mongoSanitize());
 app.use(xss());
 
+// FIXME:  uncomment this in production to set the only required parameters to be sent to the server
 // Prevent parameter pollution
 // app.use(
 //   hpp({
@@ -66,6 +66,7 @@ app.use("/api/v1/Students", StudentRoutes);
 app.use("/api/v1/Faculties", FacultyRoutes);
 app.use("/api/v1/Universities", universityRoutes);
 
+//FIXME  just to determined the exact number of proxy servers in front of our application so that we can set proxy trust to true without any issues with the rate limiter middleware but remember to remove it in production
 app.get("/ip", (req, res) => {
   res.send(req.ip);
 });

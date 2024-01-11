@@ -1,15 +1,16 @@
+const logger = require("./logger");
 const TelegramBot = require("node-telegram-bot-api");
 const token = "6428028423:AAG_-kilOIbmlfOPw-WTggvy7P9jQKm4QrE";
 const bot = new TelegramBot(token, { polling: true });
 //------------------------------------------//
 function logMessageSent(sent) {
-  console.log(
+  logger.info(
     `message sent successfully to ${sent.chat.first_name} ${sent.chat.last_name}`
   );
 }
 
 function logErrorMessage(error) {
-  console.error("Error sending OTP message:", error);
+  logger.error("Error sending OTP message:", error);
 }
 //------------------------------------------//
 bot.on("message", handleMessage);

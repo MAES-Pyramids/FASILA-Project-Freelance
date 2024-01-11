@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const logger = require("./logger");
 const dotenv = require("dotenv");
 const path = require("path");
 
@@ -40,7 +41,7 @@ async function mongoDisconnect() {
 }
 //------------------Listeners------------------//
 mongoose.connection.once("open", () => {
-  console.log(
+  logger.info(
     `DB connected successfully on ${
       MongoInstance ? "MongoInstance" : "Real Atlas MongoDB"
     }`
@@ -48,7 +49,7 @@ mongoose.connection.once("open", () => {
 });
 
 mongoose.connection.on("error", (err) => {
-  console.error(err);
+  logger.error(err);
 });
 //------------------Export------------------//
 module.exports = {

@@ -1,5 +1,6 @@
 const path = require("path");
 const dotenv = require("dotenv");
+const logger = require("./utils/logger");
 const bot = require("./utils/telegramBot");
 const { mongoConnect, mongoDisconnect } = require("./utils/mongoDB");
 //------------------Config------------------//
@@ -12,36 +13,36 @@ let server;
   await mongoConnect();
 
   server = app.listen(port, () => {
-    console.log(
+    logger.info(
       `Server listening on port ${port} in the ${process.env.NODE_ENV} mode`
     );
   });
 })();
 //------------Rejection Handling-------------//
 process.on("unhandledRejection", (err) => {
-  console.log("UNHANDLED REJECTION! 💥 Shutting down...");
-  console.error(err.name, err.message);
+  logger.error("UNHANDLED REJECTION! 💥 Shutting down...");
+  logger.error(err.name, err.message);
   server.close(() => {
     process.exit(1);
   });
 });
 
 process.on("SIGTERM", async () => {
-  console.log("👋 SIGTERM RECEIVED. Shutting down gracefully");
+  logger.error("👋 SIGTERM RECEIVED. Shutting down gracefully");
 
   try {
     await new Promise((resolve) => {
       // we need to roll back any ongoing transactions
       mongoDisconnect();
       server.close(() => {
-        console.log("💥 Server connections closed!");
+        logger.error("💥 Server connections closed!");
         resolve();
       });
     });
-    console.log("💥 Process terminated gracefully!");
+    logger.error("💥 Process terminated gracefully!");
     process.exit(0);
   } catch (err) {
-    console.error("Error during graceful shutdown:", err);
+    logger.error("Error during graceful shutdown:", err);
     process.exit(1);
   }
 });
