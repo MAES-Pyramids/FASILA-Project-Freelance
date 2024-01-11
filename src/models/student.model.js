@@ -71,7 +71,7 @@ studentSchema.pre("save", async function (next) {
   let student = this;
   if (!student.isModified("password")) return next();
 
-  const salt = await bcrypt.genSalt(process.env.SaltWorkFactor);
+  const salt = await bcrypt.genSalt(+process.env.SaltWorkFactor);
   const hash = await bcrypt.hashSync(student.password, salt);
 
   student.password = hash;

@@ -34,7 +34,9 @@ class StudentController {
     const salt = await bcrypt.genSalt(10);
     signUpData.password = await bcrypt.hash(signUpData.password, salt);
 
-    const newStudent = await studentModel.create(signUpData);
+    let newStudent = await studentModel.create(signUpData);
+    newStudent = _.omit(newStudent.toObject(), ["password"]);
+
     res.json({
       status: "success",
       message: "Account created successfully",

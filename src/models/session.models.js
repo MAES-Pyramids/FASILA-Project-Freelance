@@ -1,21 +1,29 @@
 const mongoose = require("mongoose");
 //------------------------------------------//
-const sessionsSchema = new mongoose.Schema({
-  student: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Student",
-    required: true,
+const sessionsSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: ["Student", "Doctor", "Owner", "library"],
+      required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      expires: process.env.SESSION_EXPIRATION || 60 * 60 * 24 * 30,
+    },
+    valid: {
+      type: Boolean,
+      default: true,
+    },
+    userAgent: {
+      type: String,
+    },
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    expires: process.env.SESSION_EXPIRATION || 60 * 60 * 24 * 30,
-  },
-  valid: {
-    type: Boolean,
-    default: true,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 //--------------------Static Methods--------------------//
 sessionsSchema.statics.invalidateSession = async function (sessionId) {
   await this.findOneAndUpdate({ _id: sessionId }, { valid: false });
