@@ -21,7 +21,6 @@ const universityRoutes = require("./routes/university.routes.js");
 //-------------------------------------------//
 const app = express();
 //------------Global middleware--------------//
-
 app.enable("trust proxy", 1);
 
 app.use(cors());
@@ -41,10 +40,8 @@ const limiter = rateLimit({
 });
 app.use("/api", limiter);
 
-// Body parser, reading data from body into req.body
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
-
 app.use(mongoSanitize());
 app.use(xss());
 
@@ -71,7 +68,6 @@ app.get("/ip", (req, res) => {
   res.send(req.ip);
 });
 
-// Handling invalid Routes
 app.all("*", (req, res, next) => {
   next(
     new AppError(
