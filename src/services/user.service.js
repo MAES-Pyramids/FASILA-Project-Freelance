@@ -3,7 +3,6 @@ const StudentModel = require("../models/student.model");
 const LibraryModel = require("../models/library.model");
 const DoctorModel = require("../models/doctor.model");
 const AdminModel = require("../models/admin.model");
-const { parse } = require("dotenv");
 const models = [AdminModel, LibraryModel, DoctorModel, StudentModel];
 
 exports.validatePassword = async (phone, password) => {
@@ -22,4 +21,11 @@ exports.validatePassword = async (phone, password) => {
   if (!isValid) return false;
 
   return [_.omit(user.toJSON(), "password"), type];
+};
+
+exports.findUser = async (role, query) => {
+  if (role == "Student") return await StudentModel.findOne(query).lean();
+  if (role == "Doctor") return await DoctorModel.findOne(query).lean();
+  if (role == "Library") return await LibraryModel.findOne(query).lean();
+  if (role == "Admin") return await AdminModel.findOne(query).lean();
 };

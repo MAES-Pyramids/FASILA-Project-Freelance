@@ -18,6 +18,7 @@ const SessionRoutes = require("./routes/session.routes.js");
 const StudentRoutes = require("./routes/student.routes.js");
 const FacultyRoutes = require("./routes/faculty.routes.js");
 const universityRoutes = require("./routes/university.routes.js");
+const DeserializeUser = require("./middlewares/userDeserialization");
 
 //-------------------------------------------//
 const app = express();
@@ -60,6 +61,8 @@ app.use(xss());
 
 app.use(compression());
 //--------------Global Routing--------------//
+app.use(DeserializeUser);
+
 app.use("/api/v1/sessions", SessionRoutes);
 app.use("/api/v1/Students", StudentRoutes);
 app.use("/api/v1/Faculties", FacultyRoutes);
