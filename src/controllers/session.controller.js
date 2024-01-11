@@ -1,6 +1,9 @@
 const { signJWT } = require("../utils/jwt.utils");
 const { validatePassword } = require("../services/user.service");
-const { createSession } = require("../services/session.service");
+const {
+  createSession,
+  checkExistingSession,
+} = require("../services/session.service");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
 const AppError = require("../utils/appErrorsClass");
@@ -18,7 +21,11 @@ class SessionController {
     const [user, type] = await validatePassword(phone, password);
     if (!user) return next(new AppError("Invalid credentials", 401));
 
-    // ensure there is no active session for this user
+    // ensure no active session for student
+    if (type === "Student") {
+      if (await checkExistingSession(user._id))
+        return next(new AppError("user has active session", 400));
+    }
 
     // create a session
     const session = await createSession(
