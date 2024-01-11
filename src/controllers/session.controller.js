@@ -38,14 +38,14 @@ class SessionController {
 
     // create an access token
     const accessToken = signJWT(
-      { ...{ ...user, rol: type }, session: session._id },
+      { ...{ ...user, role: type }, session: session._id },
       process.env.accessTokenPrivateKey,
       { expiresIn: process.env.accessTokenTtl }
     );
 
     // create a refresh token
     const refreshToken = signJWT(
-      { ...{ ...user, rol: type }, session: session._id },
+      { ...{ ...user, role: type }, session: session._id },
       process.env.refreshTokenPrivateKey,
       { expiresIn: process.env.refreshTokenTtl }
     );

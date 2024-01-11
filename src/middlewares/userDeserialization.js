@@ -19,8 +19,8 @@ const DeserializeUser = async (req, res, next) => {
     return next();
   }
 
-  if (expired && refreshToken) {
-    const newAccessToken = await reIssueAccessToken({ refreshToken });
+  if (expired && refreshToken !== "") {
+    const newAccessToken = await reIssueAccessToken(refreshToken);
     if (newAccessToken) res.setHeader("x-access-token", newAccessToken);
 
     const result = verifyJWT(newAccessToken, process.env.accessTokenPublicKey);

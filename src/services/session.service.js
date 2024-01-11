@@ -32,11 +32,14 @@ exports.reIssueAccessToken = async function (refreshToken) {
   const session = await SessionModel.findById(_.get(decoded, "session"));
   if (!session || !session.valid) return false;
 
-  const user = await findUser(session.role, { _id: session.user });
+  const user = await findUser(decoded.role, { _id: session.user });
   if (!user) return false;
 
   const accessToken = signJWT(
-    { ...{ ...user, rol: session.role }, session: session._id },
+    {
+      ...{ ...user, refreshTokenPublicKey: session.role },
+      session: session._id,
+    },
     process.env.accessTokenPrivateKey,
     { expiresIn: process.env.accessTokenTtl }
   );
