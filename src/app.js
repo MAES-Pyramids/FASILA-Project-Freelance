@@ -25,7 +25,7 @@ const DeserializeUser = require("./middlewares/userDeserialization");
 //-------------------------------------------//
 const app = express();
 //------------Global middleware--------------//
-// app.enable("trust proxy", 1);
+app.enable("trust proxy", 1);
 
 app.use(cors());
 app.options("*", cors());
@@ -38,7 +38,7 @@ app.use(
 );
 
 const limiter = rateLimit({
-  max: 100,
+  max: 200,
   windowMs: 30 * 60 * 1000,
   message: "Too many requests from this IP, please try again in an hour!",
 });
