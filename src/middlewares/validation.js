@@ -1,5 +1,5 @@
 const AppError = require("../utils/appErrorsClass");
-const validation = (schema) => (req, res, next) => {
+const validate = (schema) => (req, res, next) => {
   try {
     schema.parse({
       body: req.body,
@@ -12,4 +12,4 @@ const validation = (schema) => (req, res, next) => {
   }
 };
 
-module.exports = validation;
+module.exports = validate;
