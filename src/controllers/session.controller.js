@@ -18,6 +18,8 @@ class SessionController {
     const [user, type] = await validatePassword(phone, password);
     if (!user) return next(new AppError("Invalid credentials", 401));
 
+    // ensure there is no active session for this user
+
     // create a session
     const session = await createSession(
       type,
@@ -40,11 +42,7 @@ class SessionController {
     );
     // return access & refresh tokens
     // TODO: we still need to set cookies in the browser and check for the best way and what is the path used for
-    // res.cookie("refreshToken", refreshToken, {
-    //   httpOnly: true,
-    //   path: "/api/v1/session/refreshToken",
-    // });
-    return res.send({ accessToken, refreshToken });
+    return res.send({ role: type, accessToken, refreshToken });
   });
 }
 
