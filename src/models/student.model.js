@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const studentSchema = new mongoose.Schema(
   {
@@ -66,9 +67,8 @@ const studentSchema = new mongoose.Schema(
   }
 );
 
-studentSchema.pre("save", async (next) => {
+studentSchema.pre("save", async function (next) {
   let student = this;
-
   if (!student.isModified("password")) return next();
 
   const salt = await bcrypt.genSalt(process.env.SaltWorkFactor);
@@ -78,7 +78,7 @@ studentSchema.pre("save", async (next) => {
   return next();
 });
 
-studentSchema.methods.comparePassword = async (password) => {
+studentSchema.methods.comparePassword = async function (password) {
   const student = this;
   return bcrypt.compare(password, student.password).catch((e) => false);
 };

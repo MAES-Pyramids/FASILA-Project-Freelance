@@ -15,7 +15,7 @@ let MONGO_URL = process.env.DATABASE_Connection.replace(
   "<password>",
   process.env.DATABASE_Password
 );
-//------------------Connection------------------//
+//------------------Connection----------------//
 async function mongoConnect() {
   if (process.env.NODE_ENV == "test") {
     mongod = await MongoMemoryServer.create();
