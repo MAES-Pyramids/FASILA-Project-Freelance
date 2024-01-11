@@ -2,21 +2,9 @@ const mongoose = require("mongoose");
 //------------------------------------------//
 const sessionsSchema = new mongoose.Schema(
   {
-    Student: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Student",
-    },
-    Doctor: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Doctor",
-    },
-    Owner: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Owner",
-    },
-    Library: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Library",
+      refPath: "type",
     },
     createdAt: {
       type: Date,

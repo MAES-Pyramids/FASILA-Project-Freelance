@@ -1,20 +1,16 @@
 const jwt = require("jsonwebtoken");
 const logger = require("./logger");
 
-exports.signJWT = (object, configKey, options) => {
-  // const signingKey = Buffer.from(configKey, "base64").toString("ascii");
-
-  return jwt.sign(object, configKey, {
+exports.signJWT = (object, privateSignedKey, options) => {
+  return jwt.sign(object, privateSignedKey, {
     ...(options && options),
     algorithm: "RS256",
   });
 };
 
-exports.verifyJWT = (token, configKey) => {
-  // const publicKey = Buffer.from(configKey, "base64").toString("ascii");
-
+exports.verifyJWT = (token, publicSignedKey) => {
   try {
-    const decoded = jwt.verify(token, configKey);
+    const decoded = jwt.verify(token, publicSignedKey);
     return {
       valid: true,
       expired: false,
