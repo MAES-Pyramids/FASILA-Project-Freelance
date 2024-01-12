@@ -34,6 +34,7 @@ exports.reIssueAccessToken = async function (refreshToken) {
 
   const user = await findUser(decoded.role, { _id: session.user });
   if (!user) return false;
+  user = _.omit(user.toJSON(), "password");
 
   const accessToken = signJWT(
     {
