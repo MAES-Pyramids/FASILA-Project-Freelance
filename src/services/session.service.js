@@ -32,9 +32,9 @@ exports.reIssueAccessToken = async function (refreshToken) {
   const session = await SessionModel.findById(_.get(decoded, "session"));
   if (!session || !session.valid) return false;
 
-  const user = await findUser(decoded.role, { _id: session.user });
+  let user = await findUser(decoded.role, { _id: session.user });
   if (!user) return false;
-  user = _.omit(user.toJSON(), "password");
+  user = _.omit(user, "password");
 
   const accessToken = signJWT(
     {
