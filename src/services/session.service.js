@@ -37,7 +37,8 @@ exports.reIssueAccessToken = async function (refreshToken) {
 
   const accessToken = signJWT(
     {
-      ...{ ...user, role: decoded.role },
+      ...user,
+      role: decoded.role,
       session: session._id,
     },
     process.env.accessTokenPrivateKey,
