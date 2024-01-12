@@ -62,19 +62,18 @@ app.use(xss());
 // );
 
 app.use(compression());
-//--------------Global Routing--------------//
 app.use(DeserializeUser);
+//--------------Global Routing--------------//
+//FIXME  just to determined the exact number of proxy servers in front of our application so that we can set proxy trust to true without any issues with the rate limiter middleware but remember to remove it in production
+app.get("/ip", (req, res) => {
+  res.send(req.ip);
+});
 
 app.use("/api/v1/sessions", SessionRoutes);
 app.use(requireUser);
 app.use("/api/v1/Students", StudentRoutes);
 app.use("/api/v1/Faculties", FacultyRoutes);
 app.use("/api/v1/Universities", universityRoutes);
-
-//FIXME  just to determined the exact number of proxy servers in front of our application so that we can set proxy trust to true without any issues with the rate limiter middleware but remember to remove it in production
-app.get("/ip", (req, res) => {
-  res.send(req.ip);
-});
 
 app.all("*", (req, res, next) => {
   next(
