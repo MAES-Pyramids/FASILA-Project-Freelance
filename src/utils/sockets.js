@@ -1,4 +1,4 @@
-const { updateUserConnection, getUserConnection } = require("./redis");
+const { updateUserConnection } = require("./redis");
 const listen = function (socketServer) {
   socketServer.on("connection", (socket) => {
     console.log("A user connected to WebSocket");

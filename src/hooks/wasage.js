@@ -1,4 +1,5 @@
 const { verifyStudent } = require("../services/student.service");
+const { getUserConnection } = require("../utils/redis");
 const { verifyOTP } = require("../services/otp.service");
 
 const SK = process.env.Wasage_SecretKey;
@@ -13,7 +14,9 @@ exports.receiveOTP = async (req, res) => {
   switch (type) {
     case "verify":
       const { status, message } = await verifyStudent(Reference, Mobile);
-      if (!status) console.log(message);
+      const socketId = await getUserConnection(Reference);
+      if (!status) socketId.emit("VerificationError", message);
+      else socketId.emit("VerificationSuccess", message);
       break;
 
     case "reset":
