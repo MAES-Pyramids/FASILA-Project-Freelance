@@ -1,15 +1,22 @@
 const AppError = require("../utils/appErrorsClass");
-const validate = (schema) => (req, res, next) => {
-  try {
-    schema.parse({
-      body: req.body,
-      query: req.query,
-      params: req.params,
-    });
-    next();
-  } catch (error) {
-    return next(new AppError(error.details, 400));
-  }
+
+const validationMiddleWare = (schema) => (req, res, next) => {
+  const validationResult = schema.validate({
+    body: req.body,
+    query: req.query,
+    params: req.params,
+  });
+
+  if (validationResult.error)
+    return next(
+      new AppError(
+        validationResult.error.details.map((err) => {
+          return err.message;
+        })
+      )
+    );
+
+  next();
 };
 
-module.exports = validate;
+module.exports = validationMiddleWare;

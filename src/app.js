@@ -73,8 +73,8 @@ app.get("/ip", (req, res) => {
 
 app.use("/api/v1/wasage", wasageRoutes);
 app.use("/api/v1/sessions", SessionRoutes);
-app.use(requireUser);
 app.use("/api/v1/Students", StudentRoutes);
+app.use(requireUser);
 app.use("/api/v1/Faculties", FacultyRoutes);
 app.use("/api/v1/Universities", universityRoutes);
 

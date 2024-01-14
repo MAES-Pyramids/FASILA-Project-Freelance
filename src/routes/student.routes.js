@@ -1,10 +1,11 @@
 const StudentController = require("../controllers/student.controller.js");
-const StudentJV = require("../validations/student.validation.js");
-const validation = require("../middlewares/validation.js");
+const { signUpValidation } = require("../validations/student.validation.js");
+const requireUser = require("../middlewares/userRequired.js");
 
 const router = require("express").Router();
 
-router.post("/signup", StudentController.signUp);
+router.post("/signup", signUpValidation, StudentController.signUp);
+router.use(requireUser);
 
 router
   .route("/:studentId/TelegramID")
