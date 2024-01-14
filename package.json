@@ -32,6 +32,7 @@
     "node-telegram-bot-api": "^0.64.0",
     "nodemon": "^3.0.2",
     "pino": "^8.17.2",
+    "socket.io": "^4.7.4",
     "xss-clean": "^0.1.4",
     "zod": "^3.22.4"
   },

@@ -1,23 +1,35 @@
 const path = require("path");
 const dotenv = require("dotenv");
+dotenv.config({ path: path.join(__dirname, "..", "config.env") });
+
+const http = require("http");
 const logger = require("./utils/logger");
 
+const { Server } = require("socket.io");
+const sockets = require("./utils/sockets");
 const { mongoConnect, mongoDisconnect } = require("./utils/mongoDB");
-//------------------Config------------------//
-dotenv.config({ path: path.join(__dirname, "..", "config.env") });
 //------------------Listener----------------//
 const port = process.env.PORT || 3000;
 const app = require("./app");
-let server;
+
+const server = http.createServer(app);
+const socketServer = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
 (async function startServer() {
   await mongoConnect();
-  // const bot = require("./utils/telegramBot");
+  const bot = require("./utils/telegramBot");
 
-  server = app.listen(port, () => {
+  server.listen(port, () => {
     logger.info(
       `Server listening on port ${port} in the ${process.env.NODE_ENV} mode`
     );
   });
+  sockets.listen(socketServer);
 })();
 //------------Rejection Handling-------------//
 process.on("unhandledRejection", (err) => {

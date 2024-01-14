@@ -1,6 +1,7 @@
-const SK = "cb3d1e8377405d91c5e915686439013e8789b34627a3d8e735edb2c2e7c6638f";
 const { verifyStudent } = require("../services/student.service");
 const { verifyOTP } = require("../services/otp.service");
+
+const SK = process.env.Wasage_SecretKey;
 
 exports.receiveOTP = async (req, res) => {
   const { OTP, Mobile, Reference, Secret, ClientID, ClientName } = req.query;
