@@ -1,30 +1,28 @@
 const axios = require("axios");
+const AppError = require("../utils/appErrorsClass");
+const catchAsync = require("../utils/catchAsyncErrors");
+const { storeOTP } = require("../services/otp.service");
 
-exports.sendOTP = async (req, res) => {
-  const referenceId = "123456789";
-  const baseURL = "https://wasage.com/api/otp/";
-  const username =
-    "294b0f2b65f4a132160ac090b894b435b87118e27b0d2968d7ba12c8cc5b0abf";
-  const password =
-    "6a7e11505c1f08a401aea49799b3131938f070987d589a29a3708c91e05092e2";
-  const message =
-    "Welcome to App name, your OTP is :{OTP} for help contact us:+201xxxxxx";
+const baseURL = process.env.Wasage_baseURL;
+const Wasage_Username = process.env.Wasage_Username;
+const Wasage_Password = process.env.Wasage_Password;
+const welcomeMessage = process.env.Wasage_welcomeMessage;
 
-  try {
-    const response = await axios.post(
-      `${baseURL}?Username=${username}&Password=${password}&Reference=${referenceId}&Message=${message}`
-    );
+exports.getOTP = catchAsync(async (req, res) => {
+  const { id } = req.body;
 
-    // Handle success response
-    const { Code, OTP, QR, Clickable } = response.data;
-    console.log("Success Response:", { Code, OTP, QR, Clickable });
+  const response = await axios.post(
+    `${baseURL}?Username=${Wasage_Username}&Password=${Wasage_Password}&Reference=${id}&Message=${welcomeMessage}`
+  );
 
-    // Implement your logic for QR code or clickable URL
+  if (response.data.Code != 5500)
+    return next(new AppError("Error sending OTP", 500));
 
-    res.send(Clickable);
-  } catch (error) {
-    // Handle error response
-    console.error("Error Response:", error.response.data);
-    return { success: false, error: error.response.data };
-  }
-};
+  const { OTP, QR, Clickable } = response.data;
+  await storeOTP(referenceId, OTP, "verify");
+
+  res.send({
+    status: "success",
+    data: { QR, Clickable },
+  });
+});

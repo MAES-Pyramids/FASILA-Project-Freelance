@@ -3,6 +3,6 @@ const express = require("express");
 
 const router = express.Router();
 
-router.get("/", wasageController.sendOTP);
+router.post("/", wasageController.getOTP);
 
 module.exports = router;

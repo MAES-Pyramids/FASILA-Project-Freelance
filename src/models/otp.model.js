@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const OTP_TTL = process.env.OTP_TTL || 8;
 const otpSchema = new mongoose.Schema({
   otp: {
     type: String,
@@ -20,7 +21,7 @@ const otpSchema = new mongoose.Schema({
   },
   expiresAt: {
     type: Date,
-    default: Date.now() + 5 * 60 * 1000,
+    default: Date.now() + OTP_TTL * 60 * 1000,
   },
 });
 

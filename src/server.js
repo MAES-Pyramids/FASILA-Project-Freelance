@@ -11,7 +11,7 @@ const app = require("./app");
 let server;
 (async function startServer() {
   await mongoConnect();
-  const bot = require("./utils/telegramBot");
+  // const bot = require("./utils/telegramBot");
 
   server = app.listen(port, () => {
     logger.info(

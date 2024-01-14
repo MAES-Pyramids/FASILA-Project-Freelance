@@ -20,6 +20,7 @@ const StudentRoutes = require("./routes/student.routes.js");
 const FacultyRoutes = require("./routes/faculty.routes.js");
 const universityRoutes = require("./routes/university.routes.js");
 
+const { receiveOTP } = require("./hooks/wasage");
 const requireUser = require("./middlewares/userRequired");
 const DeserializeUser = require("./middlewares/userDeserialization");
 
@@ -64,23 +65,7 @@ app.use(xss());
 app.use(compression());
 app.use(DeserializeUser);
 //--------------Global Routing--------------//
-app.post("/api/wasage", (req, res) => {
-  // Handle the callback data here
-  console.log("recieeeeeeeeeeeeeeeeeeeeeeved");
-  const { OTP, Mobile, Reference, Secret, ClientID, ClientName } = req.query;
-  console.log("Received Callback Data:", {
-    OTP,
-    Mobile,
-    Reference,
-    Secret,
-    ClientID,
-    ClientName,
-  });
-
-  // Implement your logic here based on the callback data
-
-  res.status(200).send("Callback received successfully");
-});
+app.get("/api/wasage", receiveOTP);
 
 app.get("/ip", (req, res) => {
   res.send(req.ip);
