@@ -33,7 +33,7 @@ class StudentController {
     let newStudent = await StudentModel.create(signUpData);
     newStudent = _.omit(newStudent.toObject(), ["password"]);
 
-    res.json({
+    res.send({
       status: "success",
       message: "Account created successfully",
       data: newStudent,
@@ -61,7 +61,7 @@ class StudentController {
     student.idStored = true;
     await student.save();
 
-    res.json({
+    res.send({
       status: "success",
       message: "Telegram ID stored successfully",
     });
@@ -103,7 +103,7 @@ class StudentController {
 
     // Send OTP to student
     sendOTPMessage(student.telegramId, otp);
-    res.json({
+    res.send({
       status: "success",
       message: "OTP sent successfully",
     });
@@ -143,7 +143,7 @@ class StudentController {
 
     await otpModel.deleteMany({ student: studentId });
 
-    res.json({
+    res.send({
       status: "success",
       message: "Student verified successfully",
     });

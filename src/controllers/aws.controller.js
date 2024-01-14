@@ -57,7 +57,7 @@ class AWSController {
         });
       });
 
-      res.json({
+      res.send({
         status: "success",
         message: "Presigned URL generated successfully",
         data: url,

@@ -6,6 +6,7 @@ const router = require("express").Router();
 router.post("/login", SessionController.login);
 
 router.use(requireUser);
+router.get("/me", SessionController.getMe);
 router.delete("/logout", SessionController.logout);
 
 module.exports = router;

@@ -13,7 +13,7 @@ class UniversityController {
   static getALLUniversities = catchAsyncError(async (req, res, next) => {
     const universities = await UniversityModel.find();
 
-    res.json({
+    res.send({
       status: "success",
       length: universities.length,
       data: universities,
@@ -32,7 +32,7 @@ class UniversityController {
     const university = await UniversityModel.findById(id);
     if (!university) return next(new AppError("University not found", 404));
 
-    res.json({
+    res.send({
       status: "success",
       data: university,
     });
@@ -50,7 +50,7 @@ class UniversityController {
 
     const university = await UniversityModel.create({ name });
 
-    res.json({
+    res.send({
       status: "success",
       message: "University added successfully",
       data: university,

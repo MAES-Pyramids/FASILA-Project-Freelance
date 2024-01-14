@@ -23,8 +23,11 @@ const DeserializeUser = async (req, res, next) => {
     const newAccessToken = await reIssueAccessToken(refreshToken);
     if (newAccessToken) res.setHeader("x-access-token", newAccessToken);
 
-    const result = verifyJWT(newAccessToken, process.env.accessTokenPublicKey);
-    res.locals.user = result.decoded;
+    const { decoded } = verifyJWT(
+      newAccessToken,
+      process.env.accessTokenPublicKey
+    );
+    res.locals.user = decoded;
     return next();
   }
 

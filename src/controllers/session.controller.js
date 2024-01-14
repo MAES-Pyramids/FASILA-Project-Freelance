@@ -1,5 +1,5 @@
 const { signJWT } = require("../utils/jwt.utils");
-const { validatePassword } = require("../services/user.service");
+const { validatePassword, findUser } = require("../services/user.service");
 const {
   createSession,
   deleteSession,
@@ -8,6 +8,7 @@ const {
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
 const AppError = require("../utils/appErrorsClass");
+const _ = require("lodash");
 
 class SessionController {
   /**
@@ -19,7 +20,6 @@ class SessionController {
   static login = catchAsyncError(async (req, res, next) => {
     const { phone, password } = req.body;
 
-    // Validate the user's password
     const [user, type] = await validatePassword(phone, password);
     if (!user) return next(new AppError("Invalid credentials", 401));
 
@@ -29,21 +29,18 @@ class SessionController {
     //     return next(new AppError("user has active session", 400));
     // }
 
-    // create a session
     const session = await createSession(
       type,
       user._id,
       req.get("user-agent") || ""
-    ); 
+    );
 
-    // create an access token
     const accessToken = signJWT(
       { ...{ ...user, role: type }, session: session._id },
       process.env.accessTokenPrivateKey,
       { expiresIn: process.env.accessTokenTtl }
     );
 
-    // create a refresh token
     const refreshToken = signJWT(
       { ...{ ...user, role: type }, session: session._id },
       process.env.refreshTokenPrivateKey,
@@ -70,6 +67,20 @@ class SessionController {
       accessToken: "",
       refreshToken: "",
     });
+  });
+
+  /**
+   * @description Get the current logged in user data
+   * @route /api/v1/sessions/me
+   * @method Get
+   * @access private
+   */
+  static getMe = catchAsyncError(async (req, res, next) => {
+    const { _id, role } = res.locals.user;
+    let user = await findUser(role, { _id });
+    user = _.omit(user, "password", "__v");
+
+    return res.send(user);
   });
 }
 
