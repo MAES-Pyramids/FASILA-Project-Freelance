@@ -14,6 +14,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const AppError = require("./utils/appErrorsClass");
 const globalErrorHandler = require("./middlewares/errorHandler");
 
+const wasageRoutes = require("./routes/wasage.routes.js");
 const SessionRoutes = require("./routes/session.routes.js");
 const StudentRoutes = require("./routes/student.routes.js");
 const FacultyRoutes = require("./routes/faculty.routes.js");
@@ -30,7 +31,6 @@ const app = express();
 app.use(cors());
 app.options("*", cors());
 
-// Serve static content located in the "public" directory.
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
@@ -64,11 +64,29 @@ app.use(xss());
 app.use(compression());
 app.use(DeserializeUser);
 //--------------Global Routing--------------//
-//FIXME  just to determined the exact number of proxy servers in front of our application so that we can set proxy trust to true without any issues with the rate limiter middleware but remember to remove it in production
+app.post("/api/wasage", (req, res) => {
+  // Handle the callback data here
+  console.log("recieeeeeeeeeeeeeeeeeeeeeeved");
+  const { OTP, Mobile, Reference, Secret, ClientID, ClientName } = req.query;
+  console.log("Received Callback Data:", {
+    OTP,
+    Mobile,
+    Reference,
+    Secret,
+    ClientID,
+    ClientName,
+  });
+
+  // Implement your logic here based on the callback data
+
+  res.status(200).send("Callback received successfully");
+});
+
 app.get("/ip", (req, res) => {
   res.send(req.ip);
 });
 
+app.use("/api/v1/wasage", wasageRoutes);
 app.use("/api/v1/sessions", SessionRoutes);
 app.use(requireUser);
 app.use("/api/v1/Students", StudentRoutes);
@@ -78,7 +96,7 @@ app.use("/api/v1/Universities", universityRoutes);
 app.all("*", (req, res, next) => {
   next(
     new AppError(
-      `Sorry, the page you are trying to access is not available`,
+      `Sorry, the requested URL ${req.originalUrl} was not found on this server.`,
       404
     )
   );
