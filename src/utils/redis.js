@@ -8,15 +8,16 @@ const redis = new Redis({
   port: redisPort,
 });
 
-async function updateUserConnection(userId, socketId) {
-  if (isConnected) await redis.hset("user_sockets", userId, socketId);
-  else await redis.hdel("UserConnections", userId);
+async function updateUserConnection(userId, socketId, isConnected) {
+  if (isConnected)
+    await redis.hset("user_sockets", userId, JSON.stringify(socketId));
+  else await redis.hdel("user_sockets", userId);
 }
 
 async function getUserConnection(userId) {
-  const connectionInfoString = await redis.hget("user_sockets", userId);
+  const socketId = await redis.hget("user_sockets", userId);
 
-  if (connectionInfoString) return JSON.parse(connectionInfoString);
+  if (socketId) return JSON.parse(socketId);
   else return null;
 }
 

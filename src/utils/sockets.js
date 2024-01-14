@@ -1,5 +1,15 @@
 const { updateUserConnection } = require("./redis");
-const listen = function (socketServer) {
+const { Server } = require("socket.io");
+
+const socketServer = new Server({
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
+const listen = function (server) {
+  socketServer.attach(server);
   socketServer.on("connection", (socket) => {
     console.log("A user connected to WebSocket");
     const userId = socket.handshake.query.userId;
@@ -11,4 +21,4 @@ const listen = function (socketServer) {
     });
   });
 };
-module.exports = { listen };
+module.exports = { listen, socketServer };

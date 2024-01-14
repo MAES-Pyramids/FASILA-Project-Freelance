@@ -5,20 +5,13 @@ dotenv.config({ path: path.join(__dirname, "..", "config.env") });
 const http = require("http");
 const logger = require("./utils/logger");
 
-const { Server } = require("socket.io");
-const sockets = require("./utils/sockets");
+const socket = require("./utils/sockets");
 const { mongoConnect, mongoDisconnect } = require("./utils/mongoDB");
 //------------------Listener----------------//
 const port = process.env.PORT || 3000;
 const app = require("./app");
 
 const server = http.createServer(app);
-const socketServer = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
 
 (async function startServer() {
   await mongoConnect();
@@ -29,16 +22,16 @@ const socketServer = new Server(server, {
       `Server listening on port ${port} in the ${process.env.NODE_ENV} mode`
     );
   });
-  sockets.listen(socketServer);
+  socket.listen(server);
 })();
 //------------Rejection Handling-------------//
-process.on("unhandledRejection", (err) => {
-  logger.error("UNHANDLED REJECTION! 💥 Shutting down...");
-  logger.error(err.name, err.message);
-  server.close(() => {
-    process.exit(1);
-  });
-});
+// process.on("unhandledRejection", (err) => {
+//   logger.error("UNHANDLED REJECTION! 💥 Shutting down...");
+//   logger.error(err.name, err.message);
+//   server.close(() => {
+//     process.exit(1);
+//   });
+// });
 
 process.on("SIGTERM", async () => {
   logger.error("👋 SIGTERM RECEIVED. Shutting down gracefully");
