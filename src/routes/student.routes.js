@@ -10,6 +10,6 @@ router
   .route("/:studentId/TelegramID")
   .put(StudentController.SaveID)
   .post(StudentController.verifyID);
-router.get("/:studentId/SendOTP", StudentController.SendOTP);
+router.get("/:studentId/SendOTP", StudentController.SendTelegramOTP);
 
 module.exports = router;

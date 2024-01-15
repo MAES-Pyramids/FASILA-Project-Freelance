@@ -10,6 +10,7 @@ const Wasage_Password = process.env.Wasage_Password;
 const welcomeMessage = process.env.Wasage_welcomeMessage;
 
 exports.getOTP = catchAsync(async (req, res) => {
+  const { type } = req.query;
   const { id } = req.body;
 
   const response = await axios.post(
@@ -20,7 +21,7 @@ exports.getOTP = catchAsync(async (req, res) => {
     return next(new AppError("Error sending OTP", 500));
 
   const { OTP, QR, Clickable } = response.data;
-  await storeOTP(id, OTP, "verify");
+  await storeOTP(id, OTP, type);
 
   res.send({
     status: "success",

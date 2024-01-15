@@ -50,12 +50,8 @@ class StudentController {
     const { studentId } = req.params;
     const { telegramId } = req.body;
 
-    if (!telegramId || !studentId)
-      return next(new AppError("Missing required parameters", 400));
-
     const student = await StudentModel.findById(studentId);
     if (!student) return next(new AppError("Student not found", 404));
-    if (student.verified) return next(new AppError("Student is verified", 400));
 
     student.telegramId = telegramId;
     student.idStored = true;
@@ -73,24 +69,16 @@ class StudentController {
    *  @method Get
    *  @access public
    */
-  static SendOTP = catchAsyncError(async (req, res, next) => {
+  static SendTelegramOTP = catchAsyncError(async (req, res, next) => {
     const { studentId } = req.params;
     const { Type } = req.query;
-
-    if (!studentId || !Type)
-      return next(new AppError("Missing required parameters"));
-
-    if (!["verify", "reset", "Force"].includes(Type))
-      return next(new AppError("Invalid OTP type"));
 
     const student = await StudentModel.findById(studentId);
     if (!student) return next(new AppError("Student not found", 404));
 
-    // Check if there is OTP for this student
     let studentOTP = await otpModel.findOne({ student: studentId });
     if (studentOTP) await otpModel.findByIdAndDelete(studentOTP._id);
 
-    // Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000);
     const salt = await bcrypt.genSalt(10);
     const hashedOTP = await bcrypt.hash(otp.toString(), salt);
@@ -101,7 +89,6 @@ class StudentController {
       student: studentId,
     });
 
-    // Send OTP to student
     sendOTPMessage(student.telegramId, otp);
     res.send({
       status: "success",
@@ -119,12 +106,8 @@ class StudentController {
     const { studentId } = req.params;
     const { otp } = req.body;
 
-    if (!studentId || !otp)
-      return next(new AppError("Missing required parameters", 400));
-
     const student = await StudentModel.findById(studentId);
     if (!student) return next(new AppError("Student not found", 404));
-    if (student.verified) return next(new AppError("Student is verified", 400));
 
     const studentOTP = await otpModel.findOne({ student: studentId });
     if (!studentOTP || studentOTP.OTPType !== "verify")
