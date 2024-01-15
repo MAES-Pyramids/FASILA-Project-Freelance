@@ -18,6 +18,7 @@ const wasageRoutes = require("./routes/wasage.routes.js");
 const SessionRoutes = require("./routes/session.routes.js");
 const StudentRoutes = require("./routes/student.routes.js");
 const FacultyRoutes = require("./routes/faculty.routes.js");
+const SubjectRoutes = require("./routes/subject.routes.js");
 const universityRoutes = require("./routes/university.routes.js");
 
 const { receiveOTP } = require("./hooks/wasage");
@@ -75,6 +76,7 @@ app.use("/api/v1/wasage", wasageRoutes);
 app.use("/api/v1/sessions", SessionRoutes);
 app.use("/api/v1/Students", StudentRoutes);
 app.use(requireUser);
+app.use("/api/v1/Subjects", SubjectRoutes);
 app.use("/api/v1/Faculties", FacultyRoutes);
 app.use("/api/v1/Universities", universityRoutes);
 

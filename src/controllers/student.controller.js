@@ -1,5 +1,6 @@
 const { sendOTPMessage } = require("../utils/telegramBot.js");
 const StudentModel = require("../models/student.model.js");
+const FacultyModel = require("../models/faculty.model.js");
 const otpModel = require("../models/otp.model.js");
 const bcrypt = require("bcryptjs");
 const _ = require("lodash");
@@ -26,9 +27,12 @@ class StudentController {
       "faculty",
     ]);
 
-    // check if there account with same mobile number
     const student = await StudentModel.findOne({ phone: signUpData.phone });
     if (student) next(new AppError("Existing account with same mobile number"));
+
+    const maxSemester = (await FacultyModel.findById(signUpData.faculty))
+      .no_of_semesters;
+    if (semester > maxSemester) next(new AppError("Invalid semester number"));
 
     let newStudent = await StudentModel.create(signUpData);
     newStudent = _.omit(newStudent.toObject(), ["password"]);
