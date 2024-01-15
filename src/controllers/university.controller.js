@@ -46,8 +46,6 @@ class UniversityController {
    */
   static addUniversity = catchAsyncError(async (req, res, next) => {
     const { name } = req.body;
-    if (!name) return next(new AppError("Missing required parameters", 400));
-
     const university = await UniversityModel.create({ name });
 
     res.send({

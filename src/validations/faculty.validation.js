@@ -14,6 +14,8 @@ const createFacultySchema = Joi.object({
 });
 
 const getFacultyByIDSchema = Joi.object({
+  body: Joi.object({}),
+  query: Joi.object({}),
   params: Joi.object({
     id: Joi.string().required(),
   }),
