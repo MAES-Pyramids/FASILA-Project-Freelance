@@ -8,18 +8,13 @@ const {
 const router = require("express").Router();
 router.use("/:id/Faculties", FacultyRoutes);
 
-router.get("/", UniversityController.getALLUniversities);
+router
+  .route("/")
+  .get(UniversityController.getALLUniversities)
+  .post(CreateUniversity_Validation, UniversityController.addUniversity);
 
-router.get(
-  "/:id",
-  GetUniversityByID_Validation,
-  UniversityController.getUniversity
-);
-
-router.post(
-  "/",
-  CreateUniversity_Validation,
-  UniversityController.addUniversity
-);
+router
+  .route("/:id")
+  .get(GetUniversityByID_Validation, UniversityController.getUniversity);
 
 module.exports = router;

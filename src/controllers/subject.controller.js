@@ -1,5 +1,6 @@
 const { getSubjects, getSubjectById } = require("../services/subject.service");
 const SubjectModel = require("../models/subject.model");
+const FacultyModel = require("../models/faculty.model");
 const _ = require("lodash");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
@@ -72,6 +73,9 @@ class SubjectController {
    */
   static addSubject = catchAsyncError(async (req, res, next) => {
     const data = _.pick(req.body, ["name", "faculty", "semester", "doctors"]);
+
+    const maxSem = (await FacultyModel.findById(data.faculty)).no_of_semesters;
+    if (data.semester > maxSem) next(new AppError("Invalid semester number"));
 
     const subject = await SubjectModel.create(data);
 

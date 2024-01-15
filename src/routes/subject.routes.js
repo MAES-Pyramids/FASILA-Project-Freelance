@@ -1,13 +1,22 @@
 const SubjectController = require("../controllers/subject.controller");
 const router = require("express").Router({ mergeParams: true });
+const {
+  GetSubs_Validation,
+  CreateSub_Validation,
+  UpdateSub_Validation,
+  GetSubByID_Validation,
+} = require("../validations/subject.validation");
 // ----------------- Student Routes ----------------- //
 router.get("/My", SubjectController.getMySubjects);
 
 router
   .route("/")
-  .get(SubjectController.getALLSubjects)
-  .post(SubjectController.addSubject);
-router.route("/:id").get(SubjectController.getSubjectById);
+  .get(GetSubs_Validation, SubjectController.getALLSubjects)
+  .post(CreateSub_Validation, SubjectController.addSubject);
+
+router
+  .route("/:id")
+  .get(GetSubByID_Validation, SubjectController.getSubjectById);
 
 // ------------------ Admin Routes ------------------ //
 
