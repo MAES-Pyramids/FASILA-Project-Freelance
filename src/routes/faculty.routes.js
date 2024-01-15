@@ -1,15 +1,21 @@
 const FacultyController = require("../controllers/faculty.controller");
-const { SetFacultyUniversityID } = require("../middlewares/nestedRoutes");
-const FacultyJV = require("../validations/faculty.validation");
+const { SetFacultyUnivID } = require("../middlewares/nestedRoutes");
+const {
+  CreateF_Validation,
+  GetFByID_Validation,
+} = require("../validations/faculty.validation");
 
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 
-router
-  .route("/")
-  .get(FacultyController.getALLFaculties)
-  .post(SetFacultyUniversityID, FacultyController.addFaculty);
+router.get("/", GetFByID_Validation, FacultyController.getALLFaculties);
+router.get("/:id", FacultyController.getFaculty);
 
-router.route("/:id").get(FacultyController.getFaculty);
+router.post(
+  "/",
+  SetFacultyUnivID,
+  CreateF_Validation,
+  FacultyController.addFaculty
+);
 
 module.exports = router;

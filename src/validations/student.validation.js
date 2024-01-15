@@ -29,5 +29,5 @@ const signUpSchema = Joi.object({
   }),
 });
 
-const signUpValidation = validationMiddleWare(signUpSchema);
-module.exports = { signUpValidation };
+const Signup_Validation = validationMiddleWare(signUpSchema);
+module.exports = { Signup_Validation };

@@ -46,13 +46,11 @@ class FacultyController {
    * @access public
    */
   static addFaculty = catchAsyncError(async (req, res, next) => {
-    const { name, semestersMaxNumber, UniversityID } = req.body;
-    if (!name || !semestersMaxNumber || !UniversityID)
-      return next(new AppError("Missing required parameters", 400));
+    const { name, no_of_semesters, UniversityID } = req.body;
 
     const faculty = await FacultyModel.create({
       name,
-      no_of_semesters: semestersMaxNumber,
+      no_of_semesters,
     });
 
     const university = await UniversityModel.findById(UniversityID);
@@ -61,7 +59,6 @@ class FacultyController {
 
     res.send({
       status: "success",
-      message: "Faculty added successfully",
       data: faculty,
     });
   });

@@ -1,17 +1,16 @@
-const StudentController = require("../controllers/student.controller.js");
-const { signUpValidation } = require("../validations/student.validation.js");
-const requireUser = require("../middlewares/userRequired.js");
+const requireUser = require("../middlewares/userRequired");
+const StudentController = require("../controllers/student.controller");
+const { Signup_Validation } = require("../validations/student.validation");
 
 const router = require("express").Router();
 
-router.post("/signup", signUpValidation, StudentController.signUp);
+router.post("/signup", Signup_Validation, StudentController.signUp);
 router.use(requireUser);
 
 router
   .route("/:studentId/TelegramID")
   .put(StudentController.SaveID)
   .post(StudentController.verifyID);
-
 router.get("/:studentId/SendOTP", StudentController.SendOTP);
 
 module.exports = router;
