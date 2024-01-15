@@ -7,7 +7,6 @@ const {
   GetSubByID_Validation,
 } = require("../validations/subject.validation");
 // ----------------- Student Routes ----------------- //
-router.get("/My", SubjectController.getMySubjects);
 
 router
   .route("/")

@@ -26,20 +26,27 @@ class SubjectController {
   });
 
   /**
-   * @description Get all subjects ( filter  by faculty or semester)
+   * @description Get subjects based on user type( filter  by faculty or semester)
    * @route /api/v1/subjects
    * @method GET
    * @access private
    */
   static getALLSubjects = catchAsyncError(async (req, res, next) => {
-    const { faculty, semester } = req.query;
-
-    const query = {};
-    if (faculty) query.faculty = faculty;
-    if (semester) query.semester = semester;
+    let [userType, query] = [res.locals.user.role, {}];
+    if (userType === "Admin") {
+      const { faculty, semester } = req.query;
+      if (faculty) query.faculty = faculty;
+      if (semester) query.semester = semester;
+    }
+    if (userType === "Student") {
+      const { faculty, semester } = res.locals.user;
+      query = { faculty, semester };
+    }
 
     const { status, data } = await getSubjects(query);
-    if (status === "error") return next(new AppError(data, 404));
+    if (status === "error") {
+      return next(new AppError(data, 404));
+    }
 
     res.send({
       status: "success",
