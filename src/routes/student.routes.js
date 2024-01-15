@@ -6,10 +6,12 @@ const router = require("express").Router();
 router.post("/signup", Signup_Validation, StudentController.signUp);
 
 router.use(requireUser);
-router
-  .route("/:studentId/TelegramID")
-  .put(StudentController.SaveID)
-  .post(StudentController.verifyID);
-router.get("/:studentId/SendOTP", StudentController.SendTelegramOTP);
+
+
+// router
+//   .route("/:studentId/TelegramID")
+//   .put(StudentController.SaveID)
+//   .post(StudentController.verifyID);
+// router.get("/:studentId/SendOTP", StudentController.SendTelegramOTP);
 
 module.exports = router;
