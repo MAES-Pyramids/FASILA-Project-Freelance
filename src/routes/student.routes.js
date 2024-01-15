@@ -1,6 +1,6 @@
-const requireUser = require("../middlewares/userRequired");
-const StudentController = require("../controllers/student.controller");
 const { Signup_Validation } = require("../validations/student.validation");
+const StudentController = require("../controllers/student.controller");
+const requireUser = require("../middlewares/userRequired");
 
 const router = require("express").Router();
 

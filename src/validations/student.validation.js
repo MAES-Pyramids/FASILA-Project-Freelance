@@ -21,12 +21,8 @@ const signUpSchema = Joi.object({
     facultyCard: Joi.string(),
     faculty: Joi.string(),
   }),
-  query: Joi.object({
-    // Define query parameters here if needed
-  }),
-  params: Joi.object({
-    // Define route parameters here if needed
-  }),
+  query: Joi.object({}),
+  params: Joi.object({}),
 });
 
 const Signup_Validation = validationMiddleWare(signUpSchema);

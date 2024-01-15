@@ -1,7 +1,7 @@
 const Joi = require("joi");
 const validationMiddleWare = require("../middlewares/validation");
 
-const createFaculty = Joi.object({
+const createFacultySchema = Joi.object({
   body: Joi.object({
     name: Joi.string().min(2).max(100),
     no_of_semesters: Joi.number().integer().required(),
@@ -13,13 +13,13 @@ const createFaculty = Joi.object({
   }),
 });
 
-const getFacultyByID = Joi.object({
+const getFacultyByIDSchema = Joi.object({
   params: Joi.object({
     id: Joi.string().required(),
   }),
 });
 
-const CreateF_Validation = validationMiddleWare(createFaculty);
-const GetFByID_Validation = validationMiddleWare(getFacultyByID);
+const CreateF_Validation = validationMiddleWare(createFacultySchema);
+const GetFByID_Validation = validationMiddleWare(getFacultyByIDSchema);
 
 module.exports = { CreateF_Validation, GetFByID_Validation };
