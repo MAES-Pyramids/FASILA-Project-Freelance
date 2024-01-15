@@ -1,5 +1,6 @@
-const { signJWT } = require("../utils/jwt.utils");
 const { validatePassword, findUser } = require("../services/user.service");
+const { signJWT } = require("../utils/jwt.utils");
+const _ = require("lodash");
 const {
   createSession,
   deleteSession,
@@ -8,7 +9,6 @@ const {
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
 const AppError = require("../utils/appErrorsClass");
-const _ = require("lodash");
 
 class SessionController {
   /**
@@ -60,7 +60,6 @@ class SessionController {
    */
   static logout = catchAsyncError(async (req, res, next) => {
     const sessionId = res.locals.user.session;
-
     await deleteSession(sessionId);
 
     return res.send({

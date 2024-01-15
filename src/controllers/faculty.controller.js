@@ -1,15 +1,15 @@
-const FacultyModel = require("../models/faculty.model");
 const UniversityModel = require("../models/university.model");
+const FacultyModel = require("../models/faculty.model");
 
-const AppError = require("../utils/appErrorsClass");
 const catchAsyncError = require("../utils/catchAsyncErrors");
+const AppError = require("../utils/appErrorsClass");
 
 class FacultyController {
   /**
    * @description Get all faculties
    * @route /api/v1/faculties
    * @method GET
-   * @access public
+   * @access private
    */
   static getALLFaculties = catchAsyncError(async (req, res, next) => {
     const faculties = await FacultyModel.find();
@@ -25,7 +25,7 @@ class FacultyController {
    * @description Get a specific faculty by ID
    * @route /api/v1/faculties/:id
    * @method GET
-   * @access public
+   * @access private
    */
   static getFaculty = catchAsyncError(async (req, res, next) => {
     const { id } = req.params;
@@ -43,7 +43,7 @@ class FacultyController {
    * @description Add a new faculty
    * @route /api/v1/faculties ||
    * @method POST
-   * @access public
+   * @access private
    */
   static addFaculty = catchAsyncError(async (req, res, next) => {
     const { name, no_of_semesters, UniversityID } = req.body;

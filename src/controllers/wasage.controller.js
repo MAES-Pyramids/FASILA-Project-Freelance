@@ -1,7 +1,8 @@
-const axios = require("axios");
-const AppError = require("../utils/appErrorsClass");
-const catchAsync = require("../utils/catchAsyncErrors");
 const { storeOTP } = require("../services/otp.service");
+const axios = require("axios");
+
+const catchAsync = require("../utils/catchAsyncErrors");
+const AppError = require("../utils/appErrorsClass");
 
 const baseURL = process.env.Wasage_baseURL;
 const Wasage_Username = process.env.Wasage_Username;

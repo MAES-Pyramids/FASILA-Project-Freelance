@@ -1,11 +1,11 @@
+const { sendOTPMessage } = require("../utils/telegramBot.js");
 const StudentModel = require("../models/student.model.js");
 const otpModel = require("../models/otp.model.js");
 const bcrypt = require("bcryptjs");
 const _ = require("lodash");
 
-const AppError = require("../utils/appErrorsClass");
 const catchAsyncError = require("../utils/catchAsyncErrors");
-const { sendOTPMessage } = require("../utils/telegramBot.js");
+const AppError = require("../utils/appErrorsClass");
 
 class StudentController {
   /**

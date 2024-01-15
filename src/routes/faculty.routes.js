@@ -4,9 +4,7 @@ const {
   CreateF_Validation,
   GetFByID_Validation,
 } = require("../validations/faculty.validation");
-
-const express = require("express");
-const router = express.Router({ mergeParams: true });
+const router = require("express").Router({ mergeParams: true });
 
 router.get("/", FacultyController.getALLFaculties);
 router.get("/:id", GetFByID_Validation, FacultyController.getFaculty);

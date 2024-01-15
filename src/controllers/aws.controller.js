@@ -1,6 +1,7 @@
 const AWS = require("aws-sdk");
-const AppError = require("../utils/appErrorsClass");
+
 const catchAsyncError = require("../utils/catchAsyncErrors");
+const AppError = require("../utils/appErrorsClass");
 
 AWS.config.update({
   accessKeyId: process.env.AWS_accessKeyId,

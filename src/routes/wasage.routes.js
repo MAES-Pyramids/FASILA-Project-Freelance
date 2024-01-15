@@ -1,8 +1,7 @@
+const { CreateOTP_Validation } = require("../validations/wasage.validation");
 const wasageController = require("../controllers/wasage.controller");
-const express = require("express");
+const router = require("express").Router();
 
-const router = express.Router();
-
-router.post("/", wasageController.getOTP);
+router.post("/", CreateOTP_Validation, wasageController.getOTP);
 
 module.exports = router;

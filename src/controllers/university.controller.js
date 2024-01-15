@@ -1,14 +1,14 @@
 const UniversityModel = require("../models/university.model");
 
-const AppError = require("../utils/appErrorsClass");
 const catchAsyncError = require("../utils/catchAsyncErrors");
+const AppError = require("../utils/appErrorsClass");
 
 class UniversityController {
   /**
    * @description Get all universities
    * @route /api/v1/universities
    * @method GET
-   * @access public
+   * @access private
    */
   static getALLUniversities = catchAsyncError(async (req, res, next) => {
     const universities = await UniversityModel.find();
@@ -24,7 +24,7 @@ class UniversityController {
    * @description Get a specific university by ID
    * @route /api/v1/universities/:id
    * @method GET
-   * @access public
+   * @access private
    */
   static getUniversity = catchAsyncError(async (req, res, next) => {
     const { id } = req.params;
@@ -42,7 +42,7 @@ class UniversityController {
    * @description Add a new university
    * @route /api/v1/universities
    * @method POST
-   * @access public
+   * @access private
    */
   static addUniversity = catchAsyncError(async (req, res, next) => {
     const { name } = req.body;
