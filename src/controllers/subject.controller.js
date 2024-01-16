@@ -33,11 +33,13 @@ class SubjectController {
    */
   static getALLSubjects = catchAsyncError(async (req, res, next) => {
     let [userType, query] = [res.locals.user.role, {}];
+
     if (userType === "Admin") {
       const { faculty, semester } = req.query;
       if (faculty) query.faculty = faculty;
       if (semester) query.semester = semester;
     }
+
     if (userType === "Student") {
       const { faculty, semester } = res.locals.user;
       query = { faculty, semester };
