@@ -3,6 +3,7 @@ const StudentModel = require("../models/student.model.js");
 const FacultyModel = require("../models/faculty.model.js");
 const otpModel = require("../models/otp.model.js");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const _ = require("lodash");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
@@ -59,6 +60,38 @@ class StudentController {
     res.send({
       status: "success",
       data: { studentId: student._id },
+    });
+  });
+
+  /**
+   *  @description Get Student ID using his phone number
+   *  @route /api/v1/student/password/:resetToken
+   *  @method Patch
+   *  @access public
+   */
+  static changePassword = catchAsyncError(async (req, res, next) => {
+    const { resetToken } = req.params;
+    const { password } = req.body;
+
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    const student = await StudentModel.findOne({
+      resetPassToken: hashedToken,
+      resetPassExpires: { $gt: Date.now() },
+    });
+    if (!student) return next(new AppError("Invalid or expired token", 400));
+
+    student.password = password;
+    student.resetPassToken = undefined;
+    student.resetPassExpires = undefined;
+    await student.save();
+
+    res.send({
+      status: "success",
+      message: "Password changed successfully",
     });
   });
 

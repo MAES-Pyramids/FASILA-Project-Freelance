@@ -3,10 +3,10 @@ const StudentController = require("../controllers/student.controller");
 const requireUser = require("../middlewares/userRequired");
 const router = require("express").Router();
 
+router.get("/mobile/:mobileNumber", StudentController.getStudentID);
 router.post("/signup", Signup_Validation, StudentController.signUp);
 
-router.get("/mobile/:mobileNumber", StudentController.getStudentID);
-router.patch("/:resetToken/password", StudentController.changePassword);
+router.patch("/password/:resetToken", StudentController.changePassword);
 
 router.use(requireUser);
 
