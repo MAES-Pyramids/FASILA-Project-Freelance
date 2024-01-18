@@ -6,7 +6,6 @@ const {
   UpdateSub_Validation,
   GetSubByID_Validation,
 } = require("../validations/subject.validation");
-// ----------------- Student Routes ----------------- //
 
 router
   .route("/")
@@ -16,7 +15,5 @@ router
 router
   .route("/:id")
   .get(GetSubByID_Validation, SubjectController.getSubjectById);
-
-// ------------------ Admin Routes ------------------ //
 
 module.exports = router;

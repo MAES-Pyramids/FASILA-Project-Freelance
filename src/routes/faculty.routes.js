@@ -5,13 +5,16 @@ const {
   GetFByID_Validation,
 } = require("../validations/faculty.validation");
 const router = require("express").Router({ mergeParams: true });
-// ----------------- Student Routes ----------------- //
 
-// ------------------ Admin Routes ------------------ //
 router
   .route("/")
   .get(FacultyController.getALLFaculties)
   .post(SetFacultyUnivID, CreateF_Validation, FacultyController.addFaculty);
-router.get("/:id", GetFByID_Validation, FacultyController.getFaculty);
+
+router
+  .route("/:id")
+  .get(GetFByID_Validation, FacultyController.getFaculty)
+  .patch()
+  .delete();
 
 module.exports = router;
