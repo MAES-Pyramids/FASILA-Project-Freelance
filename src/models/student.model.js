@@ -61,6 +61,8 @@ const studentSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    resetPassToken: String,
+    resetPassExpires: Date,
   },
   {
     timestamps: true,

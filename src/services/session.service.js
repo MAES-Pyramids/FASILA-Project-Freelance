@@ -3,7 +3,7 @@ const { findUser } = require("./user.service");
 const SessionModel = require("../models/session.models");
 const { signJWT, verifyJWT } = require("../utils/jwt.utils");
 
-exports.createSession = async (type, user, userAgent) => {
+exports.createSession = async function (type, user, userAgent) {
   const session = await SessionModel.create({ user, userAgent, type });
   return session.toJSON();
 };
