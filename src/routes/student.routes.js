@@ -5,8 +5,10 @@ const router = require("express").Router();
 
 router.post("/signup", Signup_Validation, StudentController.signUp);
 
-router.use(requireUser);
+router.get("/mobile/:mobileNumber", StudentController.getStudentID);
+router.patch("/:resetToken/password", StudentController.changePassword);
 
+router.use(requireUser);
 
 // router
 //   .route("/:studentId/TelegramID")

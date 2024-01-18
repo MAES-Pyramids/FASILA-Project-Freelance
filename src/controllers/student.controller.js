@@ -45,6 +45,24 @@ class StudentController {
   });
 
   /**
+   *  @description Get Student ID using his phone number
+   *  @route /api/v1/student/mobile/:mobileNumber
+   *  @method Get
+   *  @access public
+   */
+  static getStudentID = catchAsyncError(async (req, res, next) => {
+    const { mobileNumber } = req.params;
+
+    const student = await StudentModel.findOne({ phone: mobileNumber });
+    if (!student) return next(new AppError("Student not found", 404));
+
+    res.send({
+      status: "success",
+      data: { studentId: student._id },
+    });
+  });
+
+  /**
    *  @description Store Telegram Chat ID for student
    *  @route /api/v1/student/SaveID:studentId
    *  @method POST
