@@ -8,14 +8,18 @@ const baseURL = process.env.Wasage_baseURL;
 const Wasage_Username = process.env.Wasage_Username;
 const Wasage_Password = process.env.Wasage_Password;
 const welcomeMessage = process.env.Wasage_welcomeMessage;
+const RestPassMessage = ` كود استعادة كلمة المرور الخاصة بك هو `;
 
 exports.getOTP = catchAsync(async (req, res) => {
   const { type } = req.query;
   const { id } = req.body;
 
-  const response = await axios.post(
-    `${baseURL}?Username=${Wasage_Username}&Password=${Wasage_Password}&Reference=${id}&Message=${welcomeMessage}`
-  );
+  const URl =
+    type == "verify"
+      ? `${baseURL}?Username=${Wasage_Username}&Password=${Wasage_Password}&Reference=${id}&Message=${welcomeMessage}`
+      : `${baseURL}?Username=${Wasage_Username}&Password=${Wasage_Password}&Reference=${id}&Message=${RestPassMessage}`;
+
+  const response = await axios.post(URl);
 
   if (response.data.Code != 5500)
     return next(new AppError("Error sending OTP", 500));

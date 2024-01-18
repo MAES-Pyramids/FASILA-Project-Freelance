@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Success Page</title>
+    <style>
+      body {
+        background-color: green;
+        margin: 0; /* Remove default margin */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+
+      .message-container {
+        text-align: center;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="message-container">
+      <!-- Display the message from localStorage -->
+      <h1>Success Page</h1>
+      <p id="verificationMessage">Verification Message:</p>
+    </div>
+
+    <script>
+      // Retrieve the stored value from localStorage
+      var verificationMessage = localStorage.getItem("restPassToken");
+
+      // Get the element to display the message
+      var messageElement = document.getElementById("verificationMessage");
+
+      // Check if the value exists and display it
+      if (verificationMessage) {
+        // Set the text content of the element
+        messageElement.textContent += verificationMessage;
+      } else {
+        // Display a default message if the value is not found
+        messageElement.textContent += "No verification message found.";
+      }
+    </script>
+  </body>
+</html>

@@ -1,6 +1,9 @@
-const { verifyStudent } = require("../services/student.service");
+const {
+  verifyStudent,
+  getPassResetToken,
+} = require("../services/student.service");
 const { getUserConnection } = require("../utils/redis");
-const { verifyOTP, getPassResetToken } = require("../services/otp.service");
+const { verifyOTP } = require("../services/otp.service");
 const { socketServer } = require("../utils/sockets");
 
 const SK = process.env.Wasage_SecretKey;
