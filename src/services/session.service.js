@@ -8,8 +8,11 @@ exports.createSession = async function (type, user, userAgent) {
   return session.toJSON();
 };
 
-exports.invalidateSession = async function (sessionId) {
-  await SessionModel.findOneAndUpdate({ _id: sessionId }, { valid: false });
+exports.invalidateUserSession = async function (userId) {
+  await (session = SessionModel.findOneAndUpdate(
+    { user: userId },
+    { valid: false }
+  ));
 };
 
 exports.deleteSession = async function (sessionId) {
@@ -34,6 +37,7 @@ exports.reIssueAccessToken = async function (refreshToken) {
 
   let user = await findUser(decoded.role, { _id: session.user });
   if (!user) return false;
+
   user = _.omit(user, "password");
 
   const accessToken = signJWT(

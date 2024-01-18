@@ -29,3 +29,16 @@ exports.getPassResetToken = async function (_id) {
 
   return { status: true, message: resetToken };
 };
+
+exports.isPassChangedAfter = async function (_id, JWT_TS) {
+  const student = await StudentModel.findOne({ _id });
+
+  if (student.passwordChangedAt) {
+    const changedTimeStamp = parseInt(
+      student.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    return JWT_TS < changedTimeStamp;
+  }
+  return false;
+};

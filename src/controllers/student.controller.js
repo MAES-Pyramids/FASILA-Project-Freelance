@@ -1,3 +1,4 @@
+const { invalidateUserSession } = require("../services/session.service.js");
 const { sendOTPMessage } = require("../utils/telegramBot.js");
 const StudentModel = require("../models/student.model.js");
 const FacultyModel = require("../models/faculty.model.js");
@@ -83,6 +84,8 @@ class StudentController {
       resetPassExpires: { $gt: Date.now() },
     });
     if (!student) return next(new AppError("Invalid or expired token", 400));
+
+    await invalidateUserSession(student._id);
 
     student.password = password;
     student.resetPassToken = undefined;

@@ -61,8 +61,18 @@ const studentSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    resetPassToken: String,
-    resetPassExpires: Date,
+    resetPassToken: {
+      type: String,
+      select: false,
+    },
+    resetPassExpires: {
+      type: Date,
+      select: false,
+    },
+    passwordChangedAt: {
+      type: Date,
+      select: false,
+    },
   },
   {
     timestamps: true,
@@ -75,6 +85,7 @@ studentSchema.pre("save", async function (next) {
 
   const salt = await bcrypt.genSalt(parseInt(process.env.SaltWorkFactor));
   student.password = bcrypt.hashSync(student.password, salt);
+  student.passwordChangedAt = Date.now() - 1000;
 
   return next();
 });
