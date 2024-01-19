@@ -76,11 +76,11 @@ app.get("/ip", (req, res) => {
 app.use("/api/v1/wasage", wasageRoutes);
 app.use("/api/v1/sessions", SessionRoutes);
 app.use("/api/v1/Students", StudentRoutes);
+app.use("/api/v1/Faculties", FacultyRoutes);
+app.use("/api/v1/Universities", universityRoutes);
 app.use(requireUser);
 app.use("/api/v1/doctors", DoctorRoutes);
 app.use("/api/v1/Subjects", SubjectRoutes);
-app.use("/api/v1/Faculties", FacultyRoutes);
-app.use("/api/v1/Universities", universityRoutes);
 
 app.all("*", (req, res, next) => {
   next(

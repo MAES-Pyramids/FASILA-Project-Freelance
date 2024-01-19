@@ -34,7 +34,8 @@ class StudentController {
 
     const maxSemester = (await FacultyModel.findById(signUpData.faculty))
       .no_of_semesters;
-    if (semester > maxSemester) next(new AppError("Invalid semester number"));
+    if (signUpData.semester > maxSemester)
+      next(new AppError("Invalid semester number"));
 
     let newStudent = await StudentModel.create(signUpData);
     newStudent = _.omit(newStudent.toObject(), ["password"]);

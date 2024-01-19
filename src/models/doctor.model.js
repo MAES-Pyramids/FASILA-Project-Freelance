@@ -11,7 +11,7 @@ const DoctorSchema = new mongoose.Schema({
     default: "doctor_default.jpg",
   },
   phone: {
-    type: Number,
+    type: String,
     unique: true,
     required: [true, "Please provide mobile number"],
   },
