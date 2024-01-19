@@ -4,9 +4,9 @@ const requireUser = require("../middlewares/userRequired");
 const router = require("express").Router();
 
 router.get("/mobile/:mobileNumber", StudentController.getStudentID);
-router.post("/signup", Signup_Validation, StudentController.signUp);
+router.patch("/pass/:resetToken", StudentController.changePassword);
 
-router.patch("/password/:resetToken", StudentController.changePassword);
+router.post("/signup", Signup_Validation, StudentController.signUp);
 
 router.use(requireUser);
 

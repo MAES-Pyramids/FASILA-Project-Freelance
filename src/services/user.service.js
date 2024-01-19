@@ -15,10 +15,10 @@ exports.validatePassword = async (phone, password) => {
       break;
     }
   }
-  if (!user) return false;
+  if (!user) return [false, null];
 
   const isValid = await user.comparePassword(password);
-  if (!isValid) return false;
+  if (!isValid) return [false, null];
 
   return [_.omit(user.toJSON(), "password"), type];
 };
