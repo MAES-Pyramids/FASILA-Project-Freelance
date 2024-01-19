@@ -1,4 +1,4 @@
-const { invalidateUserSession } = require("../services/session.service.js");
+const { invalidateUserSessions } = require("../services/session.service.js");
 const { sendOTPMessage } = require("../utils/telegramBot.js");
 const StudentModel = require("../models/student.model.js");
 const FacultyModel = require("../models/faculty.model.js");
@@ -85,7 +85,7 @@ class StudentController {
     });
     if (!student) return next(new AppError("Invalid or expired token", 400));
 
-    await invalidateUserSession(student._id);
+    await invalidateUserSessions(student._id);
 
     student.password = password;
     student.resetPassToken = undefined;
@@ -123,7 +123,7 @@ class StudentController {
 
   /**
    *  @description Send OTP code to student via Telegram
-   *  @route /api/v1/student/SendOTP/:studentId?Type=verify||reset||Force
+   *  @route /api/v1/student/SendOTP/:studentId?Type=verify||reset||force
    *  @method Get
    *  @access public
    */

@@ -7,17 +7,26 @@ const AppError = require("../utils/appErrorsClass");
 const baseURL = process.env.Wasage_baseURL;
 const Wasage_Username = process.env.Wasage_Username;
 const Wasage_Password = process.env.Wasage_Password;
-const welcomeMessage = process.env.Wasage_welcomeMessage;
-const RestPassMessage = ` كود استعادة كلمة المرور الخاصة بك هو `;
+const FLMessage = process.env.Wasage_forceLogoutMessage;
+const RPMessage = process.env.Wasage_changePassMessage;
+const WMessage = process.env.Wasage_welcomeMessage;
 
 exports.getOTP = catchAsync(async (req, res) => {
   const { type } = req.query;
   const { id } = req.body;
 
-  const URl =
-    type == "verify"
-      ? `${baseURL}?Username=${Wasage_Username}&Password=${Wasage_Password}&Reference=${id}&Message=${welcomeMessage}`
-      : `${baseURL}?Username=${Wasage_Username}&Password=${Wasage_Password}&Reference=${id}&Message=${RestPassMessage}`;
+  let URl;
+  switch (type) {
+    case "verify":
+      URl = `${baseURL}?Username=${Wasage_Username}&Password=${Wasage_Password}&Reference=${id}&Message=${WMessage}`;
+      break;
+    case "reset":
+      URl = `${baseURL}?Username=${Wasage_Username}&Password=${Wasage_Password}&Reference=${id}&Message=${RPMessage}`;
+      break;
+    case "force":
+      URl = `${baseURL}?Username=${Wasage_Username}&Password=${Wasage_Password}&Reference=${id}&Message=${FLMessage}`;
+      break;
+  }
 
   const response = await axios.post(URl);
 

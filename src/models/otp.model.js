@@ -12,7 +12,7 @@ const otpSchema = new mongoose.Schema({
   },
   OTPType: {
     type: String,
-    enum: ["verify", "reset", "Force"],
+    enum: ["verify", "reset", "force"],
     required: [true, "Please provide type"],
   },
   createdAt: {

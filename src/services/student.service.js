@@ -1,3 +1,4 @@
+const { invalidateUserSessions } = require("../services/session.service");
 const StudentModel = require("../models/student.model");
 const crypto = require("crypto");
 
@@ -36,6 +37,27 @@ exports.isPassChangedAfter = async function (_id, JWT_TS) {
   if (student.passwordChangedAt) {
     const changedTimeStamp = parseInt(
       student.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    return JWT_TS < changedTimeStamp;
+  }
+  return false;
+};
+
+exports.forceLogout = async function (_id) {
+  const succeed = await invalidateUserSessions(_id);
+  await StudentModel.updateOne({ _id }, { forceLogoutAt: Date.now() });
+
+  if (!succeed) return { status: false, message: "Something went wrong" };
+  else return { status: true, message: "Logged out successfully" };
+};
+
+exports.isForceLogoutAfter = async function (_id, JWT_TS) {
+  const student = await StudentModel.findOne({ _id });
+
+  if (student.forceLogoutAt) {
+    const changedTimeStamp = parseInt(
+      student.forceLogoutAt.getTime() / 1000,
       10
     );
     return JWT_TS < changedTimeStamp;

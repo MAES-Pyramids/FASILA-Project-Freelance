@@ -1,9 +1,11 @@
 const {
   verifyStudent,
   getPassResetToken,
+  forceLogout,
 } = require("../services/student.service");
-const { getUserConnection } = require("../utils/redis");
+
 const { verifyOTP } = require("../services/otp.service");
+const { getUserConnection } = require("../utils/redis");
 const { socketServer } = require("../utils/sockets");
 
 const SK = process.env.Wasage_SecretKey;
@@ -32,8 +34,10 @@ exports.receiveOTP = async (req, res) => {
         socketServer.to(socketID).emit("otp-passReset", { status, message });
       break;
 
-    case "Force":
-      console.log("Force");
+    case "force":
+      ({ status, message } = await forceLogout(Reference));
+      if (socketID)
+        socketServer.to(socketID).emit("otp-forceLogout", { status, message });
       break;
   }
 

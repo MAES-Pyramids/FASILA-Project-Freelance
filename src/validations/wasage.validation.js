@@ -6,7 +6,7 @@ const createOTPSchema = Joi.object({
     id: Joi.string().required(),
   }),
   query: Joi.object({
-    type: Joi.string().valid("verify", "reset", "Force").required(),
+    type: Joi.string().valid("verify", "reset", "force").required(),
   }),
   params: Joi.object({}),
 });

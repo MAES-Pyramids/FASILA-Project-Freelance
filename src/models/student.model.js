@@ -73,6 +73,10 @@ const studentSchema = new mongoose.Schema(
       type: Date,
       select: false,
     },
+    forceLogoutAt: {
+      type: Date,
+      select: false,
+    },
   },
   {
     timestamps: true,

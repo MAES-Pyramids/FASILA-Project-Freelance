@@ -1,7 +1,10 @@
 const _ = require("lodash");
 const { verifyJWT } = require("../utils/jwt.utils");
 const { reIssueAccessToken } = require("../services/session.service");
-const { isPassChangedAfter } = require("../services/student.service");
+const {
+  isPassChangedAfter,
+  isForceLogoutAfter,
+} = require("../services/student.service");
 
 const DeserializeUser = async (req, res, next) => {
   let accessToken = _.get(req, "headers.authorization", "");
@@ -17,9 +20,11 @@ const DeserializeUser = async (req, res, next) => {
 
   if (decoded) {
     if (decoded.role == "Student") {
-      if (await isPassChangedAfter(decoded._id, decoded.iat)) {
+      if (
+        (await isPassChangedAfter(decoded._id, decoded.iat)) ||
+        (await isForceLogoutAfter(decoded._id, decoded.iat))
+      )
         return next();
-      }
     }
 
     res.locals.user = decoded;

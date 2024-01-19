@@ -8,11 +8,13 @@ exports.createSession = async function (type, user, userAgent) {
   return session.toJSON();
 };
 
-exports.invalidateUserSession = async function (userId) {
-  await (session = SessionModel.findOneAndUpdate(
-    { user: userId },
-    { valid: false }
-  ));
+exports.invalidateUserSessions = async function (userId) {
+  try {
+    await SessionModel.updateMany({ user: userId }, { valid: false });
+    return true;
+  } catch (err) {
+    return false;
+  }
 };
 
 exports.deleteSession = async function (sessionId) {
