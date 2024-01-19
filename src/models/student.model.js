@@ -71,11 +71,9 @@ const studentSchema = new mongoose.Schema(
     },
     passwordChangedAt: {
       type: Date,
-      select: false,
     },
     forceLogoutAt: {
       type: Date,
-      select: false,
     },
   },
   {
