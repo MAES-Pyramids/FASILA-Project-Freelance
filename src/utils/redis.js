@@ -3,10 +3,10 @@ const Redis = require("ioredis");
 const redisHost = process.env.redisHost;
 const redisPort = process.env.redisPort;
 
-const redis = new Redis({
-  host: redisHost,
-  port: redisPort,
-});
+// const redis = new Redis({
+//   host: redisHost,
+//   port: redisPort,
+// });
 
 async function updateUserConnection(userId, socketId, isConnected) {
   if (isConnected)
