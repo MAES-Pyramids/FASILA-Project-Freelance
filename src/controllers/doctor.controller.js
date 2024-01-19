@@ -28,11 +28,11 @@ class DoctorController {
    * @access private
    */
   static createDoctor = catchAsyncError(async (req, res, next) => {
-    const { name, email, password, faculty } = req.body;
+    const { name, phone, password, faculty } = req.body;
 
     const doctor = await DoctorModel.create({
       name,
-      mobile,
+      phone,
       password,
       faculty,
     });

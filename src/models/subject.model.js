@@ -5,6 +5,10 @@ const SubjectSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  photo: {
+    type: String,
+    default: "subject_default.jpg",
+  },
   semester: {
     type: Number,
     required: true,

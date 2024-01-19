@@ -1,4 +1,4 @@
-const { getSubjects, getSubjectById } = require("../services/subject.service");
+const { getSubjects, getSubjectByID } = require("../services/subject.service");
 const SubjectModel = require("../models/subject.model");
 const FacultyModel = require("../models/faculty.model");
 const _ = require("lodash");
@@ -32,7 +32,7 @@ class SubjectController {
    * @access private
    */
   static getALLSubjects = catchAsyncError(async (req, res, next) => {
-    let [userType, query] = [res.locals.user.role, {}];
+    let [userType, query, excluded] = [res.locals.user.role, {}, {}];
 
     if (userType === "Admin") {
       const { faculty, semester } = req.query;
@@ -43,9 +43,10 @@ class SubjectController {
     if (userType === "Student") {
       const { faculty, semester } = res.locals.user;
       query = { faculty, semester };
+      excluded = "-faculty -semester";
     }
 
-    const { status, data } = await getSubjects(query);
+    const { status, data } = await getSubjects(query, excluded);
     if (status === "error") {
       return next(new AppError(data, 404));
     }
@@ -64,8 +65,9 @@ class SubjectController {
    */
   static getSubjectById = catchAsyncError(async (req, res, next) => {
     const { id } = req.params;
+    const excluded = "-faculty -semester";
 
-    const { status, data } = await getSubjectById(id);
+    const { status, data } = await getSubjectByID(id, excluded);
     if (status === "error") return next(new AppError(data, 404));
 
     res.send({

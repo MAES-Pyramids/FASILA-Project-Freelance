@@ -6,6 +6,7 @@ const createSubjectSchema = joi.object({
     name: joi.string().required(),
     semester: joi.number().required(),
     faculty: joi.string().required(),
+    doctors: joi.array().items(joi.string()),
   }),
   query: joi.object({}),
   params: joi.object({}),

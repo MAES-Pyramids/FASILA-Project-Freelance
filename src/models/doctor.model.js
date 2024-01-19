@@ -1,11 +1,16 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const DoctorSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
   },
-  mobile: {
+  photo: {
+    type: String,
+    default: "doctor_default.jpg",
+  },
+  phone: {
     type: Number,
     unique: true,
     required: [true, "Please provide mobile number"],
