@@ -5,7 +5,7 @@ const DoctorModel = require("../models/doctor.model");
 const AdminModel = require("../models/admin.model");
 const models = [AdminModel, LibraryModel, DoctorModel, StudentModel];
 
-exports.validatePassword = async (phone, password) => {
+exports.validatePassword = async function (phone, password) {
   let { user, type } = {};
 
   for (const model of models) {
@@ -23,7 +23,7 @@ exports.validatePassword = async (phone, password) => {
   return [_.omit(user.toJSON(), "password"), type];
 };
 
-exports.findUser = async (role, query) => {
+exports.findUser = async function (role, query) {
   if (role == "Student") return await StudentModel.findOne(query).lean();
   if (role == "Doctor") return await DoctorModel.findOne(query).lean();
   if (role == "Library") return await LibraryModel.findOne(query).lean();

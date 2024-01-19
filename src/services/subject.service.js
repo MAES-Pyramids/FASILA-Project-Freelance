@@ -1,6 +1,6 @@
 const SubjectModel = require("../models/subject.model");
 
-exports.getSubjects = async (query, excluded = "") => {
+exports.getSubjects = async function (query, excluded = "") {
   try {
     const subjects = await SubjectModel.find(query).select(excluded);
     return { status: "success", data: subjects };
@@ -9,7 +9,7 @@ exports.getSubjects = async (query, excluded = "") => {
   }
 };
 
-exports.getSubjectByID = async (id, excluded = "") => {
+exports.getSubjectByID = async function (id, excluded = "") {
   try {
     const subject = await SubjectModel.findById(id)
       .select(excluded)

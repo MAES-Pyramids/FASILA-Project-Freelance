@@ -2,7 +2,7 @@ const _ = require("lodash");
 const bcrypt = require("bcryptjs");
 const OTPModel = require("../models/otp.model.js");
 
-exports.storeOTP = async (studentID, OTP, OTP_Type) => {
+exports.storeOTP = async function (studentID, OTP, OTP_Type) {
   let studentOTP = await OTPModel.findOne({ student: studentID });
   if (studentOTP) await OTPModel.findByIdAndDelete(studentOTP._id);
 
@@ -16,7 +16,7 @@ exports.storeOTP = async (studentID, OTP, OTP_Type) => {
   });
 };
 
-exports.verifyOTP = async (student, received_OTP) => {
+exports.verifyOTP = async function (student, received_OTP) {
   const StoredOTP = await OTPModel.findOne({ student });
   if (!StoredOTP)
     return {

@@ -1,5 +1,5 @@
+const { getAllDoctors, getDoctorByID } = require("../services/doctor.service");
 const DoctorModel = require("../models/doctor.model");
-const facultyModel = require("../models/faculty.model");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
 const AppError = require("../utils/appErrorsClass");
@@ -12,12 +12,34 @@ class DoctorController {
    * @access private
    */
   static getDoctors = catchAsyncError(async (req, res, next) => {
-    const doctors = await DoctorModel.find();
+    const { faculty } = req.query;
+    const query = faculty != null ? { faculty } : {};
+
+    const { status, data } = await getAllDoctors(query);
+    if (!status) return next(new AppError(500, data));
 
     res.send({
       status: "success",
-      length: doctors.length,
-      data: doctors,
+      length: data.length,
+      data,
+    });
+  });
+
+  /**
+   * @description Get doctor by id
+   * @route /api/v1/doctors/:id
+   * @method GET
+   * @access private
+   */
+  static getDoctorById = catchAsyncError(async (req, res, next) => {
+    const { id } = req.params;
+
+    const { status, data } = await getDoctorByID(id);
+    if (!status) return next(new AppError(404, "Doctor not found"));
+
+    res.send({
+      status: "success",
+      data,
     });
   });
 

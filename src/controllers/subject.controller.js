@@ -43,7 +43,7 @@ class SubjectController {
     if (userType === "Student") {
       const { faculty, semester } = res.locals.user;
       query = { faculty, semester };
-      excluded = "-faculty -semester";
+      excluded = "-faculty -semester -__v";
     }
 
     const { status, data } = await getSubjects(query, excluded);
@@ -65,7 +65,7 @@ class SubjectController {
    */
   static getSubjectById = catchAsyncError(async (req, res, next) => {
     const { id } = req.params;
-    const excluded = "-faculty -semester";
+    const excluded = "-faculty -semester -__v";
 
     const { status, data } = await getSubjectByID(id, excluded);
     if (status === "error") return next(new AppError(data, 404));
