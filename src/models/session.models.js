@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 //------------------------------------------//
-const sessionsSchema = new mongoose.Schema(
+const SessionsSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -29,5 +29,5 @@ const sessionsSchema = new mongoose.Schema(
 );
 
 //-------------------------Export-----------------------//
-const Session = mongoose.model("Session", sessionsSchema);
+const Session = mongoose.model("Session", SessionsSchema);
 module.exports = Session;

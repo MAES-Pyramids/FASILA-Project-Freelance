@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const librarySchema = new mongoose.Schema({});
+const LibrarySchema = new mongoose.Schema({});
 
-const Library = mongoose.model("Library", librarySchema);
+const Library = mongoose.model("Library", LibrarySchema);
 module.exports = Library;

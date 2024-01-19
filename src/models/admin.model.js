@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const adminSchema = new mongoose.Schema({});
+const AdminSchema = new mongoose.Schema({});
 
-const Admin = mongoose.model("Admin", adminSchema);
+const Admin = mongoose.model("Admin", AdminSchema);
 module.exports = Admin;

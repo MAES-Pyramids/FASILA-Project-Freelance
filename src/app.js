@@ -15,6 +15,7 @@ const AppError = require("./utils/appErrorsClass");
 const globalErrorHandler = require("./middlewares/errorHandler");
 
 const wasageRoutes = require("./routes/wasage.routes.js");
+const DoctorRoutes = require("./routes/doctor.routes.js");
 const SessionRoutes = require("./routes/session.routes.js");
 const StudentRoutes = require("./routes/student.routes.js");
 const FacultyRoutes = require("./routes/faculty.routes.js");
@@ -76,6 +77,7 @@ app.use("/api/v1/wasage", wasageRoutes);
 app.use("/api/v1/sessions", SessionRoutes);
 app.use("/api/v1/Students", StudentRoutes);
 app.use(requireUser);
+app.use("/api/v1/doctors", DoctorRoutes);
 app.use("/api/v1/Subjects", SubjectRoutes);
 app.use("/api/v1/Faculties", FacultyRoutes);
 app.use("/api/v1/Universities", universityRoutes);

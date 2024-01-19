@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-const studentSchema = new mongoose.Schema(
+const StudentSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -81,7 +81,7 @@ const studentSchema = new mongoose.Schema(
   }
 );
 
-studentSchema.pre("save", async function (next) {
+StudentSchema.pre("save", async function (next) {
   let student = this;
   if (!student.isModified("password")) return next();
 
@@ -92,10 +92,10 @@ studentSchema.pre("save", async function (next) {
   return next();
 });
 
-studentSchema.methods.comparePassword = async function (inputPassword) {
+StudentSchema.methods.comparePassword = async function (inputPassword) {
   const student = this;
   return bcrypt.compare(inputPassword, student.password).catch((err) => false);
 };
 
-const Student = mongoose.model("Student", studentSchema);
+const Student = mongoose.model("Student", StudentSchema);
 module.exports = Student;

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const walletSchema = new mongoose.Schema({
+const WalletSchema = new mongoose.Schema({
   balance: {
     type: Number,
     default: 0,
@@ -12,4 +12,4 @@ const walletSchema = new mongoose.Schema({
   },
 });
 
-const Wallet = mongoose.model("Wallet", walletSchema);
+const Wallet = mongoose.model("Wallet", WalletSchema);

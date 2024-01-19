@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const OTP_TTL = process.env.OTP_TTL || 8;
-const otpSchema = new mongoose.Schema({
+const OTPSchema = new mongoose.Schema({
   otp: {
     type: String,
     required: [true, "Please provide otp"],
@@ -25,5 +25,5 @@ const otpSchema = new mongoose.Schema({
   },
 });
 
-const Otp = mongoose.model("Otp", otpSchema);
+const Otp = mongoose.model("Otp", OTPSchema);
 module.exports = Otp;
