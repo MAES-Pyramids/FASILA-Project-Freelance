@@ -1,3 +1,4 @@
+const { getFaculties, getFacultyByID } = require("../services/faculty.service");
 const UniversityModel = require("../models/university.model");
 const FacultyModel = require("../models/faculty.model");
 
@@ -12,12 +13,13 @@ class FacultyController {
    * @access private
    */
   static getALLFaculties = catchAsyncError(async (req, res, next) => {
-    const faculties = await FacultyModel.find();
+    const { status, data } = await getFaculties();
+    if (!status) return next(new AppError(500, data));
 
     res.send({
       status: "success",
-      length: faculties.length,
-      data: faculties,
+      length: data.length,
+      data,
     });
   });
 
@@ -30,12 +32,12 @@ class FacultyController {
   static getFaculty = catchAsyncError(async (req, res, next) => {
     const { id } = req.params;
 
-    const faculty = await FacultyModel.findById(id);
-    if (!faculty) return next(new AppError("Faculty not found", 404));
+    const { status, data } = await getFacultyByID(id);
+    if (!status) return next(new AppError("Faculty Not Found", 404));
 
     res.send({
       status: "success",
-      data: faculty,
+      data,
     });
   });
 

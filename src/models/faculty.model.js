@@ -11,5 +11,38 @@ const FacultySchema = new mongoose.Schema({
   },
 });
 
+FacultySchema.set("toObject", { virtuals: true });
+FacultySchema.set("toJSON", { virtuals: true });
+
+FacultySchema.virtual("doctors", {
+  ref: "Doctor",
+  localField: "_id",
+  foreignField: "faculty",
+  justOne: false,
+});
+
+FacultySchema.virtual("subjects", {
+  ref: "Subject",
+  localField: "_id",
+  foreignField: "faculty",
+  justOne: false,
+});
+
+FacultySchema.virtual("doctorsCount", {
+  ref: "Doctor",
+  localField: "_id",
+  foreignField: "faculty",
+  justOne: false,
+  count: true,
+});
+
+FacultySchema.virtual("subjectsCount", {
+  ref: "Subject",
+  localField: "_id",
+  foreignField: "faculty",
+  justOne: false,
+  count: true,
+});
+
 const Faculty = mongoose.model("Faculty", FacultySchema);
 module.exports = Faculty;

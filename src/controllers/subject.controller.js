@@ -68,7 +68,7 @@ class SubjectController {
     const excluded = "-faculty -semester -__v";
 
     const { status, data } = await getSubjectByID(id, excluded);
-    if (status === "error") return next(new AppError(data, 404));
+    if (!status) return next(new AppError("Subject Not Found", 404));
 
     res.send({
       status: "success",
