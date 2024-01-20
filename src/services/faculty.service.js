@@ -1,4 +1,6 @@
 const facultyModel = require("../models/faculty.model");
+const { isUniversityExist } = require("./university.service");
+const _ = require("lodash");
 
 exports.getFaculties = async function () {
   try {
@@ -20,6 +22,20 @@ exports.getFacultyByID = async function (id) {
       .populate("doctors", "name photo -_id -faculty")
       .populate("subjects", "name photo -_id -faculty")
       .select("-__v");
+    return { status: true, data: faculty };
+  } catch (err) {
+    return { status: false, data: err.message };
+  }
+};
+
+exports.createFaculty = async function (newFaculty) {
+  try {
+    const isUniversity = await isUniversityExist(newFaculty.UniversityID);
+    if (!isUniversity) return { status: false, data: "University Not Found" };
+
+    const newFacultyData = _.omit(newFaculty, ["UniversityID"]);
+    const faculty = await facultyModel.create(newFacultyData);
+
     return { status: true, data: faculty };
   } catch (err) {
     return { status: false, data: err.message };

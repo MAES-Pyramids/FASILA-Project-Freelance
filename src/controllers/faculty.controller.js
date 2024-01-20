@@ -1,6 +1,10 @@
-const { getFaculties, getFacultyByID } = require("../services/faculty.service");
-const UniversityModel = require("../models/university.model");
-const FacultyModel = require("../models/faculty.model");
+const {
+  createFaculty,
+  getFaculties,
+  getFacultyByID,
+} = require("../services/faculty.service");
+const { addFacultyToUniversity } = require("../services/university.service");
+const _ = require("lodash");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
 const AppError = require("../utils/appErrorsClass");
@@ -48,16 +52,22 @@ class FacultyController {
    * @access private
    */
   static addFaculty = catchAsyncError(async (req, res, next) => {
-    const { name, no_of_semesters, UniversityID } = req.body;
+    let [status, data, faculty] = ["", ""];
+    const newFaculty = _.pick(req.body, [
+      "name",
+      "no_of_semesters",
+      "UniversityID",
+    ]);
 
-    const faculty = await FacultyModel.create({
-      name,
-      no_of_semesters,
-    });
+    ({ status, data } = await createFaculty(newFaculty));
+    if (!status) return next(new AppError(500, data));
+    else faculty = data;
 
-    const university = await UniversityModel.findById(UniversityID);
-    university.faculties.push(faculty._id);
-    await university.save();
+    ({ status, data } = await addFacultyToUniversity(
+      newFaculty.UniversityID,
+      data._id
+    ));
+    if (!status) return next(new AppError(500, data));
 
     res.send({
       status: "success",

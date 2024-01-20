@@ -23,12 +23,12 @@ exports.getDoctorByID = async function (id) {
   }
 };
 
-exports.createDoctor = async function (data) {
+exports.createDoctor = async function (newDoctor) {
   try {
-    const isFaculty = await isFacultyExist(data.faculty);
+    const isFaculty = await isFacultyExist(newDoctor.faculty);
     if (!isFaculty) return { status: false, data: "Faculty Not Found" };
 
-    const doctor = await DoctorModel.create(data);
+    const doctor = await DoctorModel.create(newDoctor);
     return { status: true, data: doctor };
   } catch (err) {
     return { status: false, data: err.message };

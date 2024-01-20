@@ -32,3 +32,27 @@ exports.addUniversity = async (name) => {
     return { status: false, data: err.message };
   }
 };
+
+exports.addFacultyToUniversity = async (universityID, facultyID) => {
+  try {
+    const university = await UniversityModel.findById(universityID);
+    if (!university) return { status: false, data: "University Not Found" };
+
+    university.faculties.push(facultyID);
+    await university.save();
+
+    return { status: true, data: university };
+  } catch (err) {
+    return { status: false, data: err.message };
+  }
+};
+
+exports.isUniversityExist = async (id) => {
+  try {
+    const university = await UniversityModel.findById(id);
+    if (!university) return false;
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
