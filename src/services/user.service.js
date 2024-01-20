@@ -38,7 +38,7 @@ const createAndOmitPassword = async (model, data) => {
 
     return { status: true, data: userWithoutPassword };
   } catch (err) {
-    return { status: false, data: err.message };
+    return { status: false, message: err.message };
   }
 };
 
@@ -53,6 +53,6 @@ exports.createUser = async function (role, data) {
     case "Admin":
       return createAndOmitPassword(AdminModel, data);
     default:
-      return { status: false, data: "Invalid role" };
+      return { status: false, message: "Invalid role" };
   }
 };

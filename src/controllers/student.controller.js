@@ -10,10 +10,6 @@ const { isValidSemester } = require("../services/faculty.service.js");
 const { storeOTP, verifyOTP } = require("../services/otp.service.js");
 const { sendOTPMessage } = require("../utils/telegramBot.js");
 const { createUser } = require("../services/user.service.js");
-const StudentModel = require("../models/student.model.js");
-const FacultyModel = require("../models/faculty.model.js");
-const otpModel = require("../models/otp.model.js");
-const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const _ = require("lodash");
 
@@ -28,7 +24,7 @@ class StudentController {
    *  @access public
    */
   static signUp = catchAsyncError(async (req, res, next) => {
-    let [status, data] = ["", ""];
+    let [status, data, message] = ["", "", ""];
     const signUpData = _.pick(req.body, [
       "name",
       "phone",
@@ -39,17 +35,17 @@ class StudentController {
       "faculty",
     ]);
 
-    ({ status, data } = await checkValidPhone(signUpData.phone));
-    if (!status) next(new AppError(data));
+    ({ status, data, message } = await checkValidPhone(signUpData.phone));
+    if (!status) next(new AppError(message, 400));
 
-    ({ status, data } = await isValidSemester(
+    ({ status, message } = await isValidSemester(
       signUpData.faculty,
       signUpData.semester
     ));
-    if (!status) next(new AppError(data));
+    if (!status) next(new AppError(message));
 
-    ({ status, data } = await createUser("Student", signUpData));
-    if (!status) next(new AppError(data));
+    ({ status, data, message } = await createUser("Student", signUpData));
+    if (!status) next(new AppError(message, 500));
 
     res.send({
       status: "success",
@@ -63,12 +59,12 @@ class StudentController {
    *  @method Get
    *  @access public
    */
-  static getStudentID = catchAsyncError(async (req, res, next) => {
+  static getStudentId = catchAsyncError(async (req, res, next) => {
     const { mobileNumber } = req.params;
     const query = { phone: mobileNumber };
 
-    const { status, data } = await getStudentID(query);
-    if (!status) return next(new AppError(data));
+    const { status, data, message } = await getStudentID(query);
+    if (!status) return next(new AppError(message, 404));
 
     res.send({
       status: "success",
@@ -94,8 +90,8 @@ class StudentController {
 
     const query = { resetPassToken: hashedToken };
 
-    ({ status, data } = await getStudentID(query));
-    if (!status) return next(new AppError(data));
+    ({ status, data, message } = await getStudentID(query));
+    if (!status) return next(new AppError(message, 404));
 
     await invalidateUserSessions(student._id);
     ({ status, message } = await changePassword(student._id, password));

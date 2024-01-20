@@ -1,6 +1,6 @@
 const {
-  addUniversity,
   getUniversities,
+  createUniversity,
   getUniversityByID,
 } = require("../services/university.service");
 const UniversityModel = require("../models/university.model");
@@ -17,8 +17,8 @@ class UniversityController {
    * @access private
    */
   static getALLUniversities = catchAsyncError(async (req, res, next) => {
-    const { status, data } = await getUniversities();
-    if (!status) return next(new AppError(data, 500));
+    const { status, data, message } = await getUniversities();
+    if (!status) return next(new AppError(message, 500));
 
     res.send({
       status: "success",
@@ -36,8 +36,8 @@ class UniversityController {
   static getUniversity = catchAsyncError(async (req, res, next) => {
     const { id } = req.params;
 
-    const { status, data } = await getUniversityByID(id);
-    if (!status) return next(new AppError("University not found", 404));
+    const { status, data, message } = await getUniversityByID(id);
+    if (!status) return next(new AppError(message, 404));
 
     res.send({
       status: "success",
@@ -53,8 +53,8 @@ class UniversityController {
    */
   static addUniversity = catchAsyncError(async (req, res, next) => {
     const { name } = req.body;
-    const { status, data } = await addUniversity(name);
-    if (!status) return next(new AppError(data, 500));
+    const { status, data, message } = await createUniversity(name);
+    if (!status) return next(new AppError(message, 500));
 
     res.send({
       status: "success",

@@ -1,7 +1,7 @@
 const {
+  createDoctor,
   getAllDoctors,
   getDoctorByID,
-  createDoctor,
 } = require("../services/doctor.service");
 const _ = require("lodash");
 
@@ -19,8 +19,8 @@ class DoctorController {
     const { faculty } = req.query;
     const query = faculty != null ? { faculty } : {};
 
-    const { status, data } = await getAllDoctors(query);
-    if (!status) return next(new AppError(500, data));
+    const { status, data, message } = await getAllDoctors(query);
+    if (!status) return next(new AppError(message, 500));
 
     res.send({
       status: "success",
@@ -38,8 +38,8 @@ class DoctorController {
   static getDoctorById = catchAsyncError(async (req, res, next) => {
     const { id } = req.params;
 
-    const { status, data } = await getDoctorByID(id);
-    if (!status) return next(new AppError(404, "Doctor not found"));
+    const { status, data, message } = await getDoctorByID(id);
+    if (!status) return next(new AppError(message, 404));
 
     res.send({
       status: "success",
@@ -53,7 +53,7 @@ class DoctorController {
    * @method Post
    * @access private
    */
-  static createDoctor = catchAsyncError(async (req, res, next) => {
+  static addDoctor = catchAsyncError(async (req, res, next) => {
     const newDoctor = _.pick(req.body, [
       "name",
       "phone",
@@ -61,8 +61,8 @@ class DoctorController {
       "faculty",
     ]);
 
-    const { status, data } = await createDoctor(newDoctor);
-    if (!status) return next(new AppError(500, data));
+    const { status, data, message } = await createDoctor(newDoctor);
+    if (!status) return next(new AppError(message, 500));
 
     res.send({
       status: "success",

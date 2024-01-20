@@ -4,7 +4,7 @@ const router = require("express").Router();
 router
   .route("/")
   .get(DoctorController.getDoctors)
-  .post(DoctorController.createDoctor);
+  .post(DoctorController.addDoctor);
 
 router.route("/:id").get(DoctorController.getDoctorById);
 

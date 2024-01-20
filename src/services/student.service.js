@@ -5,10 +5,11 @@ const crypto = require("crypto");
 exports.checkValidPhone = async function (phone) {
   try {
     const student = await StudentModel.findOne({ phone });
-    if (student) return { status: false, data: "Phone number already exists" };
+    if (student)
+      return { status: false, message: "Phone number already exists" };
     else return { status: true, data: "Phone number is valid" };
   } catch (err) {
-    return { status: false, data: err.message };
+    return { status: false, message: err.message };
   }
 };
 
@@ -26,15 +27,17 @@ exports.getStudentID = async function (queryParams) {
       return queryParams.resetPassToken
         ? {
             status: false,
-            data: "Invalid or expired token: No matching student record was found.",
+            message:
+              "Invalid or expired token: No matching student record was found.",
           }
         : {
             status: false,
-            data: "No matching student record was found with this mobile number.",
+            message:
+              "No matching student record was found with this mobile number.",
           };
     } else return { status: true, data: student._id };
   } catch (err) {
-    return { status: false, data: err.message };
+    return { status: false, message: err.message };
   }
 };
 

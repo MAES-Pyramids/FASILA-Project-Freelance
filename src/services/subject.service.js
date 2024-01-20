@@ -6,7 +6,7 @@ exports.getSubjects = async function (query, excluded = "") {
     const subjects = await SubjectModel.find(query).select(excluded);
     return { status: true, data: subjects };
   } catch (err) {
-    return { status: false, data: err.message };
+    return { status: false, message: err.message };
   }
 };
 
@@ -15,25 +15,26 @@ exports.getSubjectByID = async function (id, excluded = "") {
     const subject = await SubjectModel.findById(id)
       .select(excluded)
       .populate("doctors", "photo name PDFsNumber");
-    return { status: true, data: subject };
+    if (!subject) return { status: false, message: "Subject Not Found" };
+    else return { status: true, data: subject };
   } catch (err) {
-    return { status: false, data: err.message };
+    return { status: false, message: err.message };
   }
 };
 
-exports.addSubject = async function (data) {
+exports.createSubject = async function (data) {
   try {
     const subject = await SubjectModel.create(data);
     return { status: true, data: subject };
   } catch (err) {
-    return { status: false, data: err.message };
+    return { status: false, message: err.message };
   }
 };
 
 exports.addDoctorToSubject = async function (subjectID, doctorID) {
   try {
     const isDoctor = await isDoctorExist(doctorID);
-    if (!isDoctor) return { status: false, data: "Doctor Not Found" };
+    if (!isDoctor) return { status: false, message: "Doctor Not Found" };
 
     const subject = await SubjectModel.findByIdAndUpdate(
       subjectID,
@@ -42,7 +43,7 @@ exports.addDoctorToSubject = async function (subjectID, doctorID) {
     );
     return { status: true, data: subject };
   } catch (err) {
-    return { status: false, data: err.message };
+    return { status: false, message: err.message };
   }
 };
 exports.removeDoctorFromSubject = async function (subjectID, doctorID) {
@@ -54,6 +55,6 @@ exports.removeDoctorFromSubject = async function (subjectID, doctorID) {
     );
     return { status: true, data: subject };
   } catch (err) {
-    return { status: false, data: err.message };
+    return { status: false, message: err.message };
   }
 };

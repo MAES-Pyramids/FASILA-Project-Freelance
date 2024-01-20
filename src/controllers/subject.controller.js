@@ -1,9 +1,7 @@
 const _ = require("lodash");
-const SubjectModel = require("../models/subject.model");
-const FacultyModel = require("../models/faculty.model");
 const {
-  addSubject,
   getSubjects,
+  createSubject,
   getSubjectByID,
   addDoctorToSubject,
   removeDoctorFromSubject,
@@ -23,8 +21,8 @@ class SubjectController {
   static getMySubjects = catchAsyncError(async (req, res, next) => {
     const { faculty, semester } = res.locals.user;
 
-    const { status, data } = await getSubjects({ faculty, semester });
-    if (status === "error") return next(new AppError(data, 404));
+    const { status, data, message } = await getSubjects({ faculty, semester });
+    if (!status) return next(new AppError(message, 404));
 
     res.send({
       status: "success",
@@ -53,10 +51,8 @@ class SubjectController {
       excluded = "-faculty -semester -__v";
     }
 
-    const { status, data } = await getSubjects(query, excluded);
-    if (status === "error") {
-      return next(new AppError(data, 404));
-    }
+    const { status, data, message } = await getSubjects(query, excluded);
+    if (!status) return next(new AppError(message, 404));
 
     res.send({
       status: "success",
@@ -74,8 +70,8 @@ class SubjectController {
     const { id } = req.params;
     const excluded = "-faculty -semester -__v";
 
-    const { status, data } = await getSubjectByID(id, excluded);
-    if (!status) return next(new AppError("Subject Not Found", 404));
+    const { status, data, message } = await getSubjectByID(id, excluded);
+    if (!status) return next(new AppError(message, 404));
 
     res.send({
       status: "success",
@@ -99,8 +95,8 @@ class SubjectController {
     ));
     if (!status) return next(new AppError(message, 400));
 
-    ({ status, data } = await addSubject(data));
-    if (!status) return next(new AppError(data, 400));
+    ({ status, data, message } = await createSubject(data));
+    if (!status) return next(new AppError(message, 400));
 
     res.send({
       status: "success",
@@ -119,11 +115,11 @@ class SubjectController {
     const { type } = req.query;
     const doctorID = _.pick(req.body, ["doctor"]);
 
-    const { status, data } =
+    const { status, data, message } =
       type == "remove"
         ? await removeDoctorFromSubject(id, doctorID)
         : await addDoctorToSubject(id, doctorID);
-    if (!status) return next(new AppError(data, 400));
+    if (!status) return next(new AppError(message, 400));
 
     res.send({
       status: "success",

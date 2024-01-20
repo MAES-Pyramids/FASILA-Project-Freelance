@@ -11,7 +11,7 @@ exports.getFaculties = async function () {
       .select("-__v");
     return { status: true, data: faculties };
   } catch (err) {
-    return { status: false, data: err.message };
+    return { status: false, message: err.message };
   }
 };
 
@@ -22,23 +22,25 @@ exports.getFacultyByID = async function (id) {
       .populate("doctors", "name photo -_id -faculty")
       .populate("subjects", "name photo -_id -faculty")
       .select("-__v");
-    return { status: true, data: faculty };
+    if (!faculty) return { status: false, message: "Faculty Not Found" };
+    else return { status: true, data: faculty };
   } catch (err) {
-    return { status: false, data: err.message };
+    return { status: false, message: err.message };
   }
 };
 
 exports.createFaculty = async function (newFaculty) {
   try {
     const isUniversity = await isUniversityExist(newFaculty.UniversityID);
-    if (!isUniversity) return { status: false, data: "University Not Found" };
+    if (!isUniversity)
+      return { status: false, message: "University Not Found" };
 
     const newFacultyData = _.omit(newFaculty, ["UniversityID"]);
     const faculty = await facultyModel.create(newFacultyData);
 
     return { status: true, data: faculty };
   } catch (err) {
-    return { status: false, data: err.message };
+    return { status: false, message: err.message };
   }
 };
 

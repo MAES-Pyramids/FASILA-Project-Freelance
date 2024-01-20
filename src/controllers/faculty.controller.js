@@ -1,6 +1,6 @@
 const {
-  createFaculty,
   getFaculties,
+  createFaculty,
   getFacultyByID,
 } = require("../services/faculty.service");
 const { addFacultyToUniversity } = require("../services/university.service");
@@ -17,8 +17,8 @@ class FacultyController {
    * @access private
    */
   static getALLFaculties = catchAsyncError(async (req, res, next) => {
-    const { status, data } = await getFaculties();
-    if (!status) return next(new AppError(500, data));
+    const { status, data, message } = await getFaculties();
+    if (!status) return next(new AppError(message, 500));
 
     res.send({
       status: "success",
@@ -36,8 +36,8 @@ class FacultyController {
   static getFaculty = catchAsyncError(async (req, res, next) => {
     const { id } = req.params;
 
-    const { status, data } = await getFacultyByID(id);
-    if (!status) return next(new AppError("Faculty Not Found", 404));
+    const { status, data, message } = await getFacultyByID(id);
+    if (!status) return next(new AppError(message, 404));
 
     res.send({
       status: "success",
@@ -59,15 +59,15 @@ class FacultyController {
       "UniversityID",
     ]);
 
-    ({ status, data } = await createFaculty(newFaculty));
-    if (!status) return next(new AppError(500, data));
+    ({ status, data, message } = await createFaculty(newFaculty));
+    if (!status) return next(new AppError(message, 500));
     else faculty = data;
 
-    ({ status, data } = await addFacultyToUniversity(
+    ({ status, data, message } = await addFacultyToUniversity(
       newFaculty.UniversityID,
       data._id
     ));
-    if (!status) return next(new AppError(500, data));
+    if (!status) return next(new AppError(message, 500));
 
     res.send({
       status: "success",

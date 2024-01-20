@@ -8,7 +8,7 @@ exports.getAllDoctors = async function (filter = {}) {
       .populate("faculty", "name");
     return { status: true, data: doctors };
   } catch (err) {
-    return { status: false, data: err.message };
+    return { status: false, message: err.message };
   }
 };
 
@@ -17,21 +17,22 @@ exports.getDoctorByID = async function (id) {
     const doctor = await DoctorModel.findById(id)
       .select("-password -__v")
       .populate("faculty", "name");
-    return { status: true, data: doctor };
+    if (!doctor) return { status: false, message: "Doctor Not Found" };
+    else return { status: true, data: doctor };
   } catch (err) {
-    return { status: false, data: err.message };
+    return { status: false, message: err.message };
   }
 };
 
 exports.createDoctor = async function (newDoctor) {
   try {
     const isFaculty = await isFacultyExist(newDoctor.faculty);
-    if (!isFaculty) return { status: false, data: "Faculty Not Found" };
+    if (!isFaculty) return { status: false, message: "Faculty Not Found" };
 
     const doctor = await DoctorModel.create(newDoctor);
     return { status: true, data: doctor };
   } catch (err) {
-    return { status: false, data: err.message };
+    return { status: false, message: err.message };
   }
 };
 
