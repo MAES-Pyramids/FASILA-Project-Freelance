@@ -36,3 +36,13 @@ exports.isValidSemester = async function (facultyID, semester) {
     return { status: false, message: err.message };
   }
 };
+
+exports.isFacultyExist = async function (id) {
+  try {
+    const faculty = await facultyModel.findById(id);
+    if (!faculty) return false;
+    return true;
+  } catch (err) {
+    return false;
+  }
+};

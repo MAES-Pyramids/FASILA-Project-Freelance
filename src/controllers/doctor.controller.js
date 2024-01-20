@@ -1,5 +1,9 @@
-const { getAllDoctors, getDoctorByID } = require("../services/doctor.service");
-const DoctorModel = require("../models/doctor.model");
+const {
+  getAllDoctors,
+  getDoctorByID,
+  createDoctor,
+} = require("../services/doctor.service");
+const _ = require("lodash");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
 const AppError = require("../utils/appErrorsClass");
@@ -50,18 +54,19 @@ class DoctorController {
    * @access private
    */
   static createDoctor = catchAsyncError(async (req, res, next) => {
-    const { name, phone, password, faculty } = req.body;
+    const newDoctor = _.pick(req.body, [
+      "name",
+      "phone",
+      "password",
+      "faculty",
+    ]);
 
-    const doctor = await DoctorModel.create({
-      name,
-      phone,
-      password,
-      faculty,
-    });
+    const { status, data } = await createDoctor(newDoctor);
+    if (!status) return next(new AppError(500, data));
 
     res.send({
       status: "success",
-      data: doctor,
+      data,
     });
   });
 }
