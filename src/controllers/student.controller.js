@@ -1,5 +1,12 @@
+const {
+  getStudentID,
+  changePassword,
+  checkValidPhone,
+} = require("../services/student.service.js");
 const { invalidateUserSessions } = require("../services/session.service.js");
+const { isValidSemester } = require("../services/faculty.service.js");
 const { sendOTPMessage } = require("../utils/telegramBot.js");
+const { createUser } = require("../services/user.service.js");
 const StudentModel = require("../models/student.model.js");
 const FacultyModel = require("../models/faculty.model.js");
 const otpModel = require("../models/otp.model.js");
@@ -18,7 +25,7 @@ class StudentController {
    *  @access public
    */
   static signUp = catchAsyncError(async (req, res, next) => {
-    // Select required parameters only
+    let [status, data] = ["", ""];
     const signUpData = _.pick(req.body, [
       "name",
       "phone",
@@ -29,21 +36,21 @@ class StudentController {
       "faculty",
     ]);
 
-    const student = await StudentModel.findOne({ phone: signUpData.phone });
-    if (student) next(new AppError("Existing account with same mobile number"));
+    ({ status, data } = await checkValidPhone(signUpData.phone));
+    if (!status) next(new AppError(data));
 
-    const maxSemester = (await FacultyModel.findById(signUpData.faculty))
-      .no_of_semesters;
-    if (signUpData.semester > maxSemester)
-      next(new AppError("Invalid semester number"));
+    ({ status, data } = await isValidSemester(
+      signUpData.faculty,
+      signUpData.semester
+    ));
+    if (!status) next(new AppError(data));
 
-    let newStudent = await StudentModel.create(signUpData);
-    newStudent = _.omit(newStudent.toObject(), ["password"]);
+    ({ status, data } = await createUser("Student", signUpData));
+    if (!status) next(new AppError(data));
 
     res.send({
       status: "success",
-      message: "Account created successfully",
-      data: newStudent,
+      data,
     });
   });
 
@@ -55,13 +62,14 @@ class StudentController {
    */
   static getStudentID = catchAsyncError(async (req, res, next) => {
     const { mobileNumber } = req.params;
+    const query = { phone: mobileNumber };
 
-    const student = await StudentModel.findOne({ phone: mobileNumber });
-    if (!student) return next(new AppError("Student not found", 404));
+    const { status, data } = await getStudentID(query);
+    if (!status) return next(new AppError(data));
 
     res.send({
       status: "success",
-      data: { studentId: student._id },
+      data,
     });
   });
 
@@ -72,6 +80,7 @@ class StudentController {
    *  @access public
    */
   static changePassword = catchAsyncError(async (req, res, next) => {
+    let [status, data, message] = ["", "", ""];
     const { resetToken } = req.params;
     const { password } = req.body;
 
@@ -80,22 +89,18 @@ class StudentController {
       .update(resetToken)
       .digest("hex");
 
-    const student = await StudentModel.findOne({
-      resetPassToken: hashedToken,
-      resetPassExpires: { $gt: Date.now() },
-    });
-    if (!student) return next(new AppError("Invalid or expired token", 400));
+    const query = { resetPassToken: hashedToken };
+
+    ({ status, data } = await getStudentID(query));
+    if (!status) return next(new AppError(data));
 
     await invalidateUserSessions(student._id);
-
-    student.password = password;
-    student.resetPassToken = undefined;
-    student.resetPassExpires = undefined;
-    await student.save();
+    ({ status, message } = await changePassword(student._id, password));
+    if (!status) return next(new AppError(message));
 
     res.send({
       status: "success",
-      message: "Password changed successfully",
+      message,
     });
   });
 

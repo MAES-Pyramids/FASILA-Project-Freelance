@@ -45,8 +45,11 @@ exports.createFaculty = async function (newFaculty) {
 exports.isValidSemester = async function (facultyID, semester) {
   try {
     const faculty = await facultyModel.findById(facultyID);
+    if (!faculty) return { status: false, message: "Faculty Not Found" };
+
     if (semester > faculty.no_of_semesters)
       return { status: false, message: "Invalid semester number" };
+
     return { status: true, message: "Valid semester number" };
   } catch (err) {
     return { status: false, message: err.message };

@@ -29,3 +29,30 @@ exports.findUser = async function (role, query) {
   if (role == "Library") return await LibraryModel.findOne(query).lean();
   if (role == "Admin") return await AdminModel.findOne(query).lean();
 };
+
+const createAndOmitPassword = async (model, data) => {
+  try {
+    const createdUser = await model.create(data);
+    const userJson = createdUser.toJSON();
+    const userWithoutPassword = _.omit(userJson, "password");
+
+    return { status: true, data: userWithoutPassword };
+  } catch (err) {
+    return { status: false, data: err.message };
+  }
+};
+
+exports.createUser = async function (role, data) {
+  switch (role) {
+    case "Student":
+      return createAndOmitPassword(StudentModel, data);
+    case "Doctor":
+      return createAndOmitPassword(DoctorModel, data);
+    case "Library":
+      return createAndOmitPassword(LibraryModel, data);
+    case "Admin":
+      return createAndOmitPassword(AdminModel, data);
+    default:
+      return { status: false, data: "Invalid role" };
+  }
+};

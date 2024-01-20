@@ -1,11 +1,11 @@
-const { validatePassword, findUser } = require("../services/user.service");
-const { signJWT } = require("../utils/jwt.utils");
-const _ = require("lodash");
 const {
   createSession,
   deleteSession,
   checkExistingSession,
 } = require("../services/session.service");
+const { validatePassword, findUser } = require("../services/user.service");
+const { signJWT } = require("../utils/jwt.utils");
+const _ = require("lodash");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
 const AppError = require("../utils/appErrorsClass");
