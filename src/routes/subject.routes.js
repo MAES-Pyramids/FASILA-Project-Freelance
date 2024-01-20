@@ -6,6 +6,7 @@ const {
   UpdateSub_Validation,
   GetSubByID_Validation,
 } = require("../validations/subject.validation");
+const { patch } = require("./wasage.routes");
 
 router
   .route("/")
@@ -14,6 +15,7 @@ router
 
 router
   .route("/:id")
-  .get(GetSubByID_Validation, SubjectController.getSubjectById);
+  .get(GetSubByID_Validation, SubjectController.getSubjectById)
+  .patch(UpdateSub_Validation, SubjectController.updateSubject);
 
 module.exports = router;

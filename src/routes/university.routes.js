@@ -3,6 +3,7 @@ const FacultyRoutes = require("./faculty.routes");
 const {
   GetUniversityByID_Validation,
   CreateUniversity_Validation,
+  GetALLUniversities_Validation,
 } = require("../validations/university.validation");
 
 const router = require("express").Router();
@@ -10,7 +11,7 @@ router.use("/:id/Faculties", FacultyRoutes);
 
 router
   .route("/")
-  .get(UniversityController.getALLUniversities)
+  .get(GetALLUniversities_Validation, UniversityController.getALLUniversities)
   .post(CreateUniversity_Validation, UniversityController.addUniversity);
 
 router

@@ -21,3 +21,13 @@ exports.getDoctorByID = async function (id) {
     return { status: false, data: err.message };
   }
 };
+
+exports.isDoctorExist = async function (id) {
+  try {
+    const doctor = await DoctorModel.findById(id);
+    if (!doctor) return false;
+    return true;
+  } catch (err) {
+    return false;
+  }
+};

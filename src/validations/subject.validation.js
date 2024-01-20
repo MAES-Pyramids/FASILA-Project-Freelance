@@ -6,7 +6,6 @@ const createSubjectSchema = joi.object({
     name: joi.string().required(),
     semester: joi.number().required(),
     faculty: joi.string().required(),
-    doctors: joi.array().items(joi.string()),
   }),
   query: joi.object({}),
   params: joi.object({}),
@@ -31,11 +30,11 @@ const getSubjectsSchema = joi.object({
 
 const updateSubjectSchema = joi.object({
   body: joi.object({
-    name: joi.string(),
-    semester: joi.number(),
-    doctors: joi.array().items(joi.string()),
+    doctor: joi.string().required(),
   }),
-  query: joi.object({}),
+  query: joi.object({
+    type: joi.string().required(),
+  }),
   params: joi.object({
     id: joi.string().required(),
   }),

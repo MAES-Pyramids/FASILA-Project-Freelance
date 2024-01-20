@@ -17,11 +17,23 @@ const getUniversityByIDSchema = Joi.object({
   }),
 });
 
+const getALLUniversitiesSchema = Joi.object({
+  body: Joi.object({}),
+  query: Joi.object({}),
+  params: Joi.object({}),
+});
+
 const CreateUniversity_Validation = validationMiddleWare(
   createUniversitySchema
 );
 const GetUniversityByID_Validation = validationMiddleWare(
   getUniversityByIDSchema
 );
-
-module.exports = { CreateUniversity_Validation, GetUniversityByID_Validation };
+const GetALLUniversities_Validation = validationMiddleWare(
+  getALLUniversitiesSchema
+);
+module.exports = {
+  CreateUniversity_Validation,
+  GetUniversityByID_Validation,
+  GetALLUniversities_Validation,
+};

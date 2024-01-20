@@ -1,7 +1,14 @@
-const { getSubjects, getSubjectByID } = require("../services/subject.service");
+const _ = require("lodash");
 const SubjectModel = require("../models/subject.model");
 const FacultyModel = require("../models/faculty.model");
-const _ = require("lodash");
+const {
+  addSubject,
+  getSubjects,
+  getSubjectByID,
+  addDoctorToSubject,
+  removeDoctorFromSubject,
+} = require("../services/subject.service");
+const { isValidSemester } = require("../services/faculty.service");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
 const AppError = require("../utils/appErrorsClass");
@@ -83,16 +90,44 @@ class SubjectController {
    * @access private
    */
   static addSubject = catchAsyncError(async (req, res, next) => {
-    const data = _.pick(req.body, ["name", "faculty", "semester", "doctors"]);
+    const newSubject = _.pick(req.body, ["name", "faculty", "semester"]);
+    let [status, message, data] = ["", "", ""];
 
-    const maxSem = (await FacultyModel.findById(data.faculty)).no_of_semesters;
-    if (data.semester > maxSem) next(new AppError("Invalid semester number"));
+    ({ status, message } = await isValidSemester(
+      newSubject.faculty,
+      newSubject.semester
+    ));
+    if (!status) return next(new AppError(message, 400));
 
-    const subject = await SubjectModel.create(data);
+    ({ status, data } = await addSubject(data));
+    if (!status) return next(new AppError(data, 400));
 
     res.send({
       status: "success",
-      data: subject,
+      data,
+    });
+  });
+
+  /**
+   * @description Update a subject
+   * @route /api/v1/subjects/:id
+   * @method PATCH
+   * @access private
+   */
+  static updateSubject = catchAsyncError(async (req, res, next) => {
+    const { id } = req.params;
+    const { type } = req.query;
+    const doctorID = _.pick(req.body, ["doctor"]);
+
+    const { status, data } =
+      type == "remove"
+        ? await removeDoctorFromSubject(id, doctorID)
+        : await addDoctorToSubject(id, doctorID);
+    if (!status) return next(new AppError(data, 400));
+
+    res.send({
+      status: "success",
+      data,
     });
   });
 }
