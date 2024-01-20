@@ -2,9 +2,12 @@ const {
   getStudentID,
   changePassword,
   checkValidPhone,
+  storeTelegramID,
+  verifyTelegramID,
 } = require("../services/student.service.js");
 const { invalidateUserSessions } = require("../services/session.service.js");
 const { isValidSemester } = require("../services/faculty.service.js");
+const { storeOTP, verifyOTP } = require("../services/otp.service.js");
 const { sendOTPMessage } = require("../utils/telegramBot.js");
 const { createUser } = require("../services/user.service.js");
 const StudentModel = require("../models/student.model.js");
@@ -105,58 +108,29 @@ class StudentController {
   });
 
   /**
-   *  @description Store Telegram Chat ID for student
+   *  @description Store Telegram Chat ID for student and send OTP code to him to verify his ID
    *  @route /api/v1/student/SaveID:studentId
    *  @method POST
    *  @access public
    */
   static SaveID = catchAsyncError(async (req, res, next) => {
-    const { studentId } = req.params;
+    let [status, data, message] = ["", ""];
+    const { _id } = res.locals.user;
     const { telegramId } = req.body;
 
-    const student = await StudentModel.findById(studentId);
-    if (!student) return next(new AppError("Student not found", 404));
+    ({ status, data, message } = await storeTelegramID(_id, telegramId));
+    if (!status) return next(new AppError(message));
 
-    student.telegramId = telegramId;
-    student.idStored = true;
-    await student.save();
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
+    ({ status, message } = await storeOTP(_id, otp, "telegram"));
+    if (!status) return next(new AppError(message));
+
+    sendOTPMessage(student.telegramId, otp);
 
     res.send({
       status: "success",
       message: "Telegram ID stored successfully",
-    });
-  });
-
-  /**
-   *  @description Send OTP code to student via Telegram
-   *  @route /api/v1/student/SendOTP/:studentId?Type=verify||reset||force
-   *  @method Get
-   *  @access public
-   */
-  static SendTelegramOTP = catchAsyncError(async (req, res, next) => {
-    const { studentId } = req.params;
-    const { Type } = req.query;
-
-    const student = await StudentModel.findById(studentId);
-    if (!student) return next(new AppError("Student not found", 404));
-
-    let studentOTP = await otpModel.findOne({ student: studentId });
-    if (studentOTP) await otpModel.findByIdAndDelete(studentOTP._id);
-
-    const otp = Math.floor(100000 + Math.random() * 900000);
-    const salt = await bcrypt.genSalt(10);
-    const hashedOTP = await bcrypt.hash(otp.toString(), salt);
-
-    studentOTP = await otpModel.create({
-      OTPType: Type,
-      otp: hashedOTP,
-      student: studentId,
-    });
-
-    sendOTPMessage(student.telegramId, otp);
-    res.send({
-      status: "success",
-      message: "OTP sent successfully",
     });
   });
 
@@ -167,32 +141,20 @@ class StudentController {
    *  @access public
    */
   static verifyID = catchAsyncError(async (req, res, next) => {
-    const { studentId } = req.params;
+    let [status, type, message] = ["", ""];
+    const { _id } = res.locals.user;
     const { otp } = req.body;
 
-    const student = await StudentModel.findById(studentId);
-    if (!student) return next(new AppError("Student not found", 404));
+    ({ status, message, type } = await verifyOTP(_id, otp));
+    if (!status) return next(new AppError(message));
+    if (type !== "telegram") return next(new AppError("Invalid OTP Type"));
 
-    const studentOTP = await otpModel.findOne({ student: studentId });
-    if (!studentOTP || studentOTP.OTPType !== "verify")
-      return next(new AppError("OTP not found", 404));
-
-    if (studentOTP.expiresAt < Date.now()) {
-      await otpModel.findByIdAndDelete(studentOTP._id);
-      return next(new AppError("OTP is expired", 400));
-    }
-
-    const isMatch = await bcrypt.compare(otp, studentOTP.otp);
-    if (!isMatch) return next(new AppError("Invalid OTP", 400));
-
-    student.verified = true;
-    await student.save();
-
-    await otpModel.deleteMany({ student: studentId });
+    ({ status, message } = await verifyTelegramID(_id));
+    if (!status) return next(new AppError(message));
 
     res.send({
       status: "success",
-      message: "Student verified successfully",
+      message,
     });
   });
 }

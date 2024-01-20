@@ -10,10 +10,9 @@ router.post("/signup", Signup_Validation, StudentController.signUp);
 
 router.use(requireUser);
 
-// router
-//   .route("/:studentId/TelegramID")
-//   .put(StudentController.SaveID)
-//   .post(StudentController.verifyID);
-// router.get("/:studentId/SendOTP", StudentController.SendTelegramOTP);
+router
+  .route("/TelegramID")
+  .post(StudentController.SaveID)
+  .patch(StudentController.verifyID);
 
 module.exports = router;

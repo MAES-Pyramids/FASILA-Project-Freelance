@@ -25,10 +25,6 @@ const StudentSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Please provide semester"],
     },
-    telegramId: {
-      type: String,
-      default: null,
-    },
     facultyCard: {
       type: String,
       required: true,
@@ -49,9 +45,14 @@ const StudentSchema = new mongoose.Schema(
         ref: "Doctor",
       },
     ],
-    idStored: {
-      type: Boolean,
-      default: false,
+    telegramId: {
+      type: String,
+      default: null,
+    },
+    telegramStatus: {
+      type: String,
+      enum: ["active", "inactive", "pending"],
+      default: "inactive",
     },
     verified: {
       type: Boolean,

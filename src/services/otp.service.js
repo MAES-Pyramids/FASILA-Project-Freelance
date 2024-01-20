@@ -3,17 +3,22 @@ const bcrypt = require("bcryptjs");
 const OTPModel = require("../models/otp.model.js");
 
 exports.storeOTP = async function (studentID, OTP, OTP_Type) {
-  let studentOTP = await OTPModel.findOne({ student: studentID });
-  if (studentOTP) await OTPModel.findByIdAndDelete(studentOTP._id);
+  try {
+    let studentOTP = await OTPModel.findOne({ student: studentID });
+    if (studentOTP) await OTPModel.findByIdAndDelete(studentOTP._id);
 
-  const salt = await bcrypt.genSalt(10);
-  const hashedOTP = await bcrypt.hash(OTP.toString(), salt);
+    const salt = await bcrypt.genSalt(10);
+    const hashedOTP = await bcrypt.hash(OTP.toString(), salt);
 
-  studentOTP = await OTPModel.create({
-    OTPType: OTP_Type,
-    otp: hashedOTP,
-    student: studentID,
-  });
+    studentOTP = await OTPModel.create({
+      OTPType: OTP_Type,
+      otp: hashedOTP,
+      student: studentID,
+    });
+    return { status: true, message: "OTP stored successfully" };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
 };
 
 exports.verifyOTP = async function (student, received_OTP) {

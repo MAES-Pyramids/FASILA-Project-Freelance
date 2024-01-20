@@ -22,19 +22,52 @@ exports.getStudentID = async function (queryParams) {
       : queryParams;
 
     const student = await StudentModel.findOne(query).select("_id");
-    if (!student)
-      return {
-        status: false,
-        data: "Invalid or expired token: No matching student record was found.",
-      };
-    else return { status: true, data: student._id };
+    if (!student) {
+      return queryParams.resetPassToken
+        ? {
+            status: false,
+            data: "Invalid or expired token: No matching student record was found.",
+          }
+        : {
+            status: false,
+            data: "No matching student record was found with this mobile number.",
+          };
+    } else return { status: true, data: student._id };
   } catch (err) {
     return { status: false, data: err.message };
   }
 };
 
-exports.changePassword = async function (studentId, password) {
-  const student = await StudentModel.findByIdAndUpdate(studentId, {
+exports.storeTelegramID = async function (_id, telegramId) {
+  try {
+    const student = await StudentModel.findByIdAndUpdate(
+      _id,
+      { telegramId, telegramStatus: "pending" },
+      { new: true }
+    );
+    return { status: true, data: student };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
+exports.verifyTelegramID = async function (_id) {
+  try {
+    const student = await StudentModel.findById(_id);
+    if (student.telegramId !== "pending")
+      return { status: false, message: "Telegram ID already verified" };
+
+    student.telegramStatus = "verified";
+    await student.save();
+
+    return { status: true, message: "Telegram ID verified successfully" };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
+exports.changePassword = async function (_id, password) {
+  const student = await StudentModel.findByIdAndUpdate(_id, {
     password: password,
     resetPassToken: undefined,
     resetPassExpires: undefined,

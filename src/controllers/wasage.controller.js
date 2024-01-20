@@ -34,7 +34,8 @@ exports.getOTP = catchAsync(async (req, res) => {
     return next(new AppError("Error sending OTP", 500));
 
   const { OTP, QR, Clickable } = response.data;
-  await storeOTP(id, OTP, type);
+  const { status, message } = await storeOTP(id, OTP, type);
+  if (!status) return next(new AppError(message, 500));
 
   res.send({
     status: "success",
