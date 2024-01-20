@@ -52,7 +52,7 @@ class FacultyController {
    * @access private
    */
   static addFaculty = catchAsyncError(async (req, res, next) => {
-    let [status, data, faculty] = ["", ""];
+    let [status, data, message, faculty] = ["", "", "", ""];
     const newFaculty = _.pick(req.body, [
       "name",
       "no_of_semesters",

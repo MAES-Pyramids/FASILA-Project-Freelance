@@ -87,7 +87,7 @@ class SubjectController {
    */
   static addSubject = catchAsyncError(async (req, res, next) => {
     const newSubject = _.pick(req.body, ["name", "faculty", "semester"]);
-    let [status, message, data] = ["", "", ""];
+    let [status, data, message] = ["", "", ""];
 
     ({ status, message } = await isValidSemester(
       newSubject.faculty,
