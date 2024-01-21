@@ -1,41 +1,46 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-const DoctorSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  photo: {
-    type: String,
-    default: "doctor_default.jpg",
-  },
-  phone: {
-    type: String,
-    unique: true,
-    required: [true, "Please provide mobile number"],
-  },
-  password: {
-    type: String,
-    required: [true, "Please provide password"],
-  },
-  PDFsNumber: {
-    type: Map,
-    of: Number,
-    default: {},
-  },
-  earning: [
-    {
-      value: Number,
-      date: Date,
+const DoctorSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
     },
-  ],
-  faculty: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Faculty",
-    required: [true, "Please provide faculty"],
+    photo: {
+      type: String,
+      default: "doctor_default.jpg",
+    },
+    phone: {
+      type: String,
+      unique: true,
+      required: [true, "Please provide mobile number"],
+    },
+    password: {
+      type: String,
+      required: [true, "Please provide password"],
+    },
+    PDFsNumber: {
+      type: Map,
+      of: Number,
+      default: {},
+    },
+    earning: [
+      {
+        value: Number,
+        date: Date,
+      },
+    ],
+    faculty: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Faculty",
+      required: [true, "Please provide faculty"],
+    },
   },
-});
+  {
+    timestamps: true,
+  }
+);
 
 DoctorSchema.pre("save", async function (next) {
   let doctor = this;
