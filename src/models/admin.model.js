@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const AdminSchema = new mongoose.Schema(
   {
@@ -38,6 +39,11 @@ AdminSchema.pre("save", async function (next) {
 
   return next();
 });
+
+AdminSchema.methods.comparePassword = async function (inputPassword) {
+  const admin = this;
+  return bcrypt.compare(inputPassword, admin.password).catch((err) => false);
+};
 
 const Admin = mongoose.model("Admin", AdminSchema);
 module.exports = Admin;

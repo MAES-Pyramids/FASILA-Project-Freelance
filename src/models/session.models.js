@@ -19,7 +19,7 @@ const SessionsSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["Student", "Doctor", "Owner", "Library"],
+      enum: ["Student", "Doctor", "Admin", "Library"],
       required: true,
     },
   },
