@@ -17,7 +17,9 @@ class FacultyController {
    * @access private
    */
   static getALLFaculties = catchAsyncError(async (req, res, next) => {
-    const { status, data, message } = await getFaculties();
+    query = { UniversityID: req.query?.universityID };
+
+    const { status, data, message } = await getFaculties(query);
     if (!status) return next(new AppError(message, 500));
 
     res.send({

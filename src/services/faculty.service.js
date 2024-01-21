@@ -2,13 +2,27 @@ const facultyModel = require("../models/faculty.model");
 const { isUniversityExist } = require("./university.service");
 const _ = require("lodash");
 
-exports.getFaculties = async function () {
+exports.getFaculties = async function (query) {
   try {
-    const faculties = await facultyModel
+    let facultiesQuery = facultyModel
       .find()
-      .populate("doctorsCount")
-      .populate("subjectsCount")
+      .populate("doctorsCount subjectsCount")
+      .populate("university", "name _id")
       .select("-__v");
+
+    if (query.UniversityID) {
+      const university = await isUniversityExist(query.UniversityID);
+
+      if (!university) {
+        return { status: false, message: "University Not Found" };
+      }
+
+      facultiesQuery = facultiesQuery
+        .where("university._id")
+        .equals(query.UniversityID);
+    }
+
+    const faculties = await facultiesQuery.exec();
     return { status: true, data: faculties };
   } catch (err) {
     return { status: false, message: err.message };

@@ -44,5 +44,12 @@ FacultySchema.virtual("subjectsCount", {
   count: true,
 });
 
+FacultySchema.virtual("university", {
+  ref: "University",
+  localField: "_id",
+  foreignField: "faculties",
+  justOne: true,
+});
+
 const Faculty = mongoose.model("Faculty", FacultySchema);
 module.exports = Faculty;

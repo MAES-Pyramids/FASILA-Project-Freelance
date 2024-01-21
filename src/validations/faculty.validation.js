@@ -21,7 +21,20 @@ const getFacultyByIDSchema = Joi.object({
   }),
 });
 
+const getAllFacultiesSchema = Joi.object({
+  body: Joi.object({}),
+  query: Joi.object({
+    universityID: Joi.string(),
+  }),
+  params: Joi.object({}),
+});
+
 const CreateF_Validation = validationMiddleWare(createFacultySchema);
 const GetFByID_Validation = validationMiddleWare(getFacultyByIDSchema);
+const GetAllFs_Validation = validationMiddleWare(getAllFacultiesSchema);
 
-module.exports = { CreateF_Validation, GetFByID_Validation };
+module.exports = {
+  CreateF_Validation,
+  GetFByID_Validation,
+  GetAllFs_Validation,
+};
