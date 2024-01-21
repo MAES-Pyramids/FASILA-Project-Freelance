@@ -4,6 +4,7 @@ const {
   GetAllFs_Validation,
 } = require("../validations/faculty.validation");
 const requireUser = require("../middlewares/userRequired");
+const restrictedTo = require("../middlewares/restrictedRoute");
 const { SetFacultyUnivID } = require("../middlewares/nestedRoutes");
 const FacultyController = require("../controllers/faculty.controller");
 //---------------------------------------------------------------------//
@@ -13,9 +14,24 @@ router.use(requireUser);
 
 router
   .route("/")
-  .get(GetAllFs_Validation, FacultyController.getALLFaculties)
-  .post(SetFacultyUnivID, CreateF_Validation, FacultyController.addFaculty);
+  .get(
+    restrictedTo("Admin"),
+    GetAllFs_Validation,
+    FacultyController.getALLFaculties
+  )
+  .post(
+    restrictedTo("Admin"),
+    SetFacultyUnivID,
+    CreateF_Validation,
+    FacultyController.addFaculty
+  );
 
-router.route("/:id").get(GetFByID_Validation, FacultyController.getFaculty);
+router
+  .route("/:id")
+  .get(
+    restrictedTo("Admin"),
+    GetFByID_Validation,
+    FacultyController.getFaculty
+  );
 
 module.exports = router;

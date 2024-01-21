@@ -5,6 +5,7 @@ const {
 } = require("../validations/university.validation");
 const FacultyRoutes = require("./faculty.routes.js");
 const requireUser = require("../middlewares/userRequired");
+const restrictedTo = require("../middlewares/restrictedRoute");
 const UniversityController = require("../controllers/university.controller");
 //---------------------------------------------------------------------//
 const router = require("express").Router();
@@ -15,6 +16,7 @@ router
   .get(GetALLUniversities_Validation, UniversityController.getALLUniversities)
   .post(
     requireUser,
+    restrictedTo("Admin"),
     CreateUniversity_Validation,
     UniversityController.addUniversity
   );
