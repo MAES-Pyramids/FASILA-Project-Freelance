@@ -109,6 +109,15 @@ exports.isForceLogoutAfter = async function (_id, JWT_TS) {
   return false;
 };
 
+exports.getStudentsNumber = async function () {
+  try {
+    const studentsNumber = await StudentModel.countDocuments();
+    return { status: true, data: studentsNumber };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
 //------------------Wasage OTP---------------------//
 exports.verifyStudent = async (_id, mobile) => {
   try {
