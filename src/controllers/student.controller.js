@@ -60,7 +60,7 @@ class StudentController {
    *  @access public
    */
   static getStudentId = catchAsyncError(async (req, res, next) => {
-    const { mobileNumber } = req.params;
+    const { mobileNumber } = req.query;
     const query = { phone: mobileNumber };
 
     const { status, _id, message } = await getStudentID(query);
@@ -79,8 +79,8 @@ class StudentController {
    *  @access public
    */
   static changePassword = catchAsyncError(async (req, res, next) => {
-    let [status, data, message] = ["", "", ""];
-    const { resetToken } = req.params;
+    let [status, message, _id] = ["", "", ""];
+    const { resetToken } = req.query;
     const { password } = req.body;
 
     const hashedToken = crypto

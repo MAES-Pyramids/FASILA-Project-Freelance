@@ -27,12 +27,12 @@ const signUpSchema = Joi.object({
 
 const studentIDSchema = Joi.object({
   body: Joi.object({}),
-  query: Joi.object({}),
-  params: Joi.object({
+  query: Joi.object({
     mobileNumber: Joi.string().length(12).required().messages({
       "string.length": "Phone number must be 12 digits long.",
     }),
   }),
+  params: Joi.object({}),
 });
 
 const changePassSchema = Joi.object({
@@ -46,10 +46,10 @@ const changePassSchema = Joi.object({
         "string.pattern.base": "Password must contain both letters & numbers.",
       }),
   }),
-  query: Joi.object({}),
-  params: Joi.object({
+  query: Joi.object({
     resetToken: Joi.string().required(),
   }),
+  params: Joi.object({}),
 });
 
 const saveTelegramIDSchema = Joi.object({
