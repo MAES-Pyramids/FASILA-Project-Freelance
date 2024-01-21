@@ -52,6 +52,18 @@ const changePassSchema = Joi.object({
   params: Joi.object({}),
 });
 
+const EditPhoneNumberSchema = Joi.object({
+  body: Joi.object({
+    phone: Joi.string().length(12).required().messages({
+      "string.length": "Phone number must be 12 digits long.",
+    }),
+  }),
+  query: Joi.object({}),
+  params: Joi.object({
+    id: Joi.string().required(),
+  }),
+});
+
 const saveTelegramIDSchema = Joi.object({
   body: Joi.object({
     telegramId: Joi.string().required(),
@@ -73,6 +85,7 @@ const StudentID_Validation = validationMiddleWare(studentIDSchema);
 const ChangePass_Validation = validationMiddleWare(changePassSchema);
 const SaveTelID_Validation = validationMiddleWare(saveTelegramIDSchema);
 const VerifyTelID_Validation = validationMiddleWare(verifyTelegramIDSchema);
+const EditPhoneNumber_Validation = validationMiddleWare(EditPhoneNumberSchema);
 
 module.exports = {
   Signup_Validation,
@@ -80,4 +93,5 @@ module.exports = {
   ChangePass_Validation,
   SaveTelID_Validation,
   VerifyTelID_Validation,
+  EditPhoneNumber_Validation,
 };

@@ -7,7 +7,7 @@ exports.checkValidPhone = async function (phone) {
     const student = await StudentModel.findOne({ phone });
     if (student)
       return { status: false, message: "Phone number already exists" };
-    else return { status: true, data: "Phone number is valid" };
+    else return { status: true, message: "Phone number is valid" };
   } catch (err) {
     return { status: false, message: err.message };
   }
@@ -36,6 +36,20 @@ exports.getStudentID = async function (queryParams) {
               "No matching student record was found with this mobile number.",
           };
     } else return { status: true, _id: student._id };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
+exports.changePhoneNumber = async function (_id, phone) {
+  try {
+    const student = await StudentModel.findOne({ _id, verified: false });
+    if (!student)
+      return { status: false, message: "Unverified Student not found" };
+
+    student.phone = phone;
+    await student.save();
+    return { status: true, message: "Phone number changed successfully" };
   } catch (err) {
     return { status: false, message: err.message };
   }

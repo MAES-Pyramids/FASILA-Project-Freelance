@@ -4,6 +4,7 @@ const {
   checkValidPhone,
   storeTelegramID,
   verifyTelegramID,
+  changePhoneNumber,
 } = require("../services/student.service.js");
 const { invalidateUserSessions } = require("../services/session.service.js");
 const { isValidSemester } = require("../services/faculty.service.js");
@@ -35,7 +36,7 @@ class StudentController {
       "faculty",
     ]);
 
-    ({ status, data, message } = await checkValidPhone(signUpData.phone));
+    ({ status, message } = await checkValidPhone(signUpData.phone));
     if (!status) next(new AppError(message, 400));
 
     ({ status, message } = await isValidSemester(
@@ -97,6 +98,29 @@ class StudentController {
     if (!status) return next(new AppError(message, 500));
 
     ({ status, message } = await changePassword(_id, password));
+    if (!status) return next(new AppError(message));
+
+    res.send({
+      status: "success",
+      message,
+    });
+  });
+
+  /**
+   * @description Edit Student Phone Number
+   * @route /api/v1/student/public/:id
+   * @method Patch
+   * @access public
+   */
+  static editPhoneNumber = catchAsyncError(async (req, res, next) => {
+    let [status, message] = ["", ""];
+    const { id } = req.params;
+    const { phone } = req.body;
+
+    ({ status, message } = await checkValidPhone(phone));
+    if (!status) return next(new AppError(message, 400));
+
+    ({ status, message } = await changePhoneNumber(id, phone));
     if (!status) return next(new AppError(message));
 
     res.send({
