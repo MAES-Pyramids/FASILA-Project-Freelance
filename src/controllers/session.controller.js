@@ -23,31 +23,37 @@ class SessionController {
     const [user, type] = await validatePassword(phone, password);
     if (!user) return next(new AppError("Invalid credentials", 401));
 
-    // ensure no active session for student
     // if (type === "Student") {
-    //   if (await checkExistingSession(user._id))
+    //   const result = await checkExistingSession(user._id);
+
+    //   if (result.status === "error")
+    //     return next(new AppError("Error checking existing session", 500));
+
+    //   const hasActiveSession = result;
+
+    //   if (hasActiveSession)
     //     return next(new AppError("user has active session", 400));
     // }
 
-    const session = await createSession(
+    const { status, data, message } = await createSession(
       type,
       user._id,
       req.get("user-agent") || ""
     );
+    if (!status) return next(new AppError(message, 500));
 
     const accessToken = signJWT(
-      { ...{ ...user, role: type }, session: session._id },
+      { ...{ ...user, role: type }, session: data._id },
       process.env.accessTokenPrivateKey,
       { expiresIn: process.env.accessTokenTtl }
     );
 
     const refreshToken = signJWT(
-      { ...{ ...user, role: type }, session: session._id },
+      { ...{ ...user, role: type }, session: data._id },
       process.env.refreshTokenPrivateKey,
       { expiresIn: process.env.refreshTokenTtl }
     );
 
-    // return access & refresh tokens
     // TODO: we still need to set cookies in the browser and check for the best way and what is the path used for
     return res.send({ role: type, object: user, accessToken, refreshToken });
   });
@@ -60,7 +66,9 @@ class SessionController {
    */
   static logout = catchAsyncError(async (req, res, next) => {
     const sessionId = res.locals.user.session;
-    await deleteSession(sessionId);
+
+    const { status, message } = await deleteSession(sessionId);
+    if (!status) return next(new AppError(message, 500));
 
     return res.send({
       accessToken: "",
@@ -76,10 +84,11 @@ class SessionController {
    */
   static getMe = catchAsyncError(async (req, res, next) => {
     const { _id, role } = res.locals.user;
-    let user = await findUser(role, { _id });
-    user = _.omit(user, "password", "__v");
 
-    return res.send(user);
+    let { status, data, message } = await findUser(role, { _id });
+    if (!status) return next(new AppError(message, 500));
+
+    return res.send(data);
   });
 }
 

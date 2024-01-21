@@ -63,12 +63,12 @@ class StudentController {
     const { mobileNumber } = req.params;
     const query = { phone: mobileNumber };
 
-    const { status, data, message } = await getStudentID(query);
+    const { status, _id, message } = await getStudentID(query);
     if (!status) return next(new AppError(message, 404));
 
     res.send({
       status: "success",
-      data,
+      _id,
     });
   });
 
@@ -90,11 +90,13 @@ class StudentController {
 
     const query = { resetPassToken: hashedToken };
 
-    ({ status, data, message } = await getStudentID(query));
+    ({ status, _id, message } = await getStudentID(query));
     if (!status) return next(new AppError(message, 404));
 
-    await invalidateUserSessions(student._id);
-    ({ status, message } = await changePassword(student._id, password));
+    ({ status, message } = await invalidateUserSessions(_id));
+    if (!status) return next(new AppError(message, 500));
+
+    ({ status, message } = await changePassword(_id, password));
     if (!status) return next(new AppError(message));
 
     res.send({

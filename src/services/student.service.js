@@ -35,7 +35,7 @@ exports.getStudentID = async function (queryParams) {
             message:
               "No matching student record was found with this mobile number.",
           };
-    } else return { status: true, data: student._id };
+    } else return { status: true, _id: student._id };
   } catch (err) {
     return { status: false, message: err.message };
   }
@@ -70,13 +70,17 @@ exports.verifyTelegramID = async function (_id) {
 };
 
 exports.changePassword = async function (_id, password) {
-  const student = await StudentModel.findByIdAndUpdate(_id, {
-    password: password,
-    resetPassToken: undefined,
-    resetPassExpires: undefined,
-  });
-  if (!student) return { status: false, message: "Student not found" };
-  else return { status: true, message: "Password changed successfully" };
+  try {
+    const student = await StudentModel.findByIdAndUpdate(_id, {
+      password: password,
+      resetPassToken: undefined,
+      resetPassExpires: undefined,
+    });
+    if (!student) return { status: false, message: "Student not found" };
+    else return { status: true, message: "Password changed successfully" };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
 };
 
 exports.isPassChangedAfter = async function (_id, JWT_TS) {
@@ -107,38 +111,54 @@ exports.isForceLogoutAfter = async function (_id, JWT_TS) {
 
 //------------------Wasage OTP---------------------//
 exports.verifyStudent = async (_id, mobile) => {
-  const student = await StudentModel.findOne({ _id, verified: false });
+  try {
+    const student = await StudentModel.findOne({ _id, verified: false });
 
-  if (!student)
-    return { status: false, message: "Student not found or actually active" };
+    if (!student)
+      return { status: false, message: "Student not found or actually active" };
 
-  if (mobile != student.phone)
-    return { status: false, message: "Wrong mobile number, Edit it please" };
+    if (mobile != student.phone)
+      return { status: false, message: "Wrong mobile number, Edit it please" };
 
-  student.verified = true;
-  await student.save();
+    student.verified = true;
+    await student.save();
 
-  return { status: true, message: "Student verified successfully" };
+    return { status: true, message: "Student verified successfully" };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
 };
 
 exports.getPassResetToken = async function (_id) {
-  const student = await StudentModel.findOne({ _id, verified: true });
-  if (!student) return { status: false, message: "Student not found" };
+  try {
+    const student = await StudentModel.findOne({ _id, verified: true });
+    if (!student) return { status: false, message: "Student not found" };
 
-  const resetToken = crypto.randomBytes(32).toString("hex");
-  const hashedRT = crypto.createHash("sha256").update(resetToken).digest("hex");
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedRT = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
 
-  student.resetPassToken = hashedRT;
-  student.resetPassExpires = Date.now() + process.env.ResetPass_TTL * 60 * 1000;
-  await student.save();
+    student.resetPassToken = hashedRT;
+    student.resetPassExpires =
+      Date.now() + process.env.ResetPass_TTL * 60 * 1000;
+    await student.save();
 
-  return { status: true, message: resetToken };
+    return { status: true, message: resetToken };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
 };
 
 exports.forceLogout = async function (_id) {
-  const succeed = await invalidateUserSessions(_id);
-  await StudentModel.updateOne({ _id }, { forceLogoutAt: Date.now() });
+  try {
+    const { status } = await invalidateUserSessions(_id);
+    if (!status) return { status: false, message: "Something went wrong" };
 
-  if (!succeed) return { status: false, message: "Something went wrong" };
-  else return { status: true, message: "Logged out successfully" };
+    await StudentModel.updateOne({ _id }, { forceLogoutAt: Date.now() });
+    return { status: true, message: "Logged out successfully" };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
 };

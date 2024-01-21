@@ -22,27 +22,31 @@ exports.storeOTP = async function (studentID, OTP, OTP_Type) {
 };
 
 exports.verifyOTP = async function (student, received_OTP) {
-  const StoredOTP = await OTPModel.findOne({ student });
-  if (!StoredOTP)
-    return {
-      status: false,
-      message: "OTP not found",
-    };
+  try {
+    const StoredOTP = await OTPModel.findOne({ student });
+    if (!StoredOTP)
+      return {
+        status: false,
+        message: "OTP not found",
+      };
 
-  if (!(await bcrypt.compare(received_OTP, StoredOTP.otp)))
-    return {
-      status: false,
-      message: "OTP is incorrect",
-    };
+    if (!(await bcrypt.compare(received_OTP, StoredOTP.otp)))
+      return {
+        status: false,
+        message: "OTP is incorrect",
+      };
 
-  if (StoredOTP.expiresAt < Date.now()) {
-    await OTPModel.findByIdAndDelete(StoredOTP._id);
-    return {
-      status: false,
-      message: "OTP is expired",
-    };
+    if (StoredOTP.expiresAt < Date.now()) {
+      await OTPModel.findByIdAndDelete(StoredOTP._id);
+      return {
+        status: false,
+        message: "OTP is expired",
+      };
+    }
+
+    await OTPModel.deleteMany({ student });
+    return { status: true, type: StoredOTP.OTPType };
+  } catch (err) {
+    return { status: false, message: err.message };
   }
-
-  await OTPModel.deleteMany({ student });
-  return { status: true, type: StoredOTP.OTPType };
 };

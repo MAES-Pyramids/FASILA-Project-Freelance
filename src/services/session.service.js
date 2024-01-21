@@ -4,26 +4,39 @@ const SessionModel = require("../models/session.models");
 const { signJWT, verifyJWT } = require("../utils/jwt.utils");
 
 exports.createSession = async function (type, user, userAgent) {
-  const session = await SessionModel.create({ user, userAgent, type });
-  return session.toJSON();
+  try {
+    const session = await SessionModel.create({ user, userAgent, type });
+    return { status: true, data: session.toJSON() };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
 };
 
 exports.invalidateUserSessions = async function (userId) {
   try {
     await SessionModel.updateMany({ user: userId }, { valid: false });
-    return true;
+    return { status: true, message: "Sessions invalidated successfully" };
   } catch (err) {
-    return false;
+    return { status: false, message: err.message };
   }
 };
 
 exports.deleteSession = async function (sessionId) {
-  await SessionModel.findById(sessionId).deleteOne();
+  try {
+    await SessionModel.findById(sessionId).deleteOne();
+    return { status: true, message: "Session deleted successfully" };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
 };
 
 exports.checkExistingSession = async function (userId) {
-  const session = await SessionModel.findOne({ user: userId, valid: true });
-  return !!session;
+  try {
+    const session = await SessionModel.findOne({ user: userId, valid: true });
+    return !!session;
+  } catch (err) {
+    return { status: "error", message: err.message };
+  }
 };
 
 exports.reIssueAccessToken = async function (refreshToken) {
@@ -37,14 +50,12 @@ exports.reIssueAccessToken = async function (refreshToken) {
   const session = await SessionModel.findById(_.get(decoded, "session"));
   if (!session || !session.valid) return false;
 
-  let user = await findUser(decoded.role, { _id: session.user });
-  if (!user) return false;
-
-  user = _.omit(user, "password");
+  let { status, data } = await findUser(decoded.role, { _id: session.user });
+  if (!status) return false;
 
   const accessToken = signJWT(
     {
-      ...user,
+      ...data,
       role: decoded.role,
       session: session._id,
     },

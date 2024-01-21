@@ -6,28 +6,53 @@ const AdminModel = require("../models/admin.model");
 const models = [AdminModel, LibraryModel, DoctorModel, StudentModel];
 
 exports.validatePassword = async function (phone, password) {
-  let { user, type } = {};
+  try {
+    let { user, type } = {};
 
-  for (const model of models) {
-    user = await model.findOne({ phone });
-    if (user) {
-      type = model.modelName;
-      break;
+    for (const model of models) {
+      user = await model.findOne({ phone });
+      if (user) {
+        type = model.modelName;
+        break;
+      }
     }
+    if (!user) return [false, null];
+
+    const isValid = await user.comparePassword(password);
+    if (!isValid) return [false, null];
+
+    return [_.omit(user.toJSON(), "password"), type];
+  } catch (err) {
+    return [false, null];
   }
-  if (!user) return [false, null];
+};
 
-  const isValid = await user.comparePassword(password);
-  if (!isValid) return [false, null];
+const findAndOmitPassword = async (model, query) => {
+  try {
+    const foundUser = await model.findOne(query).lean();
+    if (!foundUser) return { status: false, message: "User not found" };
 
-  return [_.omit(user.toJSON(), "password"), type];
+    const userWithoutPassword = _.omit(foundUser, "password");
+
+    return { status: true, data: userWithoutPassword };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
 };
 
 exports.findUser = async function (role, query) {
-  if (role == "Student") return await StudentModel.findOne(query).lean();
-  if (role == "Doctor") return await DoctorModel.findOne(query).lean();
-  if (role == "Library") return await LibraryModel.findOne(query).lean();
-  if (role == "Admin") return await AdminModel.findOne(query).lean();
+  switch (role) {
+    case "Student":
+      return findAndOmitPassword(StudentModel, query);
+    case "Doctor":
+      return findAndOmitPassword(DoctorModel, query);
+    case "Library":
+      return findAndOmitPassword(LibraryModel, query);
+    case "Admin":
+      return findAndOmitPassword(AdminModel, query);
+    default:
+      return { status: false, message: "Invalid role" };
+  }
 };
 
 const createAndOmitPassword = async (model, data) => {
