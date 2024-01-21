@@ -95,7 +95,7 @@ class SubjectController {
     ));
     if (!status) return next(new AppError(message, 400));
 
-    ({ status, data, message } = await createSubject(data));
+    ({ status, data, message } = await createSubject(newSubject));
     if (!status) return next(new AppError(message, 400));
 
     res.send({
@@ -113,12 +113,12 @@ class SubjectController {
   static updateSubject = catchAsyncError(async (req, res, next) => {
     const { id } = req.params;
     const { type } = req.query;
-    const doctorID = _.pick(req.body, ["doctor"]);
+    const { doctor } = _.pick(req.body, ["doctor"]);
 
     const { status, data, message } =
       type == "remove"
-        ? await removeDoctorFromSubject(id, doctorID)
-        : await addDoctorToSubject(id, doctorID);
+        ? await removeDoctorFromSubject(id, doctor)
+        : await addDoctorToSubject(id, doctor);
     if (!status) return next(new AppError(message, 400));
 
     res.send({

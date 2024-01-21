@@ -2,28 +2,38 @@ const facultyModel = require("../models/faculty.model");
 const { isUniversityExist } = require("./university.service");
 const _ = require("lodash");
 
+const mapFacultyData = (faculty) => ({
+  _id: faculty._id,
+  name: faculty.name,
+  no_of_semesters: faculty.no_of_semesters,
+  university: {
+    id: faculty.university._id,
+    name: faculty.university.name,
+  },
+  doctorsCount: faculty.doctorsCount,
+  subjectsCount: faculty.subjectsCount,
+});
+
 exports.getFaculties = async function (query) {
   try {
     let facultiesQuery = facultyModel
       .find()
-      .populate("doctorsCount subjectsCount")
-      .populate("university", "name _id")
-      .select("-__v");
-
-    if (query.UniversityID) {
-      const university = await isUniversityExist(query.UniversityID);
-
-      if (!university) {
-        return { status: false, message: "University Not Found" };
-      }
-
-      facultiesQuery = facultiesQuery
-        .where("university._id")
-        .equals(query.UniversityID);
-    }
+      .populate("doctorsCount subjectsCount university");
 
     const faculties = await facultiesQuery.exec();
-    return { status: true, data: faculties };
+
+    let facultiesData = faculties.map(mapFacultyData);
+
+    if (query.UniversityID) {
+      const UNExists = await isUniversityExist(query.UniversityID);
+      if (!UNExists) return { status: false, message: "University Not Found" };
+
+      facultiesData = facultiesData.filter(
+        (faculty) => faculty.university.id == query.UniversityID
+      );
+    }
+
+    return { status: true, data: facultiesData };
   } catch (err) {
     return { status: false, message: err.message };
   }

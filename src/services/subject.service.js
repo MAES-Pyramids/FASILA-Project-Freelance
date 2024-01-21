@@ -33,14 +33,14 @@ exports.createSubject = async function (data) {
 
 exports.addDoctorToSubject = async function (subjectID, doctorID) {
   try {
-    const isDoctor = await isDoctorExist(doctorID);
-    if (!isDoctor) return { status: false, message: "Doctor Not Found" };
+    const subject = await SubjectModel.findById(subjectID);
 
-    const subject = await SubjectModel.findByIdAndUpdate(
-      subjectID,
-      { $push: { doctors: doctorID } },
-      { new: true }
-    );
+    const { status, message } = await isDoctorExist(doctorID, subject.faculty);
+    if (!status) return { status: false, message };
+
+    subject.doctors.push(doctorID);
+    await subject.save();
+
     return { status: true, data: subject };
   } catch (err) {
     return { status: false, message: err.message };

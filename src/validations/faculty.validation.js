@@ -24,7 +24,7 @@ const getFacultyByIDSchema = Joi.object({
 const getAllFacultiesSchema = Joi.object({
   body: Joi.object({}),
   query: Joi.object({
-    universityID: Joi.string(),
+    UniversityID: Joi.string(),
   }),
   params: Joi.object({}),
 });

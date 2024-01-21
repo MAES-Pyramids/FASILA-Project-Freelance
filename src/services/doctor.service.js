@@ -38,12 +38,19 @@ exports.createDoctor = async function (newDoctor) {
   }
 };
 
-exports.isDoctorExist = async function (id) {
+exports.isDoctorExist = async function (id, faculty = "") {
   try {
     const doctor = await DoctorModel.findById(id);
-    if (!doctor) return false;
-    return true;
+    if (!doctor) return { status: false, message: "Doctor Not Found" };
+
+    if (faculty && doctor.faculty.toJSON() !== faculty.toJSON())
+      return {
+        status: false,
+        message: "Doctor and subject aren't on same faculty",
+      };
+
+    return { status: true, data: doctor };
   } catch (err) {
-    return false;
+    return { status: false, message: err.message };
   }
 };
