@@ -57,10 +57,10 @@ exports.storeTelegramID = async function (_id, telegramId) {
 exports.verifyTelegramID = async function (_id) {
   try {
     const student = await StudentModel.findById(_id);
-    if (student.telegramId !== "pending")
+    if (student.telegramStatus !== "pending")
       return { status: false, message: "Telegram ID already verified" };
 
-    student.telegramStatus = "verified";
+    student.telegramStatus = "active";
     await student.save();
 
     return { status: true, message: "Telegram ID verified successfully" };
@@ -71,13 +71,15 @@ exports.verifyTelegramID = async function (_id) {
 
 exports.changePassword = async function (_id, password) {
   try {
-    const student = await StudentModel.findByIdAndUpdate(_id, {
-      password: password,
-      resetPassToken: undefined,
-      resetPassExpires: undefined,
-    });
+    const student = await StudentModel.findById(_id);
     if (!student) return { status: false, message: "Student not found" };
-    else return { status: true, message: "Password changed successfully" };
+
+    student.password = password;
+    student.resetPassToken = undefined;
+    student.resetPassExpires = undefined;
+    await student.save();
+
+    return { status: true, message: "Password changed successfully" };
   } catch (err) {
     return { status: false, message: err.message };
   }
