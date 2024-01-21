@@ -38,6 +38,9 @@ exports.addDoctorToSubject = async function (subjectID, doctorID) {
     const { status, message } = await isDoctorExist(doctorID, subject.faculty);
     if (!status) return { status: false, message };
 
+    if (subject.doctors.includes(doctorID))
+      return { status: false, message: "Doctor already added" };
+
     subject.doctors.push(doctorID);
     await subject.save();
 
