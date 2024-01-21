@@ -1,10 +1,10 @@
-const FacultyController = require("../controllers/faculty.controller");
-const { SetFacultyUnivID } = require("../middlewares/nestedRoutes");
 const {
   CreateF_Validation,
   GetFByID_Validation,
   GetAllFs_Validation,
 } = require("../validations/faculty.validation");
+const FacultyController = require("../controllers/faculty.controller");
+const { SetFacultyUnivID } = require("../middlewares/nestedRoutes");
 const router = require("express").Router({ mergeParams: true });
 
 router

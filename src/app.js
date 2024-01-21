@@ -23,7 +23,6 @@ const SubjectRoutes = require("./routes/subject.routes.js");
 const universityRoutes = require("./routes/university.routes.js");
 
 const { receiveOTP } = require("./hooks/wasage");
-const requireUser = require("./middlewares/userRequired");
 const DeserializeUser = require("./middlewares/userDeserialization");
 
 //-------------------------------------------//
@@ -74,13 +73,12 @@ app.get("/ip", (req, res) => {
 });
 
 app.use("/api/v1/wasage", wasageRoutes);
+app.use("/api/v1/doctors", DoctorRoutes);
+app.use("/api/v1/Subjects", SubjectRoutes);
 app.use("/api/v1/sessions", SessionRoutes);
 app.use("/api/v1/Students", StudentRoutes);
 app.use("/api/v1/Faculties", FacultyRoutes);
 app.use("/api/v1/Universities", universityRoutes);
-app.use(requireUser);
-app.use("/api/v1/doctors", DoctorRoutes);
-app.use("/api/v1/Subjects", SubjectRoutes);
 
 app.all("*", (req, res, next) => {
   next(

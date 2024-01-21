@@ -4,9 +4,9 @@ const requireUser = require("../middlewares/userRequired");
 const router = require("express").Router();
 
 router.post("/login", Login_Validation, SessionController.login);
-router.delete("/logout", requireUser, SessionController.logout);
 
 router.use(requireUser);
+router.delete("/logout", SessionController.logout);
 router.get("/me", SessionController.getMe);
 
 module.exports = router;
