@@ -3,8 +3,12 @@ const {
   GetDocByID_Validation,
   GetAllDocs_Validation,
 } = require("../validations/doctor.validation");
+const requireUser = require("../middlewares/userRequired");
 const DoctorController = require("../controllers/doctor.controller");
+//---------------------------------------------------------------------//
 const router = require("express").Router();
+
+router.use(requireUser);
 
 router
   .route("/")

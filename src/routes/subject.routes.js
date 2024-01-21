@@ -1,12 +1,15 @@
-const SubjectController = require("../controllers/subject.controller");
-const router = require("express").Router({ mergeParams: true });
 const {
   GetSubs_Validation,
   CreateSub_Validation,
   UpdateSub_Validation,
   GetSubByID_Validation,
 } = require("../validations/subject.validation");
-const { patch } = require("./wasage.routes");
+const requireUser = require("../middlewares/userRequired");
+const SubjectController = require("../controllers/subject.controller");
+//---------------------------------------------------------------------//
+const router = require("express").Router({ mergeParams: true });
+
+router.use(requireUser);
 
 router
   .route("/")

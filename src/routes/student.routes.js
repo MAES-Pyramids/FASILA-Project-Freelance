@@ -5,8 +5,9 @@ const {
   SaveTelID_Validation,
   VerifyTelID_Validation,
 } = require("../validations/student.validation");
-const StudentController = require("../controllers/student.controller");
 const requireUser = require("../middlewares/userRequired");
+const StudentController = require("../controllers/student.controller");
+//---------------------------------------------------------------------//
 const router = require("express").Router();
 
 router
@@ -16,10 +17,9 @@ router
 
 router.post("/signup", Signup_Validation, StudentController.signUp);
 
-router.use(requireUser);
 router
   .route("/TelegramID")
-  .post(SaveTelID_Validation, StudentController.SaveID)
-  .patch(VerifyTelID_Validation, StudentController.verifyID);
+  .post(requireUser, SaveTelID_Validation, StudentController.SaveID)
+  .patch(requireUser, VerifyTelID_Validation, StudentController.verifyID);
 
 module.exports = router;

@@ -3,9 +3,13 @@ const {
   GetFByID_Validation,
   GetAllFs_Validation,
 } = require("../validations/faculty.validation");
-const FacultyController = require("../controllers/faculty.controller");
+const requireUser = require("../middlewares/userRequired");
 const { SetFacultyUnivID } = require("../middlewares/nestedRoutes");
+const FacultyController = require("../controllers/faculty.controller");
+//---------------------------------------------------------------------//
 const router = require("express").Router({ mergeParams: true });
+
+router.use(requireUser);
 
 router
   .route("/")
