@@ -1,5 +1,6 @@
 const DoctorModel = require("../models/doctor.model");
 const { isFacultyExist } = require("./faculty.service");
+const _ = require("lodash");
 
 exports.getAllDoctors = async function (filter = {}) {
   try {
@@ -30,7 +31,8 @@ exports.createDoctor = async function (newDoctor) {
     if (!isFaculty) return { status: false, message: "Faculty Not Found" };
 
     const doctor = await DoctorModel.create(newDoctor);
-    return { status: true, data: doctor };
+    const doctorData = _.omit(doctor.toObject(), ["password", "__v"]);
+    return { status: true, data: doctorData };
   } catch (err) {
     return { status: false, message: err.message };
   }

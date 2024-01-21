@@ -7,6 +7,11 @@ const AdminSchema = new mongoose.Schema(
       required: [true, "Please provide a name"],
       trim: true,
     },
+    phone: {
+      type: String,
+      unique: true,
+      required: [true, "Please provide mobile number"],
+    },
     password: {
       type: String,
       required: [true, "Please provide a password"],
