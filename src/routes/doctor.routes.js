@@ -3,6 +3,7 @@ const {
   GetDocByID_Validation,
   GetAllDocs_Validation,
 } = require("../validations/doctor.validation");
+const StudentRoutes = require("./student.routes");
 const requireUser = require("../middlewares/userRequired");
 const restrictedTo = require("../middlewares/restrictedRoute");
 const DoctorController = require("../controllers/doctor.controller");
@@ -10,6 +11,8 @@ const DoctorController = require("../controllers/doctor.controller");
 const router = require("express").Router();
 
 router.use(requireUser);
+
+router.use("/:id/Student", restrictedTo("Student"), StudentRoutes);
 
 router
   .route("/")

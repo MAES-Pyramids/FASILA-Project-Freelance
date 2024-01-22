@@ -9,7 +9,7 @@ const {
 const requireUser = require("../middlewares/userRequired");
 const StudentController = require("../controllers/student.controller");
 //---------------------------------------------------------------------//
-const router = require("express").Router();
+const router = require("express").Router({ mergeParams: true });
 
 router
   .route("/public")
@@ -21,6 +21,12 @@ router
   .patch(EditPhoneNumber_Validation, StudentController.editPhoneNumber);
 
 router.post("/signup", Signup_Validation, StudentController.signUp);
+
+router
+  .route("/favorites")
+  .get(requireUser, StudentController.gatFavoritesDoctors)
+  .patch(requireUser, StudentController.addFavoriteDoctor)
+  .delete(requireUser, StudentController.removeFavoriteDoctor);
 
 router
   .route("/TelegramID")

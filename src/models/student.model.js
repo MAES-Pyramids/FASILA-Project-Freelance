@@ -41,8 +41,11 @@ const StudentSchema = new mongoose.Schema(
     },
     favoritesDoctors: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Doctor",
+        semester: Number,
+        doctor: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Doctor",
+        },
       },
     ],
     telegramId: {

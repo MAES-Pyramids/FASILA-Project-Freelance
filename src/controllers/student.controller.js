@@ -74,6 +74,29 @@ class StudentController {
   });
 
   /**
+   * @description Edit Student Phone Number
+   * @route /api/v1/student/public/:id
+   * @method Patch
+   * @access public
+   */
+  static editPhoneNumber = catchAsyncError(async (req, res, next) => {
+    let [status, message] = ["", ""];
+    const { id } = req.params;
+    const { phone } = req.body;
+
+    ({ status, message } = await checkValidPhone(phone));
+    if (!status) return next(new AppError(message, 400));
+
+    ({ status, message } = await changePhoneNumber(id, phone));
+    if (!status) return next(new AppError(message));
+
+    res.send({
+      status: "success",
+      message,
+    });
+  });
+
+  /**
    *  @description Get Student ID using his phone number
    *  @route /api/v1/student/password/:resetToken
    *  @method Patch
@@ -107,27 +130,30 @@ class StudentController {
   });
 
   /**
-   * @description Edit Student Phone Number
-   * @route /api/v1/student/public/:id
-   * @method Patch
-   * @access public
+   * @description Get Student Favorite Doctors
+   * @route /api/v1/student/favorites
+   * @method Get
+   * @access private
    */
-  static editPhoneNumber = catchAsyncError(async (req, res, next) => {
-    let [status, message] = ["", ""];
-    const { id } = req.params;
-    const { phone } = req.body;
+  static gatFavoritesDoctors = catchAsyncError(async (req, res, next) => {});
 
-    ({ status, message } = await checkValidPhone(phone));
-    if (!status) return next(new AppError(message, 400));
+  /**
+   * @description Add Doctor to Student Favorite Doctors
+   * @route /api/v1/doctors/doctorId/Student/favorites
+   * @method Patch
+   * @access private
+   * @param {String} doctorId
+   */
+  static addFavoriteDoctor = catchAsyncError(async (req, res, next) => {});
 
-    ({ status, message } = await changePhoneNumber(id, phone));
-    if (!status) return next(new AppError(message));
-
-    res.send({
-      status: "success",
-      message,
-    });
-  });
+  /**
+   * @description Remove Doctor from Student Favorite Doctors
+   * @route /api/v1/doctors/doctorId/Student/favorites
+   * @method Delete
+   * @access private
+   * @param {String} doctorId
+   */
+  static removeFavoriteDoctor = catchAsyncError(async (req, res, next) => {});
 
   /**
    *  @description Store Telegram Chat ID for student and send OTP code to him to verify his ID
