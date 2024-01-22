@@ -21,20 +21,35 @@ exports.validatePassword = async function (phone, password) {
     const isValid = await user.comparePassword(password);
     if (!isValid) return [false, null];
 
-    return [_.omit(user.toJSON(), "password"), type];
+    return [
+      _.omit(user.toJSON(), [
+        "__v",
+        "password",
+        "facultyCard",
+        "passwordChangedAt",
+        "favoritesDoctors",
+      ]),
+      type,
+    ];
   } catch (err) {
     return [false, null];
   }
 };
 
-const findAndOmitPassword = async (model, query) => {
+const findAndOmitUser = async (model, query) => {
   try {
     const foundUser = await model.findOne(query).lean();
     if (!foundUser) return { status: false, message: "User not found" };
 
-    const userWithoutPassword = _.omit(foundUser, "password");
+    const omittedUser = _.omit(foundUser, [
+      "__v",
+      "password",
+      "facultyCard",
+      "passwordChangedAt",
+      "favoritesDoctors",
+    ]);
 
-    return { status: true, data: userWithoutPassword };
+    return { status: true, data: omittedUser };
   } catch (err) {
     return { status: false, message: err.message };
   }
@@ -43,13 +58,13 @@ const findAndOmitPassword = async (model, query) => {
 exports.findUser = async function (role, query) {
   switch (role) {
     case "Student":
-      return findAndOmitPassword(StudentModel, query);
+      return findAndOmitUser(StudentModel, query);
     case "Doctor":
-      return findAndOmitPassword(DoctorModel, query);
+      return findAndOmitUser(DoctorModel, query);
     case "Library":
-      return findAndOmitPassword(LibraryModel, query);
+      return findAndOmitUser(LibraryModel, query);
     case "Admin":
-      return findAndOmitPassword(AdminModel, query);
+      return findAndOmitUser(AdminModel, query);
     default:
       return { status: false, message: "Invalid role" };
   }
