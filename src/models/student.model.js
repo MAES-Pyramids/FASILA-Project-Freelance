@@ -39,15 +39,15 @@ const StudentSchema = new mongoose.Schema(
       ref: "Faculty",
       required: [true, "Please provide faculty"],
     },
-    favoritesDoctors: [
-      {
-        semester: Number,
-        doctor: {
+    favoritesDoctors: {
+      type: Map,
+      of: [
+        {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Doctor",
         },
-      },
-    ],
+      ],
+    },
     telegramId: {
       type: String,
       default: null,
