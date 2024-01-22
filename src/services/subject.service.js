@@ -3,6 +3,13 @@ const { isDoctorExist } = require("./doctor.service");
 
 exports.getSubjects = async function (query, excluded = "") {
   try {
+    query = query._id
+      ? (query = {
+          faculty: query.faculty,
+          doctors: { $in: [query._id] },
+        })
+      : query;
+
     const subjects = await SubjectModel.find(query).select(excluded);
     return { status: true, data: subjects };
   } catch (err) {

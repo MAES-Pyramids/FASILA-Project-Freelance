@@ -51,6 +51,12 @@ class SubjectController {
       excluded = "-faculty -semester -__v";
     }
 
+    if (userType === "Doctor") {
+      const { faculty, _id } = res.locals.user;
+      query = { faculty, _id };
+      excluded = "-faculty -doctors -__v";
+    }
+
     const { status, data, message } = await getSubjects(query, excluded);
     if (!status) return next(new AppError(message, 404));
 
