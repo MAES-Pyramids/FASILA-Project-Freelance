@@ -80,18 +80,34 @@ const verifyTelegramIDSchema = Joi.object({
   params: Joi.object({}),
 });
 
+const addFavDoctorSchema = Joi.object({
+  body: Joi.object({}),
+  query: Joi.object({}),
+  params: Joi.object({ doctorId: Joi.string().required() }),
+});
+
+const removeFavDoctorSchema = Joi.object({
+  body: Joi.object({}),
+  query: Joi.object({}),
+  params: Joi.object({ doctorId: Joi.string().required() }),
+});
+
 const Signup_Validation = validationMiddleWare(signUpSchema);
 const StudentID_Validation = validationMiddleWare(studentIDSchema);
 const ChangePass_Validation = validationMiddleWare(changePassSchema);
 const SaveTelID_Validation = validationMiddleWare(saveTelegramIDSchema);
+const AddFavDoctor_Validation = validationMiddleWare(addFavDoctorSchema);
 const VerifyTelID_Validation = validationMiddleWare(verifyTelegramIDSchema);
+const RemoveFavDoctor_Validation = validationMiddleWare(removeFavDoctorSchema);
 const EditPhoneNumber_Validation = validationMiddleWare(EditPhoneNumberSchema);
 
 module.exports = {
   Signup_Validation,
+  SaveTelID_Validation,
   StudentID_Validation,
   ChangePass_Validation,
-  SaveTelID_Validation,
   VerifyTelID_Validation,
+  AddFavDoctor_Validation,
   EditPhoneNumber_Validation,
+  RemoveFavDoctor_Validation,
 };

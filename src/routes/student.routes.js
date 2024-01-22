@@ -1,9 +1,11 @@
 const {
   Signup_Validation,
+  SaveTelID_Validation,
   StudentID_Validation,
   ChangePass_Validation,
-  SaveTelID_Validation,
   VerifyTelID_Validation,
+  AddFavDoctor_Validation,
+  RemoveFavDoctor_Validation,
   EditPhoneNumber_Validation,
 } = require("../validations/student.validation");
 const requireUser = require("../middlewares/userRequired");
@@ -25,8 +27,16 @@ router
 router
   .route("/favorites")
   .get(requireUser, StudentController.gatFavoritesDoctors)
-  .patch(requireUser, StudentController.addFavoriteDoctor)
-  .delete(requireUser, StudentController.removeFavoriteDoctor);
+  .patch(
+    requireUser,
+    AddFavDoctor_Validation,
+    StudentController.addFavoriteDoctor
+  )
+  .delete(
+    requireUser,
+    RemoveFavDoctor_Validation,
+    StudentController.removeFavoriteDoctor
+  );
 
 router
   .route("/TelegramID")
