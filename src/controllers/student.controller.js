@@ -139,8 +139,8 @@ class StudentController {
    * @access private
    */
   static gatFavoritesDoctors = catchAsyncError(async (req, res, next) => {
-    const { _id } = res.locals.user;
-    const { status, data, message } = await getFavDoctors(_id);
+    const { _id, semester } = res.locals.user;
+    const { status, data, message } = await getFavDoctors(_id, semester);
     if (!status) return next(new AppError(message));
 
     res.send({

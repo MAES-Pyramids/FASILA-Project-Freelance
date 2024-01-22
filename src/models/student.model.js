@@ -47,6 +47,7 @@ const StudentSchema = new mongoose.Schema(
           ref: "Doctor",
         },
       ],
+      default: {},
     },
     telegramId: {
       type: String,

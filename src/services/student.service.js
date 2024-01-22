@@ -135,15 +135,18 @@ exports.getStudentsNumber = async function () {
   }
 };
 
-exports.getFavDoctors = async function (_id) {
+exports.getFavDoctors = async function (_id, semester) {
   try {
     const student = await StudentModel.findById(_id);
 
-    const favoritesDoctors = await StudentModel.findById(_id)
-      .populate({ path: `favoritesDoctors.${student.semester.toString()}` })
+    const { favoritesDoctors } = await StudentModel.findById(_id)
+      .populate({
+        path: `favoritesDoctors.${student.semester.toString()}`,
+        select: "name",
+      })
       .select("favoritesDoctors");
 
-    return { status: true, data: favoritesDoctors };
+    return { status: true, data: favoritesDoctors.get(semester.toString()) };
   } catch (err) {
     return { status: false, message: err.message };
   }
@@ -155,14 +158,15 @@ exports.addFavDoctor = async function (_id, doctorId) {
     if (!status) return { status, message };
 
     const student = await StudentModel.findById(_id);
-
     const semester = student.semester.toString();
+
     const doctorsArray = student.favoritesDoctors.get(semester) || [];
 
-    if (favoritesDoctors.includes(doctorId))
+    if (doctorsArray.includes(doctorId))
       return { status: true, message: "Doctor already added" };
+    else doctorsArray.push(doctorId);
 
-    student.favoritesDoctors.set(semester, doctorsArray.push(doctorId));
+    student.favoritesDoctors.set(semester, doctorsArray);
     await student.save();
 
     return { status: true, message: "Doctor added successfully" };
