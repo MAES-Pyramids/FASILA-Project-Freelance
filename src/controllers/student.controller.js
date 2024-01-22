@@ -1,6 +1,9 @@
 const {
   getStudentID,
+  addFavDoctor,
+  getFavDoctors,
   changePassword,
+  removeFavDoctor,
   checkValidPhone,
   storeTelegramID,
   verifyTelegramID,
@@ -135,7 +138,16 @@ class StudentController {
    * @method Get
    * @access private
    */
-  static gatFavoritesDoctors = catchAsyncError(async (req, res, next) => {});
+  static gatFavoritesDoctors = catchAsyncError(async (req, res, next) => {
+    const { _id } = res.locals.user;
+    const { status, data, message } = await getFavDoctors(_id);
+    if (!status) return next(new AppError(message));
+
+    res.send({
+      status: "success",
+      data,
+    });
+  });
 
   /**
    * @description Add Doctor to Student Favorite Doctors
@@ -144,7 +156,18 @@ class StudentController {
    * @access private
    * @param {String} doctorId
    */
-  static addFavoriteDoctor = catchAsyncError(async (req, res, next) => {});
+  static addFavoriteDoctor = catchAsyncError(async (req, res, next) => {
+    const { _id } = res.locals.user;
+    const { doctorId } = req.params;
+
+    const { status, message } = await addFavDoctor(_id, doctorId);
+    if (!status) return next(new AppError(message));
+
+    res.send({
+      status: "success",
+      message,
+    });
+  });
 
   /**
    * @description Remove Doctor from Student Favorite Doctors
@@ -153,7 +176,18 @@ class StudentController {
    * @access private
    * @param {String} doctorId
    */
-  static removeFavoriteDoctor = catchAsyncError(async (req, res, next) => {});
+  static removeFavoriteDoctor = catchAsyncError(async (req, res, next) => {
+    const { _id } = res.locals.user;
+    const { doctorId } = req.params;
+
+    const { status, message } = await removeFavDoctor(_id, doctorId);
+    if (!status) return next(new AppError(message));
+
+    res.send({
+      status: "success",
+      message,
+    });
+  });
 
   /**
    *  @description Store Telegram Chat ID for student and send OTP code to him to verify his ID

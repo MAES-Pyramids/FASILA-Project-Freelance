@@ -1,4 +1,5 @@
 const { invalidateUserSessions } = require("../services/session.service");
+const { isDoctorExist } = require("../services/doctor.service");
 const StudentModel = require("../models/student.model");
 const crypto = require("crypto");
 
@@ -134,6 +135,61 @@ exports.getStudentsNumber = async function () {
   }
 };
 
+exports.getFavDoctors = async function (_id) {
+  try {
+    const student = await StudentModel.findById(_id);
+
+    const favoritesDoctors = await StudentModel.findById(_id)
+      .populate({ path: `favoritesDoctors.${student.semester.toString()}` })
+      .select("favoritesDoctors");
+
+    return { status: true, data: favoritesDoctors };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
+exports.addFavDoctor = async function (_id, doctorId) {
+  try {
+    const { status, message } = await isDoctorExist(doctorId);
+    if (!status) return { status, message };
+
+    const student = await StudentModel.findById(_id);
+
+    const semester = student.semester.toString();
+    const doctorsArray = student.favoritesDoctors.get(semester) || [];
+
+    if (favoritesDoctors.includes(doctorId))
+      return { status: true, message: "Doctor already added" };
+
+    student.favoritesDoctors.set(semester, doctorsArray.push(doctorId));
+    await student.save();
+
+    return { status: true, message: "Doctor added successfully" };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
+exports.removeFavDoctor = async function (_id, doctorId) {
+  try {
+    const student = await StudentModel.findById(_id);
+    const semester = student.semester.toString();
+
+    const doctorsArray = student.favoritesDoctors.get(semester) || [];
+    const index = doctorsArray.indexOf(doctorId);
+
+    if (index > -1) doctorsArray.splice(index, 1);
+    else return { status: true, message: "Doctor already removed" };
+
+    student.favoritesDoctors.set(semester, doctorsArray);
+    await student.save();
+
+    return { status: true, message: "Doctor removed successfully" };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
 //------------------Wasage OTP---------------------//
 exports.verifyStudent = async (_id, mobile) => {
   try {

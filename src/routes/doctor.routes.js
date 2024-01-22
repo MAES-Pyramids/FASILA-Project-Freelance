@@ -12,7 +12,7 @@ const router = require("express").Router();
 
 router.use(requireUser);
 
-router.use("/:id/Student", restrictedTo("Student"), StudentRoutes);
+router.use("/:doctorId/Student", restrictedTo("Student"), StudentRoutes);
 
 router
   .route("/")

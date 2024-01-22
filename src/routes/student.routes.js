@@ -11,6 +11,8 @@ const StudentController = require("../controllers/student.controller");
 //---------------------------------------------------------------------//
 const router = require("express").Router({ mergeParams: true });
 
+router.post("/signup", Signup_Validation, StudentController.signUp);
+
 router
   .route("/public")
   .get(StudentID_Validation, StudentController.getStudentId)
@@ -19,8 +21,6 @@ router
 router
   .route("/public/:id")
   .patch(EditPhoneNumber_Validation, StudentController.editPhoneNumber);
-
-router.post("/signup", Signup_Validation, StudentController.signUp);
 
 router
   .route("/favorites")
