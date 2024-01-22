@@ -13,8 +13,10 @@ const router = require("express").Router();
 
 router.use(requireUser);
 
+// Marking or unmarking a doctor as a favorite for a student
 router.use("/:doctorId/Student", restrictedTo("Student"), StudentRoutes);
-router.use("/:doctorId/Lectures", restrictedTo("Student"), LectureRoutes);
+// Getting all Doctor lectures for student
+router.use("/:doctorId/Subjects", restrictedTo("Student"), LectureRoutes);
 
 router
   .route("/")

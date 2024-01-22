@@ -5,12 +5,16 @@ const {
   GetSubByID_Validation,
 } = require("../validations/subject.validation");
 const requireUser = require("../middlewares/userRequired");
+const lectureRoutes = require("./lecture.routes");
 const restrictedTo = require("../middlewares/restrictedRoute");
 const SubjectController = require("../controllers/subject.controller");
 //---------------------------------------------------------------------//
 const router = require("express").Router({ mergeParams: true });
 
 router.use(requireUser);
+
+// While there is a nested route for students to access lectures,it get used directly by doctors.
+router.use("/:subjectId/Lectures", lectureRoutes);
 
 router
   .route("/")
