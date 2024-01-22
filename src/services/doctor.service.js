@@ -54,3 +54,12 @@ exports.isDoctorExist = async function (id, faculty = "") {
     return { status: false, message: err.message };
   }
 };
+
+exports.getDoctorsNumber = async function (query) {
+  try {
+    const doctorsNumber = await DoctorModel.countDocuments(query);
+    return { status: true, data: doctorsNumber };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};

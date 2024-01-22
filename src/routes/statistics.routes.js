@@ -5,6 +5,7 @@ const router = require("express").Router();
 
 router.use(requireUser);
 
+router.get("/DoctorsNumber", statisticsController.getDoctorsNumber);
 router.get("/StudentsNumber", statisticsController.getStudentsNumber);
 router.get("/SoldLecturesNumber", statisticsController.getSoldLecturesNumber);
 
