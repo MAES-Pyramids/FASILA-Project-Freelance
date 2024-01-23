@@ -50,7 +50,7 @@ async function addDiagonalWatermark(
 }
 
 addDiagonalWatermark(
-  "./source/DS-QB.pdf",
-  "./output/watermarked_pdf_lib.pdf",
+  "./source/Text_photos2.pdf",
+  "./output/watermarked_pdf_lib3.pdf",
   "01007045993"
 );
