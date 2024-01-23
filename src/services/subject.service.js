@@ -68,3 +68,17 @@ exports.removeDoctorFromSubject = async function (subjectID, doctorID) {
     return { status: false, message: err.message };
   }
 };
+
+exports.checkSubjectDoctor = async function (subjectID, doctorID) {
+  const subject = await SubjectModel.findById(subjectID);
+  if (!subject) return { status: false, message: "Subject Not Found" };
+
+  if (!subject.doctors.includes(doctorID))
+    return {
+      status: false,
+      message:
+        "The doctor does not have permission to upload lectures for this subject",
+    };
+
+  return { status: true, message: "Doctor Found" };
+};

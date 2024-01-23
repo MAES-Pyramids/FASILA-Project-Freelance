@@ -10,6 +10,9 @@ const LectureSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    description: {
+      type: String,
+    },
     subject: {
       type: mongoose.Schema.ObjectId,
       ref: "Subject",
@@ -35,7 +38,11 @@ const LectureSchema = new mongoose.Schema(
     },
     finalPrice: {
       type: Number,
-      required: true,
+      required: this.confirmed == true,
+    },
+    isFree: {
+      type: Boolean,
+      default: this.finalPrice == 0,
     },
     confirmed: {
       type: Boolean,
