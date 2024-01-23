@@ -1,7 +1,7 @@
 let muhammara = require("muhammara");
 
-const inputFilePath = "./source/Text_photos.pdf";
-const outputFilePath = "./output/Text_photos_watermarked.pdf";
+const inputFilePath = "./source/DS-QB.pdf";
+const outputFilePath = "./output/watermarked_muhammara_H.pdf";
 const fontFilePath = "./Roboto-Regular.ttf";
 
 const pdfWriter = muhammara.createWriterToModify(
@@ -24,10 +24,14 @@ const textOptions = {
 for (let pageIndex = 0; pageIndex < pdfReader.getPagesCount(); pageIndex++) {
   const pageModifier = new muhammara.PDFPageModifier(pdfWriter, pageIndex);
 
+  // const pageSize = pdfReader.parsePage(pageIndex).getMediaBox();
+  // const verticalOffset = 10; // Adjust this value based on your needs
+  // const textY = pageSize.height - verticalOffset;
+
   pageModifier
     .startContext()
     .getContext()
-    .writeText("01007045993", 200, 200, textOptions);
+    .writeText("01007045993", 10, 10, textOptions);
 
   pageModifier.endContext().writePage();
 }

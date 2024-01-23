@@ -18,7 +18,7 @@ async function setWaterMark(inputFilePath, outputFilePath, watermarkText) {
 }
 
 setWaterMark(
-  "./source/Text_photos.pdf",
-  "./output/Text_Photos_watermarked_PDF_Watermark.pdf",
+  "./source/DS-QB.pdf",
+  "./output/watermarked_pdf_watermark.pdf",
   "01007045993"
 );

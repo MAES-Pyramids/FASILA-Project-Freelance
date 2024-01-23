@@ -1,7 +1,7 @@
 let muhammara = require("muhammara");
 
-const inputFilePath = "./source/Text_photos.pdf";
-const outputFilePath = "./output/Text_photos_watermarked.pdf";
+const inputFilePath = "./source/DS-QB.pdf";
+const outputFilePath = "./output/watermarked_muhammara.pdf";
 const fontFilePath = "./Roboto-Regular.ttf";
 
 const pdfWriter = muhammara.createWriterToModify(
@@ -32,7 +32,7 @@ for (let pageIndex = 0; pageIndex < pdfReader.getPagesCount(); pageIndex++) {
   // Calculate center coordinates
   const pageWidth = pdfReader.parsePage(pageIndex).getMediaBox()[2];
   const pageHeight = pdfReader.parsePage(pageIndex).getMediaBox()[3];
-  const centerX = pageWidth / 2;
+  const centerX = pageWidth / 3;
   const centerY = pageHeight / 2;
 
   // Set the rotation angle to draw text diagonally (45 degrees)
