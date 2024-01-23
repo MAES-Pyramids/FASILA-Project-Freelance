@@ -24,7 +24,6 @@ class DoctorController {
 
     res.send({
       status: "success",
-      length: data.length,
       data,
     });
   });

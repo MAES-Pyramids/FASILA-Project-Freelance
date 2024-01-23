@@ -22,7 +22,6 @@ class UniversityController {
 
     res.send({
       status: "success",
-      length: data.length,
       data,
     });
   });
