@@ -6,12 +6,22 @@ const _ = require("lodash");
 
 class LectureController {
   static getAllLectures = catchAsyncError(async (req, res, next) => {
-    let [userType, query, excluded] = [res.locals.user.role, {}, ""];
+    let [userType, query, excluded, populateFlag] = [
+      res.locals.user.role,
+      {},
+      "",
+      false,
+    ];
     if (userType === "Admin") {
-      const { subjectId, doctorId } = req.query;
-      if (subjectId) query.subject = subjectId;
-      if (doctorId) query.doctor = doctorId;
-      query = { ...query, confirmed: true };
+      const { confirmed, subjectId, doctorId } = req.query;
+
+      query.confirmed =
+        confirmed === "true" || confirmed === undefined ? true : false;
+
+      query = subjectId ? { ...query, subject: subjectId } : query;
+      query = doctorId ? { ...query, doctor: doctorId } : query;
+      excluded = "-waterMarkLayout  -__v";
+      populateFlag = true;
     }
 
     if (userType === "Doctor") {
@@ -24,10 +34,15 @@ class LectureController {
     if (userType === "Student") {
       const { subjectId, doctorId } = req.params;
       query = { subject: subjectId, doctor: doctorId, confirmed: true };
-      excluded = "";
+      excluded =
+        "-subject -doctor -type -publishedBy -publishPrice -confirmed -waterMarkLayout";
     }
 
-    const { status, data, message } = await getLectures(query, excluded);
+    const { status, data, message } = await getLectures(
+      query,
+      excluded,
+      populateFlag
+    );
     if (!status) return next(new AppError(message, 404));
 
     res.send({

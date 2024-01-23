@@ -1,9 +1,14 @@
 const lectureModel = require("../models/lecture.model");
 const { checkSubjectDoctor } = require("./subject.service");
 
-exports.getLectures = async (query, excluded) => {
+exports.getLectures = async (query, excluded, populateFlag) => {
   try {
-    const data = await lectureModel.find(query).select(excluded);
+    let DBquery = lectureModel.find(query).select(excluded);
+
+    const data = await (populateFlag
+      ? DBquery.populate("publishedBy doctor subject", "name")
+      : DBquery);
+
     return { status: true, data };
   } catch (error) {
     return { status: false, message: error.message };
