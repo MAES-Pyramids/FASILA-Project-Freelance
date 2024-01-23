@@ -1,0 +1,17 @@
+{
+  "name": "test_pdf",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "maes",
+  "license": "ISC",
+  "dependencies": {
+    "hummus": "^1.0.116",
+    "muhammara": "^4.1.0",
+    "nodemon": "^3.0.3",
+    "pdf-manip": "^1.0.3"
+  }
+}
