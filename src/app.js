@@ -33,10 +33,11 @@ const app = express();
 //------------Global middleware--------------//
 // app.enable("trust proxy", 1);
 
+// Serve static content located in the "public" directory.
+app.use(express.static(path.join(__dirname, "..", "public")));
+
 app.use(cors());
 app.options("*", cors());
-
-app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
   process.env.NODE_ENV === "development" ? morgan("dev") : morgan("combined")

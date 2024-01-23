@@ -5,6 +5,20 @@ const AppError = require("../utils/appErrorsClass");
 const _ = require("lodash");
 
 class LectureController {
+  /**
+   * @description Get all lectures for students, doctors and admins
+   * @route  /api/subjects/:subjectId/doctors/:doctorId/lectures | /api/subjects/:subjectId/lectures | /api/lectures
+   * @method Get
+   * @access Private
+   * @param:
+   * -param {subjectId} req for students and doctors
+   * -param {doctorId} req for students
+   * @query:
+   * -query {confirmed} req for admins to get confirmed or unconfirmed lectures
+   * -query {subjectId} req for admins to filter by subject
+   * -query {doctorId} req for admins to filter by doctor
+   */
+
   static getAllLectures = catchAsyncError(async (req, res, next) => {
     let [userType, query, excluded, populateFlag] = [
       res.locals.user.role,
@@ -51,6 +65,23 @@ class LectureController {
     });
   });
 
+  static getLectureById = catchAsyncError(async (req, res, next) => {});
+
+  /**
+   * @description Add a new lecture to a subject
+   * @route  /api/subjects/:subjectId/lectures
+   * @method Post
+   * @access Private
+   * @param:
+   * -param {subjectId} req incase doctor is the publisher
+   * -param {doctorId} req incase library is the publisher
+   * @body:
+   * -body {name} req
+   * -body {path} req
+   * -body {description} req
+   * -body {publishPrice} req
+   */
+
   static addLecture = catchAsyncError(async (req, res, next) => {
     let doctor, publishedBy;
 
@@ -84,6 +115,8 @@ class LectureController {
   });
 
   static confirmLecture = catchAsyncError(async (req, res, next) => {});
+
+  static deleteLecture = catchAsyncError(async (req, res, next) => {});
 }
 
 module.exports = LectureController;

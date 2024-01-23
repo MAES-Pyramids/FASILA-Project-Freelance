@@ -9,7 +9,12 @@ router.use(requireUser);
 router
   .route("/")
   .get(LectureController.getAllLectures)
-  .post(restrictedTo("Doctor"), LectureController.addLecture)
-  .patch(restrictedTo("Admin"), LectureController.confirmLecture);
+  .post(restrictedTo("Doctor"), LectureController.addLecture);
+
+router
+  .route("/:id")
+  .get(LectureController.getLectureById)
+  .patch(restrictedTo("Doctor"), LectureController.confirmLecture)
+  .delete(restrictedTo("Doctor"), LectureController.deleteLecture);
 
 module.exports = router;
