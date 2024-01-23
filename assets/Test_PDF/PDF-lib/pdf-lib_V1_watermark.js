@@ -35,7 +35,7 @@ async function addWatermark(inputFilePath, outputFilePath, watermarkText) {
 // Replace 'input.pdf' and 'output.pdf' with your input and output file paths
 // Replace 'Watermark Text' with the desired watermark text
 addWatermark(
-  "./source/Text_photos.pdf",
-  "./output/Text_photos_watermarked_pdf_lib.pdf",
+  "../source/Text_photos.pdf",
+  "../output/Text_photos_watermarked_pdf_lib.pdf",
   "01007045993"
 );
