@@ -18,7 +18,7 @@ async function addDiagonalWatermark(
     // Calculate the diagonal position
     const diagonalPosition = {
       x: width / 3,
-      y: height / 6,
+      y: height / 3,
     };
 
     const spaceBetweenCharacters = 30;
@@ -50,7 +50,7 @@ async function addDiagonalWatermark(
 }
 
 addDiagonalWatermark(
-  "./source/Text_photos.pdf",
-  "./output/Text_photos_watermarked_pdf_lib.pdf",
+  "./source/DS-QB.pdf",
+  "./output/DS-QB_watermarked_pdf_lib.pdf",
   "01007045993"
 );
