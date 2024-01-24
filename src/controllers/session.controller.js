@@ -23,17 +23,17 @@ class SessionController {
     const [user, type] = await validatePassword(phone, password);
     if (!user) return next(new AppError("Invalid credentials", 401));
 
-    if (type === "Student") {
-      const result = await checkExistingSession(user._id);
+    // if (type === "Student") {
+    //   const result = await checkExistingSession(user._id);
 
-      if (result.status === "error")
-        return next(new AppError("Error checking existing session", 500));
+    //   if (result.status === "error")
+    //     return next(new AppError("Error checking existing session", 500));
 
-      const hasActiveSession = result;
+    //   const hasActiveSession = result;
 
-      if (hasActiveSession)
-        return next(new AppError("user has active session", 400));
-    }
+    //   if (hasActiveSession)
+    //     return next(new AppError("user has active session", 400));
+    // }
 
     const { status, data, message } = await createSession(
       type,
