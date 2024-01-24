@@ -52,10 +52,25 @@ const LectureSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    waterMarkLayout: {
-      type: String,
-      enum: ["top-left", "top-right", "bottom-left", "bottom-right"],
-      default: "bottom-right",
+    finalLayout: {
+      addEmptyPages: {
+        type: Boolean,
+        default: false,
+      },
+      numEmptyPageDetails: {
+        numEmptyPages: Number,
+        emptyPageHeightP: Number,
+        emptyPageWidthP: Number,
+        lineSpacing: Number,
+        required: this.addEmptyPages == true,
+      },
+      waterMarkDetails: {
+        diagonalXStart: Number,
+        diagonalYStart: Number,
+        spaceBetweenCharacters: Number,
+        opacity: Number,
+        required: true,
+      },
     },
   },
   {

@@ -65,8 +65,6 @@ class LectureController {
     });
   });
 
-  static getLectureById = catchAsyncError(async (req, res, next) => {});
-
   /**
    * @description Add a new lecture to a subject
    * @route  /api/subjects/:subjectId/lectures
@@ -114,7 +112,18 @@ class LectureController {
     });
   });
 
+  /**
+   * @description Confirm a lecture to be published for students
+   * @route  /api/lectures/:lectureId
+   * @method Patch
+   * @access Private
+   * @param: lectureId
+   * @body: {finalPrice , waterMarkLayout}
+   */
+
   static confirmLecture = catchAsyncError(async (req, res, next) => {});
+
+  static getLectureById = catchAsyncError(async (req, res, next) => {});
 
   static deleteLecture = catchAsyncError(async (req, res, next) => {});
 }
