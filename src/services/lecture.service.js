@@ -28,3 +28,21 @@ exports.uploadLecture = async (lecture) => {
     return { status: false, message: error.message };
   }
 };
+
+exports.confirmLectureService = async (lectureId, ConfirmBody) => {
+  try {
+    const body = { ...ConfirmBody, confirmed: true };
+    const lecture = await lectureModel.findOne({
+      _id: lectureId,
+      confirmed: false,
+    });
+    if (!lecture) return { status: false, message: "Lecture not found" };
+
+    lecture.set(body);
+    await lecture.save();
+
+    return { status: true, data: lecture };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};

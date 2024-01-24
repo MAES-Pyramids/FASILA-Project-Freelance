@@ -14,7 +14,7 @@ router
 router
   .route("/:id")
   .get(LectureController.getLectureById)
-  .patch(restrictedTo("Doctor"), LectureController.confirmLecture)
-  .delete(restrictedTo("Doctor"), LectureController.deleteLecture);
+  .patch(restrictedTo("Admin"), LectureController.confirmLecture)
+  .delete(restrictedTo("Admin"), LectureController.deleteLecture);
 
 module.exports = router;

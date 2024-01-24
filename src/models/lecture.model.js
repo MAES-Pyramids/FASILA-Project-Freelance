@@ -42,7 +42,7 @@ const LectureSchema = new mongoose.Schema(
     },
     isFree: {
       type: Boolean,
-      default: this.finalPrice == 0,
+      default: false,
     },
     confirmed: {
       type: Boolean,
@@ -52,15 +52,18 @@ const LectureSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    no_slides: {
+      type: Number,
+    },
     finalLayout: {
       addEmptyPages: {
         type: Boolean,
         default: false,
       },
-      numEmptyPageDetails: {
+      EmptyPageDetails: {
         numEmptyPages: {
           type: Number,
-          default: 0,
+          default: 1,
         },
         emptyPageHeightP: {
           type: Number,
@@ -68,11 +71,11 @@ const LectureSchema = new mongoose.Schema(
         },
         emptyPageWidthP: {
           type: Number,
-          default: 100,
+          default: 50,
         },
         lineSpacing: {
           type: Number,
-          default: 25,
+          default: 30,
         },
       },
       waterMarkDetails: {
@@ -99,6 +102,13 @@ const LectureSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+LectureSchema.pre("save", function (next) {
+  let lecture = this;
+  if (lecture.confirmed)
+    lecture.isFree = lecture.finalPrice == 0 ? true : false;
+  next();
+});
 
 const Lecture = mongoose.model("Lecture", LectureSchema);
 module.exports = Lecture;

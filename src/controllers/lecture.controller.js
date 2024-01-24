@@ -1,4 +1,8 @@
-const { getLectures, uploadLecture } = require("../services/lecture.service");
+const {
+  getLectures,
+  uploadLecture,
+  confirmLectureService,
+} = require("../services/lecture.service");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
 const AppError = require("../utils/appErrorsClass");
@@ -122,8 +126,22 @@ class LectureController {
    */
 
   static confirmLecture = catchAsyncError(async (req, res, next) => {
-    const { lectureId } = req.params;
-    const confirmationBody = _.pick(req.body, ["finalPrice", "finalLayout"]);
+    const { id } = req.params;
+    const confirmBody = _.pick(req.body, [
+      "name",
+      "no_slides",
+      "description",
+      "finalPrice",
+      "finalLayout",
+    ]);
+
+    const { status, message } = await confirmLectureService(id, confirmBody);
+    if (!status) return next(new AppError(message, 400));
+
+    res.send({
+      status: "success",
+      message: "Lecture confirmed successfully",
+    });
   });
 
   static getLectureById = catchAsyncError(async (req, res, next) => {});
