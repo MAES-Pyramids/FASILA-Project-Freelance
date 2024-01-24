@@ -58,18 +58,40 @@ const LectureSchema = new mongoose.Schema(
         default: false,
       },
       numEmptyPageDetails: {
-        numEmptyPages: Number,
-        emptyPageHeightP: Number,
-        emptyPageWidthP: Number,
-        lineSpacing: Number,
-        required: this.addEmptyPages == true,
+        numEmptyPages: {
+          type: Number,
+          default: 0,
+        },
+        emptyPageHeightP: {
+          type: Number,
+          default: 100,
+        },
+        emptyPageWidthP: {
+          type: Number,
+          default: 100,
+        },
+        lineSpacing: {
+          type: Number,
+          default: 25,
+        },
       },
       waterMarkDetails: {
-        diagonalXStart: Number,
-        diagonalYStart: Number,
-        spaceBetweenCharacters: Number,
-        opacity: Number,
-        required: true,
+        diagonalXStart: {
+          type: Number,
+          required: true,
+        },
+        diagonalYStart: {
+          type: Number,
+          required: true,
+        },
+        spaceBetweenCharacters: {
+          type: Number,
+          required: true,
+        },
+        opacity: {
+          type: Number,
+          default: 0.4,
+        },
       },
     },
   },

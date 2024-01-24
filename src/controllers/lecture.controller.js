@@ -34,7 +34,7 @@ class LectureController {
 
       query = subjectId ? { ...query, subject: subjectId } : query;
       query = doctorId ? { ...query, doctor: doctorId } : query;
-      excluded = "-waterMarkLayout  -__v";
+      excluded = "-finalLayout  -__v";
       populateFlag = true;
     }
 
@@ -42,14 +42,14 @@ class LectureController {
       const { subjectId } = req.params;
       const { _id } = res.locals.user;
       query = { subject: subjectId, doctor: _id };
-      excluded = "-waterMarkLayout -type -publishedBy -doctor -subject -__v";
+      excluded = "-finalLayout -type -publishedBy -doctor -subject -__v";
     }
 
     if (userType === "Student") {
       const { subjectId, doctorId } = req.params;
       query = { subject: subjectId, doctor: doctorId, confirmed: true };
       excluded =
-        "-subject -doctor -type -publishedBy -publishPrice -confirmed -waterMarkLayout";
+        "-subject -doctor -type -publishedBy -publishPrice -confirmed -finalLayout";
     }
 
     const { status, data, message } = await getLectures(
@@ -118,10 +118,13 @@ class LectureController {
    * @method Patch
    * @access Private
    * @param: lectureId
-   * @body: {finalPrice , waterMarkLayout}
+   * @body: {finalPrice , finalLayout}
    */
 
-  static confirmLecture = catchAsyncError(async (req, res, next) => {});
+  static confirmLecture = catchAsyncError(async (req, res, next) => {
+    const { lectureId } = req.params;
+    const confirmationBody = _.pick(req.body, ["finalPrice", "finalLayout"]);
+  });
 
   static getLectureById = catchAsyncError(async (req, res, next) => {});
 
