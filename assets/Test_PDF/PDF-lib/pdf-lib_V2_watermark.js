@@ -9,13 +9,11 @@ async function addDiagonalWatermark(
   const pdfBytes = fs.readFileSync(inputFilePath);
   const pdfDoc = await PDFDocument.load(pdfBytes);
 
-  // Add a diagonal watermark to each page
   const pages = pdfDoc.getPages();
   for (const page of pages) {
     const { width, height } = page.getSize();
     const watermark = watermarkText || "Watermark";
 
-    // Calculate the diagonal position
     const diagonalPosition = {
       x: width / 3,
       y: height / 3,
@@ -24,7 +22,6 @@ async function addDiagonalWatermark(
     const spaceBetweenCharacters = 30;
     const semiTransparentColor = rgb(0.8, 0.8, 0.8);
 
-    // Add the diagonal watermark to the page with space between characters
     let currentX = diagonalPosition.x;
     let currentY = diagonalPosition.y;
     for (const char of watermark) {
