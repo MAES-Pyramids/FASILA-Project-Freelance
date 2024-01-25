@@ -36,15 +36,18 @@ const app = express();
 // Serve static content located in the "public" directory.
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-const corsOptions = {
-  origin: "https://fasila-lib-electronic.vercel.app/",
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true,
-  optionsSuccessStatus: 204,
-};
+app.use(cors());
+app.options("*", cors());
 
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+// const corsOptions = {
+//   origin: "https://fasila-lib-electronic.vercel.app/",
+//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//   credentials: true,
+//   optionsSuccessStatus: 204,
+// };
+
+// app.use(cors(corsOptions));
+// app.options("*", cors(corsOptions));
 
 app.use(
   process.env.NODE_ENV === "development" ? morgan("dev") : morgan("combined")
