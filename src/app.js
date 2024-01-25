@@ -33,9 +33,6 @@ const app = express();
 //------------Global middleware--------------//
 // app.enable("trust proxy", 1);
 
-// Serve static content located in the "public" directory.
-app.use(express.static(path.join(__dirname, "..", "public")));
-
 // const corsOptions = {
 //   origin: "*",
 //   methods: "GET,PUT,PATCH,POST,DELETE",
@@ -61,6 +58,9 @@ app.options("*", cors(corsOptions));
 // });
 
 // https://fasila-lib-electronic.vercel.app
+
+// Serve static content located in the "public" directory.
+app.use(express.static(path.join(__dirname, "..", "public")));
 
 app.use(
   process.env.NODE_ENV === "development" ? morgan("dev") : morgan("combined")
