@@ -33,15 +33,8 @@ const app = express();
 //------------Global middleware--------------//
 // app.enable("trust proxy", 1);
 
-// const corsOptions = {
-//   origin: "*",
-//   methods: "GET,PUT,PATCH,POST,DELETE",
-//   credentials: true,
-//   optionsSuccessStatus: 204,
-// };
-
 const corsOptions = {
-  origin: "http://localhost:8080",
+  origin: "*",
   methods: "GET,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
@@ -59,7 +52,6 @@ app.options("*", cors(corsOptions));
 
 // https://fasila-lib-electronic.vercel.app
 
-// Serve static content located in the "public" directory.
 app.use(express.static(path.join(__dirname, "..", "public")));
 
 app.use(
