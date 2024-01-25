@@ -37,7 +37,7 @@ const app = express();
 app.use(express.static(path.join(__dirname, "..", "public")));
 
 const corsOptions = {
-  origin: "https://fasila-lib-electronic.vercel.app",
+  origin: "*",
   methods: "GET,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
@@ -47,16 +47,12 @@ app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 
 app.use((req, res, next) => {
-  res.header(
-    "Access-Control-Allow-Origin",
-    "https://fasila-lib-electronic.vercel.app"
-  );
+  res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Credentials", "true");
   next();
 });
 
-// app.use(cors(corsOptions));
-// app.options("*", cors(corsOptions));
+// https://fasila-lib-electronic.vercel.app
 
 app.use(
   process.env.NODE_ENV === "development" ? morgan("dev") : morgan("combined")
