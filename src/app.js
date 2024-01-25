@@ -44,15 +44,15 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 // };
 
 const corsOptions = {
-  origin: "*",
-  methods: "GET,HEAD", // Adjust the allowed methods to match your requirements
+  origin: "http://localhost:8080",
+  methods: "GET,HEAD",
   credentials: true,
   optionsSuccessStatus: 204,
-  allowedHeaders: "*", // Allowing all headers, adjust as needed
+  allowedHeaders: "*",
 };
 
 app.use(cors(corsOptions));
-// app.options("*", cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 // app.use((req, res, next) => {
 //   res.header("Access-Control-Allow-Origin", "*");
