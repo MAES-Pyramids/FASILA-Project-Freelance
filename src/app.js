@@ -42,7 +42,7 @@ const app = express();
 
 const corsOptions = {
   origin: "http://localhost:8080",
-  methods: "GET,HEAD",
+  methods: "GET,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
   allowedHeaders: "*",
