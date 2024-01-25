@@ -36,21 +36,29 @@ const app = express();
 // Serve static content located in the "public" directory.
 app.use(express.static(path.join(__dirname, "..", "public")));
 
+// const corsOptions = {
+//   origin: "*",
+//   methods: "GET,PUT,PATCH,POST,DELETE",
+//   credentials: true,
+//   optionsSuccessStatus: 204,
+// };
+
 const corsOptions = {
   origin: "*",
-  methods: "GET,PUT,PATCH,POST,DELETE",
+  methods: "GET,HEAD", // Adjust the allowed methods to match your requirements
   credentials: true,
   optionsSuccessStatus: 204,
+  allowedHeaders: "*", // Allowing all headers, adjust as needed
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+// app.options("*", cors(corsOptions));
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Credentials", "true");
-  next();
-});
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Credentials", "true");
+//   next();
+// });
 
 // https://fasila-lib-electronic.vercel.app
 
