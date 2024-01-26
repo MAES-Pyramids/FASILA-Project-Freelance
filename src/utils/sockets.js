@@ -10,17 +10,16 @@ const socketServer = new Server({
 
 const listen = function (server) {
   socketServer.attach(server);
-  socketServer.on("connection", (socket) => {
+  socketServer.on("connection", async (socket) => {
     console.log("A user connected to WebSocket");
     const userId = socket.handshake.query.userId;
-    console.log(userId);
 
-    updateUserConnection(userId, socket.id, true);
+    await updateUserConnection(userId, socket.id, true);
 
     socket.on("disconnect", async () => {
       console.log("User disconnected from WebSocket");
       const userId = socket.handshake.query.userId;
-      console.log(userId);
+
       await updateUserConnection(userId, socket.id, false);
     });
   });

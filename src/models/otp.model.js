@@ -17,11 +17,11 @@ const OTPSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now(),
+    default: () => Date.now(),
   },
   expiresAt: {
     type: Date,
-    default: Date.now() + OTP_TTL * 60 * 1000,
+    default: () => Date.now() + OTP_TTL * 60 * 1000,
   },
 });
 

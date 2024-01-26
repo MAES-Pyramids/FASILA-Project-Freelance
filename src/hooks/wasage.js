@@ -20,8 +20,6 @@ exports.receiveOTP = async (req, res) => {
   let status, message, type;
 
   ({ status, message, type } = await verifyOTP(Reference, OTP));
-  console.log("data now=" + Date.now());
-  console.log({ status, message, type });
   if (!status) return res.status(403).send(message);
 
   const socketID = await getUserConnection(Reference);
