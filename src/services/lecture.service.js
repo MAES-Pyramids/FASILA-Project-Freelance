@@ -1,17 +1,57 @@
 const lectureModel = require("../models/lecture.model");
 const { checkSubjectDoctor } = require("./subject.service");
 
-exports.getLectures = async (query, excluded, populateFlag) => {
+exports.getLecturesForAdmin = async (query) => {
   try {
-    let DBquery = lectureModel.find(query).select(excluded);
+    excluded = "-finalLayout  -__v";
 
-    const data = await (populateFlag
-      ? DBquery.populate("publishedBy doctor subject", "name")
-      : DBquery);
+    const data = await lectureModel
+      .find(query)
+      .select(excluded)
+      .populate("publishedBy doctor subject", "name");
 
     return { status: true, data };
   } catch (error) {
     return { status: false, message: error.message };
+  }
+};
+
+exports.getLecturesForDoctor = async (query) => {
+  try {
+    excluded = "-finalLayout -type -publishedBy -doctor -subject -__v";
+    const data = await lectureModel.find(query).select(excluded);
+
+    return { status: true, data };
+  } catch (error) {
+    return { status: false, message: error.message };
+  }
+};
+
+exports.getLecturesForStudent = async (query) => {
+  try {
+    excluded =
+      "-subject -doctor -type -publishedBy -publishPrice -confirmed -finalLayout -__v -path";
+
+    let data = await lectureModel.find(query).select(excluded);
+    return { status: true, data };
+  } catch (error) {
+    return { status: false, message: error.message };
+  }
+};
+
+exports.getLecture = async (_id) => {
+  try {
+    const STExcluded =
+      "-subject -doctor -type -publishedBy -publishPrice -confirmed -finalLayout -__v";
+
+    const lecture = await lectureModel
+      .findOne({ _id, confirmed: true })
+      .select(STExcluded);
+
+    if (!lecture) return { status: false, message: "Lecture not found" };
+    else return { status: true, data: lecture };
+  } catch (err) {
+    return { status: false, message: err.message };
   }
 };
 
@@ -42,22 +82,6 @@ exports.confirmLectureService = async (lectureId, ConfirmBody) => {
     await lecture.save();
 
     return { status: true, data: lecture };
-  } catch (err) {
-    return { status: false, message: err.message };
-  }
-};
-
-exports.getLecture = async (_id) => {
-  try {
-    const STExcluded =
-      "-subject -doctor -type -publishedBy -publishPrice -confirmed -finalLayout -__v";
-
-    const lecture = await lectureModel
-      .findOne({ _id, confirmed: true })
-      .select(STExcluded);
-
-    if (!lecture) return { status: false, message: "Lecture not found" };
-    else return { status: true, data: lecture };
   } catch (err) {
     return { status: false, message: err.message };
   }

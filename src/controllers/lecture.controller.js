@@ -1,7 +1,8 @@
 const {
   getLecture,
-  getLectures,
-  uploadLecture,
+  getLecturesForAdmin,
+  getLecturesForDoctor,
+  getLecturesForStudent,
   confirmLectureService,
 } = require("../services/lecture.service");
 
@@ -23,45 +24,58 @@ class LectureController {
    * -query {subjectId} req for admins to filter by subject
    * -query {doctorId} req for admins to filter by doctor
    */
-
   static getAllLectures = catchAsyncError(async (req, res, next) => {
-    let [userType, query, excluded, populateFlag] = [
-      res.locals.user.role,
-      {},
-      "",
-      false,
-    ];
+    let [userType, query] = [res.locals.user.role, {}];
+    let [status, data, message] = [, ,];
+
     if (userType === "Admin") {
       const { confirmed, subjectId, doctorId } = req.query;
 
       query.confirmed =
         confirmed === "true" || confirmed === undefined ? true : false;
-
       query = subjectId ? { ...query, subject: subjectId } : query;
       query = doctorId ? { ...query, doctor: doctorId } : query;
-      excluded = "-finalLayout  -__v";
-      populateFlag = true;
+
+      ({ status, data, message } = await getLecturesForAdmin(query));
     }
 
     if (userType === "Doctor") {
       const { subjectId } = req.params;
       const { _id } = res.locals.user;
       query = { subject: subjectId, doctor: _id };
-      excluded = "-finalLayout -type -publishedBy -doctor -subject -__v";
+      ({ status, data, message } = await getLecturesForDoctor(query));
     }
 
     if (userType === "Student") {
       const { subjectId, doctorId } = req.params;
       query = { subject: subjectId, doctor: doctorId, confirmed: true };
-      excluded =
-        "-subject -doctor -type -publishedBy -publishPrice -confirmed -finalLayout -__v -path";
+      ({ status, data, message } = await getLecturesForStudent(query));
     }
 
-    const { status, data, message } = await getLectures(
-      query,
-      excluded,
-      populateFlag
-    );
+    if (userType === "Library") {
+      ({ status, message } = {
+        status: false,
+        message: "Libraries can't access lectures yet",
+      });
+    }
+
+    if (!status) return next(new AppError(message, 404));
+    res.send({
+      status: "success",
+      data,
+    });
+  });
+
+  /**
+   * @description Get a lecture by id
+   * @route  /api/lectures/:lectureId
+   * @method Get
+   * @access Private
+   * @param: lectureId
+   */
+  static getLectureById = catchAsyncError(async (req, res, next) => {
+    const { id } = req.params;
+    const { status, data, message } = await getLecture(id);
     if (!status) return next(new AppError(message, 404));
 
     res.send({
@@ -84,7 +98,6 @@ class LectureController {
    * -body {description} req
    * -body {publishPrice} req
    */
-
   static addLecture = catchAsyncError(async (req, res, next) => {
     let doctor, publishedBy;
 
@@ -125,7 +138,6 @@ class LectureController {
    * @param: lectureId
    * @body: {finalPrice , finalLayout}
    */
-
   static confirmLecture = catchAsyncError(async (req, res, next) => {
     const { id } = req.params;
     const confirmBody = _.pick(req.body, [
@@ -142,24 +154,6 @@ class LectureController {
     res.send({
       status: "success",
       message: "Lecture confirmed successfully",
-    });
-  });
-
-  /**
-   * @description Get a lecture by id
-   * @route  /api/lectures/:lectureId
-   * @method Get
-   * @access Private
-   * @param: lectureId
-   */
-  static getLectureById = catchAsyncError(async (req, res, next) => {
-    const { id } = req.params;
-    const { status, data, message } = await getLecture(id);
-    if (!status) return next(new AppError(message, 404));
-
-    res.send({
-      status: "success",
-      data,
     });
   });
 
