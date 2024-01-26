@@ -1,4 +1,5 @@
 const {
+  getLecture,
   getLectures,
   uploadLecture,
   confirmLectureService,
@@ -53,7 +54,7 @@ class LectureController {
       const { subjectId, doctorId } = req.params;
       query = { subject: subjectId, doctor: doctorId, confirmed: true };
       excluded =
-        "-subject -doctor -type -publishedBy -publishPrice -confirmed -finalLayout";
+        "-subject -doctor -type -publishedBy -publishPrice -confirmed -finalLayout -__v -path";
     }
 
     const { status, data, message } = await getLectures(
@@ -144,7 +145,23 @@ class LectureController {
     });
   });
 
-  static getLectureById = catchAsyncError(async (req, res, next) => {});
+  /**
+   * @description Get a lecture by id
+   * @route  /api/lectures/:lectureId
+   * @method Get
+   * @access Private
+   * @param: lectureId
+   */
+  static getLectureById = catchAsyncError(async (req, res, next) => {
+    const { id } = req.params;
+    const { status, data, message } = await getLecture(id);
+    if (!status) return next(new AppError(message, 404));
+
+    res.send({
+      status: "success",
+      data,
+    });
+  });
 
   static deleteLecture = catchAsyncError(async (req, res, next) => {});
 }

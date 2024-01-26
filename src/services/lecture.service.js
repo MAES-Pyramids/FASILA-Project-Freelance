@@ -46,3 +46,21 @@ exports.confirmLectureService = async (lectureId, ConfirmBody) => {
     return { status: false, message: err.message };
   }
 };
+
+exports.getLecture = async (_id) => {
+  try {
+    const STExcluded =
+      "-subject -doctor -type -publishedBy -publishPrice -confirmed -finalLayout -__v";
+
+    const lecture = await lectureModel
+      .findOne({ _id, confirmed: true })
+      .select(STExcluded);
+
+    if (!lecture) return { status: false, message: "Lecture not found" };
+    else return { status: true, data: lecture };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
+exports.deleteLecture = async (lectureId) => {};

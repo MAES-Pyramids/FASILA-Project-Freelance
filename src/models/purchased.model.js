@@ -11,7 +11,7 @@ const PurchasedLectureSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
     },
-    transaction: {
+    transactionId: {
       type: String,
     },
     status: {
