@@ -40,16 +40,17 @@ class LectureController {
     }
 
     if (userType === "Doctor") {
-      const { subjectId } = req.params;
       const { _id } = res.locals.user;
+      const { subjectId } = req.params;
       query = { subject: subjectId, doctor: _id };
       ({ status, data, message } = await getLecturesForDoctor(query));
     }
 
     if (userType === "Student") {
+      const { _id } = res.locals.user;
       const { subjectId, doctorId } = req.params;
       query = { subject: subjectId, doctor: doctorId, confirmed: true };
-      ({ status, data, message } = await getLecturesForStudent(query));
+      ({ status, data, message } = await getLecturesForStudent(query, _id));
     }
 
     if (userType === "Library") {
