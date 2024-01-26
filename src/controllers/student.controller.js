@@ -208,7 +208,7 @@ class StudentController {
     ({ status, message } = await storeOTP(_id, otp, "telegram"));
     if (!status) return next(new AppError(message));
 
-    sendOTPMessage(data.telegramId, otp);
+    await (data.telegramId, otp);
 
     res.send({
       status: "success",
