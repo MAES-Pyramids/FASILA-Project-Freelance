@@ -12,7 +12,10 @@ const SK = process.env.Wasage_SecretKey;
 
 exports.receiveOTP = async (req, res) => {
   const { OTP, Mobile, Reference, Secret, ClientID, ClientName } = req.query;
-  if (Secret !== SK) return res.status(403).send("Invalid Secret Key");
+  if (Secret !== SK) {
+    console.log("Invalid Secret Key");
+    return res.status(403).send("Invalid Secret Key");
+  }
 
   let status, message, type;
 
