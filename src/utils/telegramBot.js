@@ -35,10 +35,12 @@ const sendOTPMessage = async (chatId, OTP) => {
   }
 };
 //------------------------------------------//
-bot.on("message", async (msg) => {
-  if (msg.text === "/start") {
-    await sendWelcomeMessage(msg);
-  }
-});
+function startTelegramBot() {
+  bot.on("message", async (msg) => {
+    if (msg.text === "/start") {
+      await sendWelcomeMessage(msg);
+    }
+  });
+}
 //------------------------------------------//
-module.exports = { sendOTPMessage, bot };
+module.exports = { sendOTPMessage, startTelegramBot, bot };
