@@ -13,10 +13,14 @@ const listen = function (server) {
   socketServer.on("connection", (socket) => {
     console.log("A user connected to WebSocket");
     const userId = socket.handshake.query.userId;
+    console.log(userId);
+
     updateUserConnection(userId, socket.id, true);
 
     socket.on("disconnect", async () => {
       console.log("User disconnected from WebSocket");
+      const userId = socket.handshake.query.userId;
+      console.log(userId);
       await updateUserConnection(userId, socket.id, false);
     });
   });
