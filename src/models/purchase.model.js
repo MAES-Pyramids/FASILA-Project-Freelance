@@ -14,7 +14,7 @@ const PurchasedLectureSchema = new mongoose.Schema(
     transactionId: {
       type: String,
     },
-    status: {
+    transactionStatus: {
       type: String,
       enum: ["pending", "success", "failed"],
       default: "pending",

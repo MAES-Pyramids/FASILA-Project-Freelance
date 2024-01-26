@@ -247,3 +247,20 @@ exports.forceLogout = async function (_id) {
     return { status: false, message: err.message };
   }
 };
+
+exports.getStudentPaymentData = async (_id) => {
+  try {
+    const student = await StudentModel.findOne({ _id, verified: true });
+    if (!student) return { status: false, message: "Student not found" };
+
+    const data = {
+      first_name: student.first_name,
+      last_name: student.last_name,
+      phone: student.phone,
+    };
+
+    return { status: true, data };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
