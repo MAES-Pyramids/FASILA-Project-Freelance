@@ -3,20 +3,14 @@ const TelegramBot = require("node-telegram-bot-api");
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const bot = new TelegramBot(token, { polling: true });
 //------------------------------------------//
-bot.on("message", async (msg) => {
-  if (msg.text === "/start") {
-    await sendWelcomeMessage(msg);
-  }
-});
-//------------------------------------------//
-logMessageSent = (sent) => {
+const logMessageSent = (sent) => {
   logger.info(`message sent to ${sent.chat.first_name} ${sent.chat.last_name}`);
 };
-logErrorMessage = (error) => {
+const logErrorMessage = (error) => {
   logger.error("Error sending OTP message:", error);
 };
 
-sendWelcomeMessage = async (msg) => {
+const sendWelcomeMessage = async (msg) => {
   const chatId = msg.chat.id;
   const { first_name } = msg.chat;
 
@@ -30,7 +24,7 @@ sendWelcomeMessage = async (msg) => {
   }
 };
 
-sendOTPMessage = async (chatId, OTP) => {
+const sendOTPMessage = async (chatId, OTP) => {
   const message = `Your OTP Code is ${OTP}, it's valid for ${process.env.OTP_TTL} minutes. Please don't share it with anyone.`;
 
   try {
@@ -40,5 +34,11 @@ sendOTPMessage = async (chatId, OTP) => {
     logErrorMessage(err);
   }
 };
-
+//------------------------------------------//
+bot.on("message", async (msg) => {
+  if (msg.text === "/start") {
+    await sendWelcomeMessage(msg);
+  }
+});
+//------------------------------------------//
 module.exports = { sendOTPMessage, bot };
