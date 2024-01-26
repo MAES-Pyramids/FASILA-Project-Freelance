@@ -34,6 +34,7 @@ const app = express();
 // app.enable("trust proxy", 1);
 
 const corsOptions = {
+  // https://fasila-lib-electronic.vercel.app
   origin: "*",
   methods: "GET,PUT,PATCH,POST,DELETE",
   credentials: true,
@@ -49,8 +50,6 @@ app.options("*", cors(corsOptions));
 //   res.header("Access-Control-Allow-Credentials", "true");
 //   next();
 // });
-
-// https://fasila-lib-electronic.vercel.app
 
 app.use(express.static(path.join(__dirname, "..", "public")));
 
