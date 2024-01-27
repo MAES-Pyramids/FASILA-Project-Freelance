@@ -183,7 +183,7 @@ class LectureController {
       // Create order
       ({ status, orderId, message } = await OrderRegistrationReq(
         orderData,
-        lectureId
+        PLecture._id
       ));
       if (!status) return next(new AppError(message, 400));
 
@@ -196,7 +196,7 @@ class LectureController {
     if (checker.existing && !checker.orderCreated) {
       ({ status, orderId, message } = await OrderRegistrationReq(
         orderData,
-        lectureId
+        PLecture._id
       ));
       if (!status) return next(new AppError(message, 400));
 

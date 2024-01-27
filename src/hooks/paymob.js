@@ -1,4 +1,4 @@
 exports.receivePayment = async (req, res) => {
-  console.log("body: " + res.body);
-  console.log("query: " + res.query);
+  console.log(req.body);
+  console.log(req.query);
 };
