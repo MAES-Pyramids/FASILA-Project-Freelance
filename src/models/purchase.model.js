@@ -47,3 +47,4 @@ const PurchasedLecture = mongoose.model(
   "PurchasedLecture",
   PurchasedLectureSchema
 );
+module.exports = PurchasedLecture;

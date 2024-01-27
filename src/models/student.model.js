@@ -92,7 +92,7 @@ const StudentSchema = new mongoose.Schema(
 
 StudentSchema.pre("save", async function (next) {
   let student = this;
-  if (!student.isModified("password")) return next();
+  if (!student.isModified("password") || student.isNew) return next();
 
   const salt = await bcrypt.genSalt(parseInt(process.env.SaltWorkFactor));
   student.password = bcrypt.hashSync(student.password, salt);
