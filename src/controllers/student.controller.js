@@ -30,7 +30,8 @@ class StudentController {
   static signUp = catchAsyncError(async (req, res, next) => {
     let [status, data, message] = ["", "", ""];
     const signUpData = _.pick(req.body, [
-      "name",
+      "first_name",
+      "last_name",
       "phone",
       "password",
       "gender",

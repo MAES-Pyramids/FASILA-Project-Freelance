@@ -3,7 +3,8 @@ const validationMiddleWare = require("../middlewares/validation");
 
 const signUpSchema = Joi.object({
   body: Joi.object({
-    name: Joi.string().min(1).max(255),
+    first_name: Joi.string().min(1).max(255).required(),
+    last_name: Joi.string().min(1).max(255).required(),
     phone: Joi.string().length(12).required().messages({
       "string.length": "Phone number must be 12 digits long.",
     }),
