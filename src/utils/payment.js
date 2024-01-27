@@ -17,8 +17,11 @@ const AuthenticationReq = async () => {
   }
 };
 
-const OrderRegistrationReq = async (token, orderData, orderId) => {
+const OrderRegistrationReq = async (orderData, lectureId) => {
   try {
+    const { status, token, message } = await AuthenticationReq();
+    if (!status) throw new Error(message);
+
     const { amount, item } = orderData;
     const { data } = await axios.post(
       "https://accept.paymob.com/api/ecommerce/orders",
@@ -26,7 +29,7 @@ const OrderRegistrationReq = async (token, orderData, orderId) => {
         auth_token: token,
         delivery_needed: false,
         amount_cents: amount * 100,
-        // merchant_order_id: orderId,
+        merchant_order_id: lectureId,
         currency: "EGP",
         items: [item],
       },
@@ -43,8 +46,11 @@ const OrderRegistrationReq = async (token, orderData, orderId) => {
   }
 };
 
-const PaymentKeyReq = async (token, orderId, customerData) => {
+const PaymentKeyReq = async (orderId, customerData) => {
   try {
+    const { status, token, message } = await AuthenticationReq();
+    if (!status) throw new Error(message);
+
     const { data } = await axios.post(
       "https://accept.paymob.com/api/acceptance/payment_keys",
       {
@@ -84,25 +90,13 @@ const PaymentKeyReq = async (token, orderId, customerData) => {
   }
 };
 
-const getCardIframe = async (PurchasedLecId, orderData, customerData) => {
+const getCardIframe = async (orderId, customerData) => {
   try {
-    let [status, message, token, orderId, key] = [, , , ,];
-
-    ({ status, token, message } = await AuthenticationReq());
-    if (!status) throw new Error(message);
-
-    ({ status, orderId, message } = await OrderRegistrationReq(
-      token,
-      orderData,
-      PurchasedLecId
-    ));
-    if (!status) throw new Error(message);
-
-    ({ status, key, message } = await PaymentKeyReq(
+    const { status, key, message } = await PaymentKeyReq(
       token,
       orderId,
       customerData
-    ));
+    );
     if (!status) throw new Error(message);
 
     return { status: true, IFrame: Paymob_CardIFrame + key };
@@ -111,4 +105,4 @@ const getCardIframe = async (PurchasedLecId, orderData, customerData) => {
   }
 };
 
-module.exports = { getCardIframe };
+module.exports = { OrderRegistrationReq, getCardIframe };

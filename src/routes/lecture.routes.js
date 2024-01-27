@@ -12,7 +12,7 @@ router
   .post(restrictedTo("Doctor"), LectureController.addLecture);
 
 router
-  .route("/:id")
+  .route("/:lectureId")
   .get(restrictedTo("Student"), LectureController.getLectureById)
   .patch(restrictedTo("Admin"), LectureController.confirmLecture)
   .delete(restrictedTo("Admin"), LectureController.deleteLecture);

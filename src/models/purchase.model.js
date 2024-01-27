@@ -11,6 +11,9 @@ const PurchasedLectureSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
     },
+    orderId: {
+      type: String,
+    },
     transactionId: {
       type: String,
     },

@@ -5,10 +5,14 @@ const {
   getLecturesForStudent,
   confirmLectureService,
 } = require("../services/lecture.service");
-const { getPLStatus, createNewPL } = require("../services/purchases.service");
+const {
+  getPLStatus,
+  createNewPL,
+  storeOrderId,
+} = require("../services/purchases.service");
+const { OrderRegistrationReq, getCardIframe } = require("../utils/payment");
 const { getStudentPaymentData } = require("../services/student.service");
 const { getLecturePaymentData } = require("../services/lecture.service");
-const { getCardIframe } = require("../utils/payment");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
 const AppError = require("../utils/appErrorsClass");
@@ -126,7 +130,7 @@ class LectureController {
    * @body: {finalPrice , finalLayout}
    */
   static confirmLecture = catchAsyncError(async (req, res, next) => {
-    const { id } = req.params;
+    const { lectureId } = req.params;
     const confirmBody = _.pick(req.body, [
       "name",
       "no_slides",
@@ -135,7 +139,10 @@ class LectureController {
       "finalLayout",
     ]);
 
-    const { status, message } = await confirmLectureService(id, confirmBody);
+    const { status, message } = await confirmLectureService(
+      lectureId,
+      confirmBody
+    );
     if (!status) return next(new AppError(message, 400));
 
     res.send({
@@ -152,31 +159,63 @@ class LectureController {
    * @param: lectureId
    */
   static getLectureById = catchAsyncError(async (req, res, next) => {
-    let [status, lecture, PLecture, message] = [, , , ,];
-    const [lectureId, userId] = [
-      ({ id } = req.params),
-      ({ _id } = res.locals.user),
-    ];
+    let status, lecture, checker, PLecture, message, orderId, IFrame;
+    const { lectureId } = req.params;
+    const { _id } = res.locals.user;
 
     ({ status, lecture, message } = await checkLectureStatus(lectureId));
     if (!status) return next(new AppError(message, 404));
 
-    ({ status, PLecture, message } = await getPLStatus(userId, lectureId));
+    ({ status, checker, PLecture, message } = await getPLStatus(
+      _id,
+      lectureId
+    ));
     if (!status) return next(new AppError(message, 400));
 
-    if (!PLecture) {
-      ({ status, PLecture } = await createNewPL(userId, lectureId));
+    const orderData = getLecturePaymentData(lecture);
+
+    // If PL entry doesn't exist, create a new one and register an order
+    if (!checker.existing) {
+      ({ status, PLecture } = await createNewPL(_id, lectureId));
+      if (!status) return next(new AppError(message, 400));
+
+      // Create order
+      ({ status, orderId, message } = await OrderRegistrationReq(
+        orderData,
+        lectureId
+      ));
+      if (!status) return next(new AppError(message, 400));
+
+      // Store order
+      ({ status, message } = await storeOrderId(PLecture._id, orderId));
       if (!status) return next(new AppError(message, 400));
     }
-    const orderId = PLecture._id;
-    const orderData = getLecturePaymentData(lecture);
-    ({ status, data } = await getStudentPaymentData(userId));
-    if (!status) return next(new AppError(message, 400));
+
+    // If PL entry exists and order hasn't been created, register an order
+    if (checker.existing && !checker.orderCreated) {
+      ({ status, orderId, message } = await OrderRegistrationReq(
+        orderData,
+        lectureId
+      ));
+      if (!status) return next(new AppError(message, 400));
+
+      // Store order
+      ({ status, message } = await storeOrderId(PLecture._id, orderId));
+      if (!status) return next(new AppError(message, 400));
+    }
+
+    // If PL entry exists and order is created, use existing orderId
+    if (checker.existing && checker.orderCreated) {
+      orderId = PLecture.orderId;
+    }
+
+    const studentData = await getStudentPaymentData(userId);
+    if (!studentData.status)
+      return next(new AppError(studentData.message, 400));
 
     ({ status, message, IFrame } = await getCardIframe(
       orderId,
-      orderData,
-      data
+      studentData.data
     ));
     if (!status) return next(new AppError(message, 400));
 
