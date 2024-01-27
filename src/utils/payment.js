@@ -92,11 +92,7 @@ const PaymentKeyReq = async (orderId, customerData) => {
 
 const getCardIframe = async (orderId, customerData) => {
   try {
-    const { status, key, message } = await PaymentKeyReq(
-      token,
-      orderId,
-      customerData
-    );
+    const { status, key, message } = await PaymentKeyReq(orderId, customerData);
     if (!status) throw new Error(message);
 
     return { status: true, IFrame: Paymob_CardIFrame + key };

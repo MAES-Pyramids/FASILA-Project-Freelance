@@ -209,7 +209,7 @@ class LectureController {
       orderId = PLecture.orderId;
     }
 
-    const studentData = await getStudentPaymentData(userId);
+    const studentData = await getStudentPaymentData(_id);
     if (!studentData.status)
       return next(new AppError(studentData.message, 400));
 

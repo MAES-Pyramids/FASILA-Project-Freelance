@@ -1,8 +1,8 @@
-const PurchasedLectureModel = require("../models/purchase.model");
+const PLModel = require("../models/purchase.model");
 
 exports.checkStudentPurchasedLectureModels = async (studentId, lectureId) => {
   try {
-    const data = await PurchasedLectureModel.findOne({
+    const data = await PLModel.findOne({
       student: studentId,
       lecture: lectureId,
       status: "success",
@@ -17,7 +17,7 @@ exports.checkStudentPurchasedLectureModels = async (studentId, lectureId) => {
 
 exports.getPLStatus = async (studentId, lectureId) => {
   try {
-    const PLecture = await PurchasedLectureModel.findOne({
+    const PLecture = await PLModel.findOne({
       student: studentId,
       lecture: lectureId,
     });
@@ -47,7 +47,7 @@ exports.getPLStatus = async (studentId, lectureId) => {
 
 exports.createNewPL = async (studentId, lectureId) => {
   try {
-    const PLecture = await PurchasedLectureModel.create({
+    const PLecture = await PLModel.create({
       student: studentId,
       lecture: lectureId,
     });
@@ -59,7 +59,7 @@ exports.createNewPL = async (studentId, lectureId) => {
 
 exports.storeOrderId = async (_id, orderId) => {
   try {
-    const PLecture = await PurchasedLectureModel.findByIdAndUpdate(
+    const PLecture = await PLModel.findByIdAndUpdate(
       _id,
       { orderId },
       { new: true }
