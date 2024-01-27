@@ -28,7 +28,7 @@ const OrderRegistrationReq = async (orderData, lectureId) => {
       {
         auth_token: token,
         delivery_needed: false,
-        amount_cents: amount * 100,
+        amount_cents: amount,
         merchant_order_id: lectureId,
         currency: "EGP",
         items: [item],
@@ -46,7 +46,7 @@ const OrderRegistrationReq = async (orderData, lectureId) => {
   }
 };
 
-const PaymentKeyReq = async (orderId, customerData) => {
+const PaymentKeyReq = async (orderId, customerData, amount) => {
   try {
     const { status, token, message } = await AuthenticationReq();
     if (!status) throw new Error(message);
@@ -55,7 +55,7 @@ const PaymentKeyReq = async (orderId, customerData) => {
       "https://accept.paymob.com/api/acceptance/payment_keys",
       {
         auth_token: token,
-        amount_cents: 100,
+        amount_cents: amount,
         expiration: 1200,
         order_id: orderId,
         billing_data: {
@@ -90,9 +90,13 @@ const PaymentKeyReq = async (orderId, customerData) => {
   }
 };
 
-const getCardIframe = async (orderId, customerData) => {
+const getCardIframe = async (orderId, customerData, amount) => {
   try {
-    const { status, key, message } = await PaymentKeyReq(orderId, customerData);
+    const { status, key, message } = await PaymentKeyReq(
+      orderId,
+      customerData,
+      amount
+    );
     if (!status) throw new Error(message);
 
     return { status: true, IFrame: Paymob_CardIFrame + key };

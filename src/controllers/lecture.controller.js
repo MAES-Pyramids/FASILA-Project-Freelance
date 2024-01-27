@@ -215,7 +215,8 @@ class LectureController {
 
     ({ status, message, IFrame } = await getCardIframe(
       orderId,
-      studentData.data
+      studentData.data,
+      orderData.amount
     ));
     if (!status) return next(new AppError(message, 400));
 

@@ -1,6 +1,6 @@
 const PLModel = require("../models/purchase.model");
 
-exports.checkStudentPurchasedLectureModels = async (studentId, lectureId) => {
+exports.checkStudentPurchasedLectures = async (studentId, lectureId) => {
   try {
     const data = await PLModel.findOne({
       student: studentId,
