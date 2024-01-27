@@ -4,6 +4,7 @@ const {
   getLecturesForDoctor,
   getLecturesForStudent,
   confirmLectureService,
+  uploadLecture,
 } = require("../services/lecture.service");
 const {
   getPLStatus,

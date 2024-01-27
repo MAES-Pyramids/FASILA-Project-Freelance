@@ -13,7 +13,7 @@ const AuthenticationReq = async () => {
     );
     return { status: true, token: data.token };
   } catch (err) {
-    return { status: false, message: err };
+    return { status: false, message: err.response.data.message };
   }
 };
 
@@ -42,7 +42,7 @@ const OrderRegistrationReq = async (orderData, lectureId) => {
     );
     return { status: true, orderId: data.id };
   } catch (err) {
-    return { status: false, message: err };
+    return { status: false, message: err.response.data.message };
   }
 };
 
@@ -86,10 +86,10 @@ const PaymentKeyReq = async (orderId, customerData, amount) => {
     );
     return { status: true, key: data.token };
   } catch (err) {
-    return { status: false, message: err };
+    return { status: false, message: err.response.data.message };
   }
 };
-
+//------------------------------------------------------------//
 const getCardIframe = async (orderId, customerData, amount) => {
   try {
     const { status, key, message } = await PaymentKeyReq(
@@ -104,5 +104,5 @@ const getCardIframe = async (orderId, customerData, amount) => {
     return { status: false, message: err };
   }
 };
-
+//------------------------------------------------------------//
 module.exports = { OrderRegistrationReq, getCardIframe };

@@ -81,15 +81,12 @@ const LectureSchema = new mongoose.Schema(
       waterMarkDetails: {
         diagonalXStart: {
           type: Number,
-          required: true,
         },
         diagonalYStart: {
           type: Number,
-          required: true,
         },
         spaceBetweenCharacters: {
           type: Number,
-          required: true,
         },
         opacity: {
           type: Number,
