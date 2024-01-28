@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 
 const PurchasedLectureSchema = new mongoose.Schema(
   {
+    transactionId: {
+      type: String,
+    },
     lecture: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Lecture",
@@ -10,22 +13,10 @@ const PurchasedLectureSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
     },
-    transactionId: {
-      type: String,
-    },
     status: {
       type: String,
       enum: ["pending", "success", "failed"],
       default: "pending",
-    },
-    purchasedBy: {
-      type: String,
-      enum: ["Student", "Library"],
-      default: "Student",
-    },
-    purchasedAt: {
-      type: Date,
-      default: () => Date.now(),
     },
     price: {
       type: Number,
@@ -38,9 +29,29 @@ const PurchasedLectureSchema = new mongoose.Schema(
         message: "Invalid URL format for the document path.",
       },
     },
+    purchasedBy: {
+      type: String,
+      enum: ["Student", "Library"],
+      default: "Student",
+    },
+    purchasedAt: {
+      type: Date,
+      default: () => Date.now(),
+    },
   },
   { timestamps: true }
 );
+
+PurchasedLectureSchema.set("toObject", { virtuals: true });
+PurchasedLectureSchema.set("toJSON", { virtuals: true });
+
+PurchasedLectureSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "lecture",
+    select: "name description no_purchases no_slides",
+  });
+  next();
+});
 
 const PurchasedLecture = mongoose.model(
   "PurchasedLecture",
