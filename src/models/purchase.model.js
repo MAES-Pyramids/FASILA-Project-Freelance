@@ -13,7 +13,7 @@ const PurchasedLectureSchema = new mongoose.Schema(
     transactionId: {
       type: String,
     },
-    Status: {
+    status: {
       type: String,
       enum: ["pending", "success", "failed"],
       default: "pending",
@@ -23,8 +23,13 @@ const PurchasedLectureSchema = new mongoose.Schema(
       enum: ["Student", "Library"],
       default: "Student",
     },
+    purchasedAt: {
+      type: Date,
+      default: () => Date.now(),
+    },
     price: {
       type: Number,
+      required: [true, "Price is required"],
     },
     path: {
       type: String,

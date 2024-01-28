@@ -28,11 +28,13 @@ exports.isLecturePurchased = async (student, lecture) => {
   }
 };
 
-exports.createNewPL = async (studentId, lectureId) => {
+exports.createNewPL = async (student, lecture, price = 0, transactionId) => {
   try {
     const PLecture = await PLModel.create({
-      student: studentId,
-      lecture: lectureId,
+      student,
+      lecture,
+      price,
+      transactionId,
     });
     return { status: true, PLecture };
   } catch (err) {
@@ -40,47 +42,22 @@ exports.createNewPL = async (studentId, lectureId) => {
   }
 };
 
-// exports.storeOrderId = async (_id, orderId) => {
-//   try {
-//     const PLecture = await PLModel.findByIdAndUpdate(
-//       _id,
-//       { orderId },
-//       { new: true }
-//     );
+exports.storeTransactionId = async (lecture, student, transactionId) => {
+  try {
+    const PLecture = await PLModel.findOneAndUpdate(
+      {
+        lecture,
+        student,
+      },
+      {
+        transactionId,
+        status: "pending",
+      }
+    );
 
-//     if (!PLecture) return { status: false, message: "Order not found" };
-//     else return { status: true, PLecture };
-//   } catch (err) {
-//     return { status: false, message: err.message };
-//   }
-// };
-
-// exports.getPLStatus = async (studentId, lectureId) => {
-//   try {
-//     const PLecture = await PLModel.findOne({
-//       student: studentId,
-//       lecture: lectureId,
-//     });
-
-//     if (PLecture?.transactionStatus === "success")
-//       return { status: false, message: "Lecture already purchased" };
-
-//     if (!PLecture) return { status: true, checker: { existing: false } };
-
-//     if (PLecture?.orderId) {
-//       return {
-//         status: true,
-//         checker: { existing: true, orderCreated: true },
-//         PLecture,
-//       };
-//     } else {
-//       return {
-//         status: true,
-//         checker: { existing: true, orderCreated: false },
-//         PLecture,
-//       };
-//     }
-//   } catch (err) {
-//     return { status: false, message: err.message };
-//   }
-// };
+    if (!PLecture) return { status: false, message: "Order not found" };
+    else return { status: true, PLecture };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
