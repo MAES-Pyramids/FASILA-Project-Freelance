@@ -40,4 +40,8 @@ exports.receivePayment = async (req, res) => {
   const RHmac = crypto.createHmac("sha512", hmacSecret);
   RHmac.update(concatenatedValues);
   const hash = RHmac.digest("hex");
+
+  console.log("hash", hash);
+  console.log("hmac", hmac);
+  console.log("hmac === hash", hmac === hash);
 };

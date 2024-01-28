@@ -17,11 +17,8 @@ const AuthenticationReq = async () => {
   }
 };
 
-const OrderRegistrationReq = async (orderData, lectureId) => {
+const OrderRegistrationReq = async (token, orderData, merchant_order_id) => {
   try {
-    const { status, token, message } = await AuthenticationReq();
-    if (!status) throw new Error(message);
-
     const { amount, item } = orderData;
     const { data } = await axios.post(
       "https://accept.paymob.com/api/ecommerce/orders",
@@ -29,7 +26,7 @@ const OrderRegistrationReq = async (orderData, lectureId) => {
         auth_token: token,
         delivery_needed: false,
         amount_cents: amount,
-        merchant_order_id: lectureId,
+        merchant_order_id,
         currency: "EGP",
         items: [item],
       },
@@ -46,11 +43,8 @@ const OrderRegistrationReq = async (orderData, lectureId) => {
   }
 };
 
-const PaymentKeyReq = async (orderId, customerData, amount) => {
+const PaymentKeyReq = async (token, orderId, customerData, amount) => {
   try {
-    const { status, token, message } = await AuthenticationReq();
-    if (!status) throw new Error(message);
-
     const { data } = await axios.post(
       "https://accept.paymob.com/api/acceptance/payment_keys",
       {
@@ -90,13 +84,25 @@ const PaymentKeyReq = async (orderId, customerData, amount) => {
   }
 };
 //------------------------------------------------------------//
-const getCardIframe = async (orderId, customerData, amount) => {
+const getCardIframe = async (merchant_id, customerData, orderData) => {
   try {
-    const { status, key, message } = await PaymentKeyReq(
+    let status, token, orderId, key, message;
+    ({ status, token, message } = await AuthenticationReq());
+    if (!status) throw new Error(message);
+
+    ({ status, orderId, message } = await OrderRegistrationReq(
+      token,
+      orderData,
+      merchant_id
+    ));
+    if (!status) throw new Error(message);
+
+    ({ status, key, message } = await PaymentKeyReq(
+      token,
       orderId,
       customerData,
-      amount
-    );
+      orderData.amount
+    ));
     if (!status) throw new Error(message);
 
     return { status: true, IFrame: Paymob_CardIFrame + key };

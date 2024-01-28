@@ -91,7 +91,15 @@ exports.checkLectureStatus = async (lectureId) => {
     if (!lecture.confirmed)
       return { status: false, message: "Lecture not published yet" };
 
-    return { status: true, lecture: {} };
+    return {
+      status: true,
+      lecture: {
+        id: lecture._id,
+        name: lecture.name,
+        price: lecture.finalPrice,
+        isFree: lecture.finalPrice === 0,
+      },
+    };
   } catch (err) {
     return { status: false, message: err.message };
   }

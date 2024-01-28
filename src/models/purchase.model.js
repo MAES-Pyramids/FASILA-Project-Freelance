@@ -1,4 +1,3 @@
-const { string } = require("joi");
 const mongoose = require("mongoose");
 
 const PurchasedLectureSchema = new mongoose.Schema(
@@ -11,13 +10,10 @@ const PurchasedLectureSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
     },
-    orderId: {
-      type: String,
-    },
     transactionId: {
       type: String,
     },
-    transactionStatus: {
+    Status: {
       type: String,
       enum: ["pending", "success", "failed"],
       default: "pending",

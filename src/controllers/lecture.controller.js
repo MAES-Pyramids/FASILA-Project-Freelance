@@ -7,9 +7,8 @@ const {
   uploadLecture,
 } = require("../services/lecture.service");
 const {
-  getPLStatus,
   createNewPL,
-  storeOrderId,
+  isLecturePurchased,
 } = require("../services/purchases.service");
 const { OrderRegistrationReq, getCardIframe } = require("../utils/payment");
 const { getStudentPaymentData } = require("../services/student.service");
@@ -228,10 +227,46 @@ class LectureController {
   });
 
   static byLecture = catchAsyncError(async (req, res, next) => {
+    let status, lecture, message, PLecture, orderId, IFrame;
     const { lectureId } = req.params;
     const { _id } = res.locals.user;
 
+    ({ status, message } = await isLecturePurchased(_id, lectureId));
+    if (!status) return next(new AppError(message, 400));
+
     ({ status, lecture, message } = await checkLectureStatus(lectureId));
+    if (!status) return next(new AppError(message, 404));
+
+    if (!lecture.isFree) {
+      const orderData = getLecturePaymentData(lecture);
+
+      ({ status, customerData, message } = await getStudentPaymentData(_id));
+      if (!status) return next(new AppError(message, 400));
+
+      const merchant_id = `${lectureId}-${_id}-${Date.now()} `;
+      ({ status, IFrame, message } = getCardIframe(
+        merchant_id,
+        customerData,
+        orderData
+      ));
+      if (!status) return next(new AppError(message, 400));
+
+      res.send({
+        status: "success",
+        IFrame,
+      });
+    }
+
+    if (lecture.isFree) {
+      //TODO we still need to edit createNewPl to make worker process works and upload to digital ocean also
+      ({ status, PLecture } = await createNewPL(_id, lectureId));
+      if (!status) return next(new AppError(message, 400));
+
+      res.send({
+        status: "success",
+        path: PLecture.path,
+      });
+    }
   });
 
   static deleteLecture = catchAsyncError(async (req, res, next) => {});

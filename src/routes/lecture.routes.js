@@ -13,7 +13,7 @@ router
 
 router
   .route("/:lectureId")
-  .get(restrictedTo("Student"), LectureController.getLectureById)
+  .get(restrictedTo("Student"), LectureController.byLecture)
   .patch(restrictedTo("Admin"), LectureController.confirmLecture)
   .delete(restrictedTo("Admin"), LectureController.deleteLecture);
 
