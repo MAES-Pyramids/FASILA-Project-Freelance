@@ -88,7 +88,10 @@ exports.checkLectureStatus = async (lectureId) => {
     const lecture = await lectureModel.findOne({ _id: lectureId });
     if (!lecture) return { status: false, message: "Lecture not found" };
 
-    return { status: lecture.confirmed, lecture };
+    if (!lecture.confirmed)
+      return { status: false, message: "Lecture not published yet" };
+
+    return { status: true, lecture: {} };
   } catch (err) {
     return { status: false, message: err.message };
   }

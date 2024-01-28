@@ -88,7 +88,7 @@ class SessionController {
     let { status, data, message } = await findUser(role, { _id });
     if (!status) return next(new AppError(message, 500));
 
-    return res.send(data);
+    return res.send({ role, object: data });
   });
 }
 

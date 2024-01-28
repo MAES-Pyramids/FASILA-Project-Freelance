@@ -227,6 +227,13 @@ class LectureController {
     });
   });
 
+  static byLecture = catchAsyncError(async (req, res, next) => {
+    const { lectureId } = req.params;
+    const { _id } = res.locals.user;
+
+    ({ status, lecture, message } = await checkLectureStatus(lectureId));
+  });
+
   static deleteLecture = catchAsyncError(async (req, res, next) => {});
 }
 
