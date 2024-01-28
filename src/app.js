@@ -26,7 +26,7 @@ const statisticsRoutes = require("./routes/statistics.routes.js");
 const universityRoutes = require("./routes/university.routes.js");
 
 const { receiveOTP } = require("./hooks/wasage");
-const { receivePayment } = require("./hooks/paymob.js");
+const { receivePaymentpost, receivePaymentget } = require("./hooks/paymob.js");
 const DeserializeUser = require("./middlewares/userDeserialization");
 
 //-------------------------------------------//
@@ -59,7 +59,7 @@ app.use(
 );
 
 const limiter = rateLimit({
-  max: 200,
+  max: 500,
   windowMs: 30 * 60 * 1000,
   message: "Too many requests from this IP, please try again in an hour!",
 });
@@ -86,7 +86,8 @@ app.use(compression());
 app.use(DeserializeUser);
 //--------------Global Routing--------------//
 app.get("/api/wasage", receiveOTP);
-app.post("/api/acceptance/post_pay", receivePayment);
+app.post("/api/acceptance/post_pay", receivePaymentpost);
+app.get("/api/acceptance/post_pay", receivePaymentget);
 
 app.get("/ip", (req, res) => {
   res.send(req.ip);
