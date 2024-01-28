@@ -105,37 +105,37 @@ const getCardIframe = async (orderId, customerData, amount) => {
   }
 };
 //------------------------------------------------------------//
-setImmediate(async () => {
-  try {
-    let status, token, orderId, key, message;
+// setImmediate(async () => {
+//   try {
+//     let status, token, orderId, key, message;
 
-    ({ status, orderId, message } = await OrderRegistrationReq(
-      {
-        amount: 100,
-        item: {
-          name: "Test",
-          amount_cents: 100,
-          description: "Test",
-          quantity: 1,
-        },
-      },
-      "12382"
-    ));
-    if (!status) throw new Error(message);
+//     ({ status, orderId, message } = await OrderRegistrationReq(
+//       {
+//         amount: 100,
+//         item: {
+//           name: "Test",
+//           amount_cents: 100,
+//           description: "Test",
+//           quantity: 1,
+//         },
+//       },
+//       "12382"
+//     ));
+//     if (!status) throw new Error(message);
 
-    ({ status, key, message } = await PaymentKeyReq(
-      orderId,
-      {
-        first_name: "Test",
-        last_name: "Test",
-        phone: "Test",
-      },
-      100
-    ));
-    if (!status) throw new Error(message);
-    console.log(Paymob_CardIFrame + key);
-  } catch (err) {
-    console.log(err);
-  }
-});
+//     ({ status, key, message } = await PaymentKeyReq(
+//       orderId,
+//       {
+//         first_name: "Test",
+//         last_name: "Test",
+//         phone: "Test",
+//       },
+//       100
+//     ));
+//     if (!status) throw new Error(message);
+//     console.log(Paymob_CardIFrame + key);
+//   } catch (err) {
+//     console.log(err);
+//   }
+// });
 module.exports = { OrderRegistrationReq, getCardIframe };
