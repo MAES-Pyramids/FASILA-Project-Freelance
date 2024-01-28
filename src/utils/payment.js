@@ -13,7 +13,7 @@ const AuthenticationReq = async () => {
     );
     return { status: true, token: data.token };
   } catch (err) {
-    return { status: false, message: err.response.data.message };
+    return { status: false, message: err.response.data };
   }
 };
 
@@ -26,7 +26,7 @@ const OrderRegistrationReq = async (token, orderData, merchant_order_id) => {
         auth_token: token,
         delivery_needed: false,
         amount_cents: amount,
-        merchant_order_id,
+        merchant_order_id: merchant_order_id,
         currency: "EGP",
         items: [item],
       },
@@ -39,7 +39,7 @@ const OrderRegistrationReq = async (token, orderData, merchant_order_id) => {
     );
     return { status: true, orderId: data.id };
   } catch (err) {
-    return { status: false, message: err.response.data.message };
+    return { status: false, message: err.response.data };
   }
 };
 
@@ -80,7 +80,7 @@ const PaymentKeyReq = async (token, orderId, customerData, amount) => {
     );
     return { status: true, key: data.token };
   } catch (err) {
-    return { status: false, message: err.response.data.message };
+    return { status: false, message: err.response.data };
   }
 };
 //------------------------------------------------------------//

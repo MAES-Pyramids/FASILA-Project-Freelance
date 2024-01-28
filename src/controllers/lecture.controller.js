@@ -158,76 +158,8 @@ class LectureController {
    * @access Private
    * @param: lectureId
    */
-  static getLectureById = catchAsyncError(async (req, res, next) => {
-    let status, lecture, checker, PLecture, message, orderId, IFrame;
-    const { lectureId } = req.params;
-    const { _id } = res.locals.user;
-
-    ({ status, lecture, message } = await checkLectureStatus(lectureId));
-    if (!status) return next(new AppError(message, 404));
-
-    ({ status, checker, PLecture, message } = await getPLStatus(
-      _id,
-      lectureId
-    ));
-    if (!status) return next(new AppError(message, 400));
-
-    const orderData = getLecturePaymentData(lecture);
-
-    // If PL entry doesn't exist, create a new one and register an order
-    if (!checker.existing) {
-      ({ status, PLecture } = await createNewPL(_id, lectureId));
-      if (!status) return next(new AppError(message, 400));
-
-      // Create order
-      ({ status, orderId, message } = await OrderRegistrationReq(
-        orderData,
-        PLecture._id
-      ));
-      if (!status) return next(new AppError(message, 400));
-
-      // Store order
-      ({ status, message } = await storeOrderId(PLecture._id, orderId));
-      if (!status) return next(new AppError(message, 400));
-    }
-
-    // If PL entry exists and order hasn't been created, register an order
-    if (checker.existing && !checker.orderCreated) {
-      ({ status, orderId, message } = await OrderRegistrationReq(
-        orderData,
-        PLecture._id
-      ));
-      if (!status) return next(new AppError(message, 400));
-
-      // Store order
-      ({ status, message } = await storeOrderId(PLecture._id, orderId));
-      if (!status) return next(new AppError(message, 400));
-    }
-
-    // If PL entry exists and order is created, use existing orderId
-    if (checker.existing && checker.orderCreated) {
-      orderId = PLecture.orderId;
-    }
-
-    const studentData = await getStudentPaymentData(_id);
-    if (!studentData.status)
-      return next(new AppError(studentData.message, 400));
-
-    ({ status, message, IFrame } = await getCardIframe(
-      orderId,
-      studentData.data,
-      orderData.amount
-    ));
-    if (!status) return next(new AppError(message, 400));
-
-    res.send({
-      status: "success",
-      IFrame,
-    });
-  });
-
   static byLecture = catchAsyncError(async (req, res, next) => {
-    let status, lecture, message, PLecture, orderId, IFrame;
+    let status, lecture, message, customerData, IFrame, PLecture;
     const { lectureId } = req.params;
     const { _id } = res.locals.user;
 
@@ -244,7 +176,7 @@ class LectureController {
       if (!status) return next(new AppError(message, 400));
 
       const merchant_id = `${lectureId}-${_id}-${Date.now()} `;
-      ({ status, IFrame, message } = getCardIframe(
+      ({ status, IFrame, message } = await getCardIframe(
         merchant_id,
         customerData,
         orderData
@@ -273,3 +205,71 @@ class LectureController {
 }
 
 module.exports = LectureController;
+
+// static getLectureById = catchAsyncError(async (req, res, next) => {
+//   let status, lecture, checker, PLecture, message, orderId, IFrame;
+//   const { lectureId } = req.params;
+//   const { _id } = res.locals.user;
+
+//   ({ status, lecture, message } = await checkLectureStatus(lectureId));
+//   if (!status) return next(new AppError(message, 404));
+
+//   ({ status, checker, PLecture, message } = await getPLStatus(
+//     _id,
+//     lectureId
+//   ));
+//   if (!status) return next(new AppError(message, 400));
+
+//   const orderData = getLecturePaymentData(lecture);
+
+//   // If PL entry doesn't exist, create a new one and register an order
+//   if (!checker.existing) {
+//     ({ status, PLecture } = await createNewPL(_id, lectureId));
+//     if (!status) return next(new AppError(message, 400));
+
+//     // Create order
+//     ({ status, orderId, message } = await OrderRegistrationReq(
+//       orderData,
+//       PLecture._id
+//     ));
+//     if (!status) return next(new AppError(message, 400));
+
+//     // Store order
+//     ({ status, message } = await storeOrderId(PLecture._id, orderId));
+//     if (!status) return next(new AppError(message, 400));
+//   }
+
+//   // If PL entry exists and order hasn't been created, register an order
+//   if (checker.existing && !checker.orderCreated) {
+//     ({ status, orderId, message } = await OrderRegistrationReq(
+//       orderData,
+//       PLecture._id
+//     ));
+//     if (!status) return next(new AppError(message, 400));
+
+//     // Store order
+//     ({ status, message } = await storeOrderId(PLecture._id, orderId));
+//     if (!status) return next(new AppError(message, 400));
+//   }
+
+//   // If PL entry exists and order is created, use existing orderId
+//   if (checker.existing && checker.orderCreated) {
+//     orderId = PLecture.orderId;
+//   }
+
+//   const studentData = await getStudentPaymentData(_id);
+//   if (!studentData.status)
+//     return next(new AppError(studentData.message, 400));
+
+//   ({ status, message, IFrame } = await getCardIframe(
+//     orderId,
+//     studentData.data,
+//     orderData.amount
+//   ));
+//   if (!status) return next(new AppError(message, 400));
+
+//   res.send({
+//     status: "success",
+//     IFrame,
+//   });
+// });

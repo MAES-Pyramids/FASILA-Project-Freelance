@@ -96,7 +96,8 @@ exports.checkLectureStatus = async (lectureId) => {
       lecture: {
         id: lecture._id,
         name: lecture.name,
-        price: lecture.finalPrice,
+        finalPrice: lecture.finalPrice,
+        description: lecture.description,
         isFree: lecture.finalPrice === 0,
       },
     };

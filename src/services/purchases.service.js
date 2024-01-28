@@ -15,36 +15,6 @@ exports.checkStudentPurchasedLectures = async (studentId, lectureId) => {
   }
 };
 
-// exports.getPLStatus = async (studentId, lectureId) => {
-//   try {
-//     const PLecture = await PLModel.findOne({
-//       student: studentId,
-//       lecture: lectureId,
-//     });
-
-//     if (PLecture?.transactionStatus === "success")
-//       return { status: false, message: "Lecture already purchased" };
-
-//     if (!PLecture) return { status: true, checker: { existing: false } };
-
-//     if (PLecture?.orderId) {
-//       return {
-//         status: true,
-//         checker: { existing: true, orderCreated: true },
-//         PLecture,
-//       };
-//     } else {
-//       return {
-//         status: true,
-//         checker: { existing: true, orderCreated: false },
-//         PLecture,
-//       };
-//     }
-//   } catch (err) {
-//     return { status: false, message: err.message };
-//   }
-// };
-
 exports.isLecturePurchased = async (student, lecture) => {
   try {
     const PLecture = await PLModel.findOne({ student, lecture });
@@ -80,6 +50,36 @@ exports.createNewPL = async (studentId, lectureId) => {
 
 //     if (!PLecture) return { status: false, message: "Order not found" };
 //     else return { status: true, PLecture };
+//   } catch (err) {
+//     return { status: false, message: err.message };
+//   }
+// };
+
+// exports.getPLStatus = async (studentId, lectureId) => {
+//   try {
+//     const PLecture = await PLModel.findOne({
+//       student: studentId,
+//       lecture: lectureId,
+//     });
+
+//     if (PLecture?.transactionStatus === "success")
+//       return { status: false, message: "Lecture already purchased" };
+
+//     if (!PLecture) return { status: true, checker: { existing: false } };
+
+//     if (PLecture?.orderId) {
+//       return {
+//         status: true,
+//         checker: { existing: true, orderCreated: true },
+//         PLecture,
+//       };
+//     } else {
+//       return {
+//         status: true,
+//         checker: { existing: true, orderCreated: false },
+//         PLecture,
+//       };
+//     }
 //   } catch (err) {
 //     return { status: false, message: err.message };
 //   }
