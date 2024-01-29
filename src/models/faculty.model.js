@@ -50,6 +50,6 @@ FacultySchema.virtual("university", {
   foreignField: "faculties",
   justOne: true,
 });
-
+//-------------------------Export-----------------------//
 const Faculty = mongoose.model("Faculty", FacultySchema);
 module.exports = Faculty;

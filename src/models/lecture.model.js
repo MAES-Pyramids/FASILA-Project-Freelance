@@ -109,6 +109,6 @@ LectureSchema.pre("save", function (next) {
     lecture.isFree = lecture.finalPrice == 0 ? true : false;
   next();
 });
-
+//-------------------------Export-----------------------//
 const Lecture = mongoose.model("Lecture", LectureSchema);
 module.exports = Lecture;

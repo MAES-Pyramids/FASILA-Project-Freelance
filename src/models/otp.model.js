@@ -24,6 +24,6 @@ const OTPSchema = new mongoose.Schema({
     default: () => Date.now() + OTP_TTL * 60 * 1000,
   },
 });
-
+//-------------------------Export-----------------------//
 const Otp = mongoose.model("Otp", OTPSchema);
 module.exports = Otp;

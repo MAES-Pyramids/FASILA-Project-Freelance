@@ -27,7 +27,6 @@ const SessionsSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
 //-------------------------Export-----------------------//
 const Session = mongoose.model("Session", SessionsSchema);
 module.exports = Session;

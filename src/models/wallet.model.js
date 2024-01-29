@@ -11,5 +11,5 @@ const WalletSchema = new mongoose.Schema({
     required: [true, "Please provide student"],
   },
 });
-
+//-------------------------Export-----------------------//
 const Wallet = mongoose.model("Wallet", WalletSchema);

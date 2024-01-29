@@ -26,6 +26,6 @@ UniversitySchema.pre("save", function (next) {
   }
   next();
 });
-
+//-------------------------Export-----------------------//
 const University = mongoose.model("University", UniversitySchema);
 module.exports = University;

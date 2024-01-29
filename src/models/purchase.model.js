@@ -41,7 +41,6 @@ const PurchasedLectureSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
 PurchasedLectureSchema.set("toObject", { virtuals: true });
 PurchasedLectureSchema.set("toJSON", { virtuals: true });
 
@@ -53,6 +52,8 @@ PurchasedLectureSchema.pre(/^find/, function (next) {
   next();
 });
 
+PurchasedLectureSchema.pre("save", async function (next) {});
+//-------------------------Export-----------------------//
 const PurchasedLecture = mongoose.model(
   "PurchasedLecture",
   PurchasedLectureSchema
