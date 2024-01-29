@@ -55,6 +55,9 @@ const LectureSchema = new mongoose.Schema(
     no_slides: {
       type: Number,
     },
+    preview_path: {
+      type: String,
+    },
     finalLayout: {
       addEmptyPages: {
         type: Boolean,

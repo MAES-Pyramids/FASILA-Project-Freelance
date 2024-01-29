@@ -48,7 +48,7 @@ PurchasedLectureSchema.set("toJSON", { virtuals: true });
 PurchasedLectureSchema.pre(/^find/, function (next) {
   this.populate({
     path: "lecture",
-    select: "name description no_purchases no_slides",
+    select: "name description no_purchases no_slides preview_path",
   });
   next();
 });

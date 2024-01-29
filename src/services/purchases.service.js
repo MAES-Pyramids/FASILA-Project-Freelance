@@ -28,35 +28,15 @@ exports.isLecturePurchased = async (student, lecture) => {
   }
 };
 
-exports.createNewPL = async (student, lecture, price = 0, transactionId) => {
+exports.createNewPL = async (student, lecture, price = 0, others) => {
   try {
     const PLecture = await PLModel.create({
       student,
       lecture,
       price,
-      transactionId,
+      ...others,
     });
     return { status: true, PLecture };
-  } catch (err) {
-    return { status: false, message: err.message };
-  }
-};
-
-exports.storeTransactionId = async (lecture, student, transactionId) => {
-  try {
-    const PLecture = await PLModel.findOneAndUpdate(
-      {
-        lecture,
-        student,
-      },
-      {
-        transactionId,
-        status: "pending",
-      }
-    );
-
-    if (!PLecture) return { status: false, message: "Order not found" };
-    else return { status: true, PLecture };
   } catch (err) {
     return { status: false, message: err.message };
   }

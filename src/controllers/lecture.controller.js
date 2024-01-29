@@ -10,7 +10,7 @@ const {
   createNewPL,
   isLecturePurchased,
 } = require("../services/purchases.service");
-const { OrderRegistrationReq, getCardIframe } = require("../utils/payment");
+const { getCardIframe } = require("../utils/payment");
 const { getStudentPaymentData } = require("../services/student.service");
 const { getLecturePaymentData } = require("../services/lecture.service");
 

@@ -1,8 +1,10 @@
 const axios = require("axios");
+const crypto = require("crypto");
 
-const Paymob_Key = process.env.Paymob_Key;
 const integration_id = process.env.Paymob_Integration_id;
 const Paymob_CardIFrame = process.env.Paymob_CardIFrame;
+const hmacSecret = process.env.Paymob_hmacSecret;
+const Paymob_Key = process.env.Paymob_Key;
 
 const AuthenticationReq = async () => {
   try {
@@ -111,37 +113,45 @@ const getCardIframe = async (merchant_id, customerData, orderData) => {
   }
 };
 //------------------------------------------------------------//
-// setImmediate(async () => {
-//   try {
-//     let status, token, orderId, key, message;
+const checkHmacValidation = (requestBodyObj, hmac) => {
+  const extractedFields = {
+    amount_cents: requestBodyObj.obj.amount_cents,
+    created_at: requestBodyObj.obj.created_at,
+    currency: requestBodyObj.obj.currency,
+    error_occured: requestBodyObj.obj.error_occured,
+    has_parent_transaction: requestBodyObj.obj.has_parent_transaction,
+    id: requestBodyObj.obj.id,
+    integration_id: requestBodyObj.obj.integration_id,
+    is_3d_secure: requestBodyObj.obj.is_3d_secure,
+    is_auth: requestBodyObj.obj.is_auth,
+    is_capture: requestBodyObj.obj.is_capture,
+    is_refunded: requestBodyObj.obj.is_refunded,
+    is_standalone_payment: requestBodyObj.obj.is_standalone_payment,
+    is_voided: requestBodyObj.obj.is_voided,
+    order_id: requestBodyObj.obj.order.id,
+    owner: requestBodyObj.obj.owner,
+    pending: requestBodyObj.obj.pending,
+    source_data_pan: requestBodyObj.obj.source_data.pan,
+    source_data_sub_type: requestBodyObj.obj.source_data.sub_type,
+    source_data_type: requestBodyObj.obj.source_data.type,
+    success: requestBodyObj.obj.success,
+  };
 
-//     ({ status, orderId, message } = await OrderRegistrationReq(
-//       {
-//         amount: 100,
-//         item: {
-//           name: "Test",
-//           amount_cents: 100,
-//           description: "Test",
-//           quantity: 1,
-//         },
-//       },
-//       "12382"
-//     ));
-//     if (!status) throw new Error(message);
+  // Sort the keys lexicographically
+  const sortedKeys = Object.keys(extractedFields).sort();
 
-//     ({ status, key, message } = await PaymentKeyReq(
-//       orderId,
-//       {
-//         first_name: "Test",
-//         last_name: "Test",
-//         phone: "Test",
-//       },
-//       100
-//     ));
-//     if (!status) throw new Error(message);
-//     console.log(Paymob_CardIFrame + key);
-//   } catch (err) {
-//     console.log(err);
-//   }
-// });
-module.exports = { OrderRegistrationReq, getCardIframe };
+  // Concatenate values of sorted keys
+  const concatenatedValues = sortedKeys
+    .map((key) => extractedFields[key])
+    .join("");
+
+  // Calculate the hash of the concatenated string using SHA512 and HMAC secret
+  const RHmac = crypto.createHmac("sha512", hmacSecret);
+  RHmac.update(concatenatedValues);
+  const hash = RHmac.digest("hex");
+
+  return { status: hash === hmac, extractedFields };
+};
+
+//------------------------------------------------------------//
+module.exports = { getCardIframe, checkHmacValidation };
