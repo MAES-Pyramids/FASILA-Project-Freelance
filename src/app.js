@@ -32,10 +32,9 @@ const DeserializeUser = require("./middlewares/userDeserialization");
 //-------------------------------------------//
 const app = express();
 //------------Global middleware--------------//
-app.enable("trust proxy", 1);
+// app.enable("trust proxy", 1);
 
 const corsOptions = {
-  // https://fasila-lib-electronic.vercel.app
   origin: "*",
   methods: "GET,PUT,PATCH,POST,DELETE",
   credentials: true,

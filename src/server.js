@@ -28,7 +28,7 @@ const server = http.createServer(app);
 })();
 //------------Rejection Handling-------------//
 // process.on("unhandledRejection", (err) => {
-//   logger.error("UNHANDLED REJECTION! 💥 Shutting down...");
+//   logger.fatal("UNHANDLED REJECTION! 💥 Shutting down...");
 //   logger.error(err.name, err.message);
 //   server.close(() => {
 //     process.exit(1);

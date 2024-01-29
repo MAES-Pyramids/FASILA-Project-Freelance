@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const { checkHmacValidation } = require("../utils/payment");
 const { createNewPL } = require("../services/purchases.service");
 
@@ -24,8 +25,7 @@ exports.receivePayment = async (req, res) => {
           purchasedAt: created_at,
         }
       );
-
-      if (!status) console.error(message);
+      if (!status) logger.error(message);
     }
 
     res.status(200).json({ received: true });

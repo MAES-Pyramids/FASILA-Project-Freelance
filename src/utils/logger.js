@@ -1,17 +1,20 @@
-const logger = require("pino");
+const path = require("path");
+const pino = require("pino");
 const dayjs = require("dayjs");
 
-const log = logger({
+const fileTransport = pino.transport({
+  target: "pino/file",
+  options: { destination: path.join(__dirname, "..", "..", "logs", "app.log") },
+});
+
+module.exports = pino({
   transport: {
     target: "pino-pretty",
-    options: {
-      colorize: true,
-    },
+    options: { colorize: true },
   },
   base: {
     pid: false,
   },
   timestamp: () => `,"time":"${dayjs().format()}"`,
+  transporters: [fileTransport],
 });
-
-module.exports = log;
