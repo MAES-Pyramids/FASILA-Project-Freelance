@@ -2,7 +2,6 @@ const { PDFDocument, rgb, degrees } = require("pdf-lib");
 const fs = require("fs/promises");
 const axios = require("axios");
 const Fontkit = require("fontkit");
-// const {@font-indopak} = require("arabic-fonts/src/css/arabic-fonts.css");
 
 const addWatermarkAndEmptyPages = async function (
   inputFileURL,
@@ -11,9 +10,11 @@ const addWatermarkAndEmptyPages = async function (
   addEmptyPages = false
 ) {
   const EPHeightPercent = 100;
-  const EPWidthPercent = 50;
+  const EPWidthPercent = 100;
   const numEmptyPages = 1;
   const lineSpacing = 30;
+  const addEmptyPageAfter = 3;
+  const addTwoEmptyPagesAtEnd = true;
   let response;
 
   try {
@@ -69,8 +70,46 @@ const addWatermarkAndEmptyPages = async function (
       (width * EPWidthPercent) / 100,
       (height * EPHeightPercent) / 100,
     ];
+    if (addEmptyPages) {
+      if (addTwoEmptyPagesAtEnd) {
+        if (i === pdfDoc.getPageCount() - 1) {
+          for (let j = 0; j < 2; j++) {
+            const newPage = pdfDoc.insertPage(i + 1 + j);
+            newPage.setSize(newWidth, newHeight);
 
-    // insert Empty Pages
+            const linesPerPage = Math.floor(newHeight / lineSpacing);
+            for (let k = 0; k < linesPerPage; k++) {
+              newPage.drawLine({
+                start: { x: 10, y: k * lineSpacing },
+                end: { x: newWidth - 10, y: k * lineSpacing },
+                thickness: 1,
+                color: rgb(0.8, 0.8, 0.8),
+              });
+            }
+          }
+          i += 2;
+        }
+      } else {
+        if (i % addEmptyPageAfter === addEmptyPageAfter - 1) {
+          for (let j = 0; j < numEmptyPages; j++) {
+            const newPage = pdfDoc.insertPage(i + 1 + j);
+            newPage.setSize(newWidth, newHeight);
+
+            const linesPerPage = Math.floor(newHeight / lineSpacing);
+            for (let k = 0; k < linesPerPage; k++) {
+              newPage.drawLine({
+                start: { x: 10, y: k * lineSpacing },
+                end: { x: newWidth - 10, y: k * lineSpacing },
+                thickness: 1,
+                color: rgb(0.8, 0.8, 0.8),
+              });
+            }
+          }
+          i++;
+        }
+      }
+    }
+
     myMap.forEach((value, key) => {
       addDiagonalWatermarkToPage(currentPage, value);
     });
@@ -87,29 +126,9 @@ addWatermarkAndEmptyPages(
   {
     watermarkPhone: "01007045993",
     watermarkName: "مرحبا بك في",
-  }
+  },
+  true
 );
-
-// if (addEmptyPages && i < pdfDoc.getPageCount()) {
-//   // Insert empty pages after each page
-//   for (let j = 0; j < numEmptyPages; j++) {
-//     const newPage = pdfDoc.insertPage(i + 1 + j);
-//     newPage.setSize(newWidth, newHeight);
-
-//     // Draw lines on the empty page
-//     const linesPerPage = Math.floor(newHeight / lineSpacing);
-
-//     for (let k = 0; k < linesPerPage; k++) {
-//       newPage.drawLine({
-//         start: { x: 10, y: k * lineSpacing },
-//         end: { x: newWidth - 10, y: k * lineSpacing },
-//         thickness: 1,
-//         color: rgb(0.8, 0.8, 0.8),
-//       });
-//     }
-//   }
-//   i += numEmptyPages;
-// }
 
 // const fontBytes = await fs.readFile(`${__dirname}/../../fonts/`);
 // const arabicFont = await pdfDoc.embedFont(fontBytes);
