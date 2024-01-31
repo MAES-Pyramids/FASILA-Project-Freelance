@@ -4,7 +4,7 @@ const { checkStudentPurchasedLectures } = require("./purchases.service");
 
 exports.getLecturesForAdmin = async (query) => {
   try {
-    excluded = "-finalLayout  -__v";
+    excluded = "-waterMarkDetails  -__v";
 
     const data = await lectureModel
       .find(query)
@@ -19,7 +19,7 @@ exports.getLecturesForAdmin = async (query) => {
 
 exports.getLecturesForDoctor = async (query) => {
   try {
-    excluded = "-finalLayout -type -publishedBy -doctor -subject -__v";
+    excluded = "-waterMarkDetails -type -publishedBy -doctor -subject -__v";
     const data = await lectureModel.find(query).select(excluded);
 
     return { status: true, data };
@@ -31,7 +31,7 @@ exports.getLecturesForDoctor = async (query) => {
 exports.getLecturesForStudent = async (query, student) => {
   try {
     excluded =
-      "-subject -doctor -type -publishedBy -publishPrice -confirmed -finalLayout -__v -path";
+      "-subject -doctor -type -publishedBy -publishPrice -confirmed -waterMarkDetails -__v -path";
 
     let AllLectures = await lectureModel.find(query).select(excluded);
     AllLectures = await Promise.all(
@@ -40,7 +40,7 @@ exports.getLecturesForStudent = async (query, student) => {
           student,
           lec._id
         );
-        if (status) return { ...data.toObject(), purchased: true };
+        if (status) return { ...data, purchased: true };
         else return { ...lec.toObject(), purchased: false };
       })
     );

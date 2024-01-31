@@ -2,15 +2,15 @@ const { PDFDocument, rgb, degrees } = require("pdf-lib");
 const fs = require("fs/promises");
 const axios = require("axios");
 
-const addDWatermark = (page, watermarkObject) => {
-  const { width, height } = page.getSize();
+const addDWatermark = (page, watermarkObject, watermarkOptions) => {
+  const { spaceBetweenCharacters, opacity } = watermarkOptions;
   const { watermarkPhone } = watermarkObject;
+  const { width, height } = page.getSize();
   const diagonalPosition = {
     x: width / 3,
     y: height / watermarkObject.waterMarkHI,
   };
 
-  const spaceBetweenCharacters = 15;
   const semiTransparentColor = rgb(0.8, 0.8, 0.8);
 
   let PhoneCurrentX = diagonalPosition.x;
@@ -21,7 +21,7 @@ const addDWatermark = (page, watermarkObject) => {
       x: PhoneCurrentX,
       y: PhoneCurrentY,
       size: 30,
-      opacity: 0.4,
+      opacity,
       rotate: degrees(35),
       color: semiTransparentColor,
       pivot: [PhoneCurrentX, PhoneCurrentY],
@@ -52,10 +52,12 @@ exports.addWatermarkAndEmptyPages = async function (
   inputFileURL,
   outputFilePath,
   watermarkPhone,
-  addEmptyPages = false,
-  emptyPageOptions
+  waterMarkDetails,
+  emptyPageDetails
 ) {
-  const { addTwoEmptyPagesAtEnd, addEmptyPageAfter } = emptyPageOptions;
+  const { addEmptyPages, addTwoEmptyPagesAtEnd, addEmptyPageAfter } =
+    emptyPageDetails;
+
   const EPHeightP = 100;
   const EPWidthP = 100;
 
@@ -105,10 +107,14 @@ exports.addWatermarkAndEmptyPages = async function (
     }
 
     myMap.forEach((value) => {
-      addDWatermark(currentPage, {
-        waterMarkHI: value,
-        watermarkPhone,
-      });
+      addDWatermark(
+        currentPage,
+        {
+          waterMarkHI: value,
+          watermarkPhone,
+        },
+        waterMarkDetails
+      );
     });
   }
 

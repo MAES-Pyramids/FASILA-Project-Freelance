@@ -1,10 +1,10 @@
 const {
+  uploadLecture,
   checkLectureStatus,
   getLecturesForAdmin,
   getLecturesForDoctor,
   getLecturesForStudent,
   confirmLectureService,
-  uploadLecture,
 } = require("../services/lecture.service");
 const {
   createNewPL,
@@ -127,7 +127,7 @@ class LectureController {
    * @method Patch
    * @access Private
    * @param: lectureId
-   * @body: {finalPrice , finalLayout}
+   * @body: {finalPrice , waterMarkDetails}
    */
   static confirmLecture = catchAsyncError(async (req, res, next) => {
     const { lectureId } = req.params;
@@ -136,7 +136,7 @@ class LectureController {
       "no_slides",
       "description",
       "finalPrice",
-      "finalLayout",
+      "waterMarkDetails",
     ]);
 
     const { status, message } = await confirmLectureService(
@@ -170,37 +170,30 @@ class LectureController {
     if (!status) return next(new AppError(message, 404));
 
     if (!lecture.isFree) {
-      const orderData = getLecturePaymentData(lecture);
-
-      ({ status, customerData, message } = await getStudentPaymentData(_id));
-      if (!status) return next(new AppError(message, 400));
-
-      const merchant_id = `${lectureId}-${_id}-${Date.now()} `;
-      ({ status, IFrame, message } = await getCardIframe(
-        merchant_id,
-        customerData,
-        orderData
-      ));
-      if (!status) return next(new AppError(message, 400));
-
-      res.send({
-        status: "success",
-        IFrame,
-      });
     }
     if (lecture.isFree) {
-      //TODO we still need to edit createNewPl to make worker process works and upload to digital ocean also
       ({ status, PLecture, message } = await createNewPL(_id, lectureId));
       if (!status) return next(new AppError(message, 400));
-
-      res.send({
-        status: "success",
-        path: PLecture.path,
-      });
     }
-  });
 
-  static deleteLecture = catchAsyncError(async (req, res, next) => {});
+    res.send({
+      status: "success",
+      message: "Lecture purchased successfully",
+    });
+  });
 }
 
 module.exports = LectureController;
+
+// const orderData = getLecturePaymentData(lecture);
+
+// ({ status, customerData, message } = await getStudentPaymentData(_id));
+// if (!status) return next(new AppError(message, 400));
+
+// const merchant_id = `${lectureId}-${_id}-${Date.now()}`;
+// ({ status, IFrame, message } = await getCardIframe(
+//   merchant_id,
+//   customerData,
+//   orderData
+// ));
+// if (!status) return next(new AppError(message, 400));

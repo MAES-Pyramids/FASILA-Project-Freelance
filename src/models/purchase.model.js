@@ -1,11 +1,9 @@
+const { boolean } = require("joi");
 const mongoose = require("mongoose");
 const { Worker } = require("worker_threads");
 
 const PurchasedLectureSchema = new mongoose.Schema(
   {
-    transactionId: {
-      type: String,
-    },
     lecture: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Lecture",
@@ -39,6 +37,18 @@ const PurchasedLectureSchema = new mongoose.Schema(
       type: Date,
       default: () => Date.now(),
     },
+    emptyPageDetails: {
+      addEmptyPages: {
+        type: Boolean,
+        default: false,
+      },
+      addTwoEmptyPagesAtEnd: {
+        type: Boolean,
+      },
+      addEmptyPageAfter: {
+        type: Number,
+      },
+    },
   },
   { timestamps: true }
 );
@@ -53,13 +63,21 @@ PurchasedLectureSchema.pre(/^find/, function (next) {
   next();
 });
 
-function createWorker(inputFileURL, outputFilePath, watermarkPhone) {
+function createWorker(
+  inputFileURL,
+  outputFilePath,
+  watermarkPhone,
+  waterMarkDetails,
+  emptyPageDetails
+) {
   return new Promise((resolve, reject) => {
     const worker = new Worker("./src/utils/workerThread.js", {
       workerData: {
         inputFileURL,
         outputFilePath,
         watermarkPhone,
+        waterMarkDetails,
+        emptyPageDetails,
       },
     });
     worker.on("message", (data) => {
@@ -74,15 +92,25 @@ function createWorker(inputFileURL, outputFilePath, watermarkPhone) {
 
 PurchasedLectureSchema.pre("save", async function (next) {
   const PLecture = this;
-  const { path } = (await PLecture.populate("lecture", "path")).lecture;
+
+  const { emptyPageDetails } = PLecture;
+  const { path, waterMarkDetails } = (
+    await PLecture.populate({
+      path: "lecture",
+      select: "path waterMarkDetails",
+    })
+  ).lecture;
   const { phone } = (await PLecture.populate("student", "phone")).student;
 
   try {
-    const result = await createWorker(
+    await createWorker(
       path,
       `${__dirname}/../../public/pdfs/test_1.1_modified.pdf`,
-      phone.slice(1)
+      phone.slice(1),
+      waterMarkDetails,
+      emptyPageDetails
     );
+    PLecture.status = "success";
     next();
   } catch (err) {
     return next(new Error(`Error in creating worker thread ${err.message}`));

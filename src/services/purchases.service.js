@@ -8,8 +8,19 @@ exports.checkStudentPurchasedLectures = async (studentId, lectureId) => {
       status: "success",
     });
 
+    const FormattedData = {
+      _id: data._id,
+      name: data.lecture.name,
+      description: data.lecture.description,
+      no_purchases: data.lecture.no_purchases,
+      no_slides: data.lecture.no_slides,
+      preview_path: data.lecture.preview_path,
+      createdAt: data.createdAt,
+      path: data.path,
+    };
+
     if (!data) return { status: false };
-    else return { status: true, data };
+    else return { status: true, data: FormattedData };
   } catch (err) {
     return { status: false, message: err.message };
   }
