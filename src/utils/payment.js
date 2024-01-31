@@ -152,6 +152,5 @@ const checkHmacValidation = (requestBodyObj, hmac) => {
 
   return { status: hash === hmac, extractedFields };
 };
-
 //------------------------------------------------------------//
 module.exports = { getCardIframe, checkHmacValidation };

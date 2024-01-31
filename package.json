@@ -32,6 +32,7 @@
     "morgan": "^1.10.0",
     "node-telegram-bot-api": "^0.64.0",
     "nodemon": "^3.0.2",
+    "pdf-lib": "^1.17.1",
     "pino": "^8.17.2",
     "socket.io": "^4.7.4",
     "xss-clean": "^0.1.4"
