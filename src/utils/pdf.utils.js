@@ -1,58 +1,64 @@
 const { PDFDocument, rgb, degrees } = require("pdf-lib");
 const fs = require("fs/promises");
 const axios = require("axios");
+const Fontkit = require("fontkit");
+// const {@font-indopak} = require("arabic-fonts/src/css/arabic-fonts.css");
 
 const addWatermarkAndEmptyPages = async function (
   inputFileURL,
   outputFilePath,
-  watermarkText,
+  watermarkObject,
   addEmptyPages = false
 ) {
-  const numEmptyPages = 1;
-  const lineSpacing = 30;
   const EPHeightPercent = 100;
   const EPWidthPercent = 50;
+  const numEmptyPages = 1;
+  const lineSpacing = 30;
   let response;
 
   try {
-    const response = await axios.get(inputFileURL, {
+    response = await axios.get(inputFileURL, {
       responseType: "arraybuffer",
     });
   } catch (err) {
     console.log(err);
   }
 
-  // const pdfBytes = await fs.readFile(inputFilePath);
+  const myMap = new Map([
+    [1, 1.3],
+    [2, 2.3],
+    [3, 10],
+  ]);
+
   const pdfBytes = Buffer.from(response.data);
   const pdfDoc = await PDFDocument.load(pdfBytes);
+  pdfDoc.registerFontkit(Fontkit);
 
-  const addDiagonalWatermarkToPage = (page) => {
+  const addDiagonalWatermarkToPage = (page, waterMarkHI) => {
     const { width, height } = page.getSize();
-    const watermark = watermarkText || "Watermark";
-
+    const { watermarkPhone, watermarkName } = watermarkObject;
     const diagonalPosition = {
-      x: width / 4,
-      y: height / 3,
+      x: width / 3,
+      y: height / waterMarkHI,
     };
 
-    const spaceBetweenCharacters = 25;
+    const spaceBetweenCharacters = 15;
     const semiTransparentColor = rgb(0.8, 0.8, 0.8);
 
-    let currentX = diagonalPosition.x;
-    let currentY = diagonalPosition.y;
-    for (const char of watermark) {
+    let PhoneCurrentX = diagonalPosition.x;
+    let PhoneCurrentY = diagonalPosition.y;
+    for (const char of watermarkPhone) {
       page.drawText(char, {
-        x: currentX,
-        y: currentY,
-        size: 50,
+        x: PhoneCurrentX,
+        y: PhoneCurrentY,
+        size: 30,
         opacity: 0.4,
-        rotate: degrees(45),
+        rotate: degrees(35),
         color: semiTransparentColor,
-        pivot: [currentX, currentY],
+        pivot: [PhoneCurrentX, PhoneCurrentY],
       });
-
-      currentX += spaceBetweenCharacters;
-      currentY += spaceBetweenCharacters;
+      PhoneCurrentX += spaceBetweenCharacters;
+      PhoneCurrentY += spaceBetweenCharacters - 5;
     }
   };
 
@@ -65,8 +71,9 @@ const addWatermarkAndEmptyPages = async function (
     ];
 
     // insert Empty Pages
-
-    addDiagonalWatermarkToPage(currentPage);
+    myMap.forEach((value, key) => {
+      addDiagonalWatermarkToPage(currentPage, value);
+    });
   }
 
   const modifiedPdfBytes = await pdfDoc.save();
@@ -74,11 +81,14 @@ const addWatermarkAndEmptyPages = async function (
   console.log("Watermark and empty pages added successfully!");
 };
 
-// addWatermarkAndEmptyPages(
-//   "http://localhost:3000/pdfs/test_1.1.pdf",
-//   "../../public/pdfs/test_1.1_modified.pdf",
-//   "01007045993"
-// );
+addWatermarkAndEmptyPages(
+  "https://fasila.onrender.com/pdfs/test_1.1.pdf",
+  `${__dirname}/../../public/pdfs/test_1.1_modified.pdf`,
+  {
+    watermarkPhone: "01007045993",
+    watermarkName: "مرحبا بك في",
+  }
+);
 
 // if (addEmptyPages && i < pdfDoc.getPageCount()) {
 //   // Insert empty pages after each page
@@ -99,4 +109,23 @@ const addWatermarkAndEmptyPages = async function (
 //     }
 //   }
 //   i += numEmptyPages;
+// }
+
+// const fontBytes = await fs.readFile(`${__dirname}/../../fonts/`);
+// const arabicFont = await pdfDoc.embedFont(fontBytes);
+// let NameCurrentX = diagonalPosition.x + 10;
+// let NameCurrentY = diagonalPosition.y - 28;
+// for (const char of watermarkName) {
+//   page.drawText(char, {
+//     x: NameCurrentX,
+//     y: NameCurrentY,
+//     size: 30,
+//     opacity: 0.4,
+//     rotate: degrees(35),
+//     color: semiTransparentColor,
+//     font: arabicFont,
+//     pivot: [NameCurrentX, NameCurrentY],
+//   });
+//   NameCurrentX += spaceBetweenCharacters;
+//   NameCurrentY += spaceBetweenCharacters;
 // }
