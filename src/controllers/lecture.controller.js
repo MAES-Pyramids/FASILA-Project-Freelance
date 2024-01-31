@@ -188,10 +188,9 @@ class LectureController {
         IFrame,
       });
     }
-
     if (lecture.isFree) {
       //TODO we still need to edit createNewPl to make worker process works and upload to digital ocean also
-      ({ status, PLecture } = await createNewPL(_id, lectureId));
+      ({ status, PLecture, message } = await createNewPL(_id, lectureId));
       if (!status) return next(new AppError(message, 400));
 
       res.send({

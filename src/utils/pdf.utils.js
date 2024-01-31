@@ -1,7 +1,6 @@
 const { PDFDocument, rgb, degrees } = require("pdf-lib");
 const fs = require("fs/promises");
 const axios = require("axios");
-const Fontkit = require("fontkit");
 
 const addDiagonalWatermarkToPage = (page, watermarkObject) => {
   const { width, height } = page.getSize();
@@ -54,27 +53,23 @@ const addEmptyPageWithLines = (
   }
 };
 
-const addWatermarkAndEmptyPages = async function (
+exports.addWatermarkAndEmptyPages = async function (
   inputFileURL,
   outputFilePath,
-  watermarkObject,
+  watermarkPhone,
   addEmptyPages = false,
   emptyPageOptions
 ) {
   const { addTwoEmptyPagesAtEnd, addEmptyPageAfter } = emptyPageOptions;
-  const EPHeightPercent = 100;
-  const EPWidthPercent = 100;
+  const EPHeightP = 100;
+  const EPWidthP = 100;
   const lineSpacing = 30;
 
   let response;
-
   try {
-    response = await axios.get(inputFileURL, {
-      responseType: "arraybuffer",
-    });
+    response = await axios.get(inputFileURL, { responseType: "arraybuffer" });
   } catch (err) {
-    console.log(err);
-    return { status: "false", message: "Error in fetching pdf file" };
+    throw new Error("Error getting file from URL");
   }
 
   const myMap = new Map([
@@ -86,73 +81,58 @@ const addWatermarkAndEmptyPages = async function (
   const pdfBytes = Buffer.from(response.data);
   const pdfDoc = await PDFDocument.load(pdfBytes);
 
+  let numberOfAddedPages = 0;
   for (let i = 0; i < pdfDoc.getPageCount(); i++) {
     const currentPage = pdfDoc.getPage(i);
     const { width, height } = currentPage.getSize();
     const [newWidth, newHeight] = [
-      (width * EPWidthPercent) / 100,
-      (height * EPHeightPercent) / 100,
+      (width * EPWidthP) / 100,
+      (height * EPHeightP) / 100,
     ];
 
     if (addEmptyPages) {
-      if (addTwoEmptyPagesAtEnd && i === pdfDoc.getPageCount() - 1) {
-        for (let j = 0; j < 2; j++) {
+      if (addTwoEmptyPagesAtEnd) {
+        if (i === pdfDoc.getPageCount() - 1) {
+          for (let j = 0; j < 2; j++) {
+            addEmptyPageWithLines(
+              pdfDoc,
+              i + 1 + j,
+              newWidth,
+              newHeight,
+              lineSpacing
+            );
+          }
+          i += 2;
+        }
+      } else {
+        if (
+          (i + 1 - numberOfAddedPages) % addEmptyPageAfter == 0 ||
+          i + 1 == pdfDoc.getPageCount()
+        ) {
           addEmptyPageWithLines(
             pdfDoc,
-            i + 1 + j,
+            i + 1,
             newWidth,
             newHeight,
             lineSpacing
           );
+          i++;
+          numberOfAddedPages++;
         }
-        i += 2;
-      } else if (i % addEmptyPageAfter === addEmptyPageAfter - 1) {
-        addEmptyPageWithLines(pdfDoc, i + 1, newWidth, newHeight, lineSpacing);
-        i++;
       }
     }
 
-    myMap.forEach((value, key) => {
+    myMap.forEach((value) => {
       addDiagonalWatermarkToPage(currentPage, {
         waterMarkHI: value,
-        ...watermarkObject,
+        watermarkPhone,
       });
     });
   }
-
   const modifiedPdfBytes = await pdfDoc.save();
   await fs.writeFile(outputFilePath, modifiedPdfBytes);
-  console.log("Watermark and empty pages added successfully!");
+  return {
+    status: "true",
+    message: "Watermark and empty pages added successfully!",
+  };
 };
-
-addWatermarkAndEmptyPages(
-  "https://fasila.onrender.com/pdfs/test_1.1.pdf",
-  `${__dirname}/../../public/pdfs/test_1.1_modified.pdf`,
-  {
-    watermarkPhone: "01007045993",
-  },
-  true,
-  {
-    addTwoEmptyPagesAtEnd: true,
-    addEmptyPageAfter: 2,
-  }
-);
-
-// const fontBytes = await fs.readFile(`${__dirname}/../../fonts/`);
-// const arabicFont = await pdfDoc.embedFont(fontBytes);
-// let NameCurrentX = diagonalPosition.x + 10;
-// let NameCurrentY = diagonalPosition.y - 28;
-// for (const char of watermarkName) {
-//   page.drawText(char, {
-//     x: NameCurrentX,
-//     y: NameCurrentY,
-//     size: 30,
-//     opacity: 0.4,
-//     rotate: degrees(35),
-//     color: semiTransparentColor,
-//     font: arabicFont,
-//     pivot: [NameCurrentX, NameCurrentY],
-//   });
-//   NameCurrentX += spaceBetweenCharacters;
-//   NameCurrentY += spaceBetweenCharacters;
-// }

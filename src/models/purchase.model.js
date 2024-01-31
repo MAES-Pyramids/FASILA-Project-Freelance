@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { addWatermarkAndEmptyPages } = require("../utils/pdf.utils");
+const { Worker } = require("worker_threads");
 
 const PurchasedLectureSchema = new mongoose.Schema(
   {
@@ -53,7 +53,44 @@ PurchasedLectureSchema.pre(/^find/, function (next) {
   next();
 });
 
-PurchasedLectureSchema.pre("save", async function (next) {});
+function createWorker(inputFileURL, outputFilePath, watermarkPhone) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker("./src/utils/workerThread.js", {
+      workerData: {
+        inputFileURL,
+        outputFilePath,
+        watermarkPhone,
+      },
+    });
+
+    worker.on("message", (data) => {
+      if (data.status) resolve(data);
+      else reject(data);
+    });
+
+    worker.on("error", (err) => {
+      reject(err);
+    });
+  });
+}
+
+PurchasedLectureSchema.pre("save", async function (next) {
+  const PLecture = this;
+  const { path } = (await PLecture.populate("lecture", "path")).lecture;
+  const { phone } = (await PLecture.populate("student", "phone")).student;
+
+  try {
+    const result = await createWorker(
+      path,
+      `${__dirname}/../../public/pdfs/test_1.1_modified.pdf`,
+      phone.slice(1)
+    );
+    console.log(result);
+    next();
+  } catch (err) {
+    return next(new Error(`Error in creating worker thread ${err.message}`));
+  }
+});
 //-------------------------Export-----------------------//
 const PurchasedLecture = mongoose.model(
   "PurchasedLecture",
