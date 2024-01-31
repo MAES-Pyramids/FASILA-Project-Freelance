@@ -98,8 +98,15 @@ StudentSchema.pre("save", async function (next) {
   student.password = bcrypt.hashSync(student.password, salt);
 
   if (!student.isNew) student.passwordChangedAt = Date.now() - 1000;
-
   return next();
+});
+
+StudentSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "wallet",
+    select: "balance",
+  });
+  next();
 });
 
 StudentSchema.methods.comparePassword = async function (inputPassword) {

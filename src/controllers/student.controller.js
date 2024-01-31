@@ -12,6 +12,7 @@ const {
 const { invalidateUserSessions } = require("../services/session.service.js");
 const { isValidSemester } = require("../services/faculty.service.js");
 const { storeOTP, verifyOTP } = require("../services/otp.service.js");
+const { createWallet } = require("../services/wallet.service.js");
 const { sendOTPMessage } = require("../utils/telegramBot.js");
 const { createUser } = require("../services/user.service.js");
 const crypto = require("crypto");
@@ -39,17 +40,19 @@ class StudentController {
       "facultyCard",
       "faculty",
     ]);
+    const { faculty, semester } = signUpData;
 
     ({ status, message } = await checkValidPhone(signUpData.phone));
     if (!status) next(new AppError(message, 400));
 
-    ({ status, message } = await isValidSemester(
-      signUpData.faculty,
-      signUpData.semester
-    ));
+    ({ status, message } = await isValidSemester(faculty, semester));
     if (!status) next(new AppError(message));
 
+    // TODO: ensure converting it to transaction
     ({ status, data, message } = await createUser("Student", signUpData));
+    if (!status) next(new AppError(message, 500));
+
+    ({ status, message } = await createWallet(data._id));
     if (!status) next(new AppError(message, 500));
 
     res.send({
