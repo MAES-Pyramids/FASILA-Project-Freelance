@@ -62,12 +62,10 @@ function createWorker(inputFileURL, outputFilePath, watermarkPhone) {
         watermarkPhone,
       },
     });
-
     worker.on("message", (data) => {
       if (data.status) resolve(data);
       else reject(data);
     });
-
     worker.on("error", (err) => {
       reject(err);
     });
@@ -85,7 +83,6 @@ PurchasedLectureSchema.pre("save", async function (next) {
       `${__dirname}/../../public/pdfs/test_1.1_modified.pdf`,
       phone.slice(1)
     );
-    console.log(result);
     next();
   } catch (err) {
     return next(new Error(`Error in creating worker thread ${err.message}`));

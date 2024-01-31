@@ -2,7 +2,7 @@ const { PDFDocument, rgb, degrees } = require("pdf-lib");
 const fs = require("fs/promises");
 const axios = require("axios");
 
-const addDiagonalWatermarkToPage = (page, watermarkObject) => {
+const addDWatermark = (page, watermarkObject) => {
   const { width, height } = page.getSize();
   const { watermarkPhone } = watermarkObject;
   const diagonalPosition = {
@@ -31,13 +31,8 @@ const addDiagonalWatermarkToPage = (page, watermarkObject) => {
   }
 };
 
-const addEmptyPageWithLines = (
-  pdfDoc,
-  index,
-  newWidth,
-  newHeight,
-  lineSpacing
-) => {
+const addEmptyPage = (pdfDoc, index, newWidth, newHeight) => {
+  const lineSpacing = 30;
   const newPage = pdfDoc.insertPage(index);
   newPage.setSize(newWidth, newHeight);
 
@@ -63,7 +58,6 @@ exports.addWatermarkAndEmptyPages = async function (
   const { addTwoEmptyPagesAtEnd, addEmptyPageAfter } = emptyPageOptions;
   const EPHeightP = 100;
   const EPWidthP = 100;
-  const lineSpacing = 30;
 
   let response;
   try {
@@ -81,56 +75,46 @@ exports.addWatermarkAndEmptyPages = async function (
   const pdfBytes = Buffer.from(response.data);
   const pdfDoc = await PDFDocument.load(pdfBytes);
 
-  let numberOfAddedPages = 0;
+  let addedPagesNo = 0;
   for (let i = 0; i < pdfDoc.getPageCount(); i++) {
     const currentPage = pdfDoc.getPage(i);
     const { width, height } = currentPage.getSize();
+
     const [newWidth, newHeight] = [
       (width * EPWidthP) / 100,
       (height * EPHeightP) / 100,
     ];
 
     if (addEmptyPages) {
-      if (addTwoEmptyPagesAtEnd) {
-        if (i === pdfDoc.getPageCount() - 1) {
-          for (let j = 0; j < 2; j++) {
-            addEmptyPageWithLines(
-              pdfDoc,
-              i + 1 + j,
-              newWidth,
-              newHeight,
-              lineSpacing
-            );
-          }
-          i += 2;
+      if (addTwoEmptyPagesAtEnd && i === pdfDoc.getPageCount() - 1) {
+        for (let j = 0; j < 2; j++) {
+          addEmptyPage(pdfDoc, i + 1 + j, newWidth, newHeight);
         }
-      } else {
-        if (
-          (i + 1 - numberOfAddedPages) % addEmptyPageAfter == 0 ||
-          i + 1 == pdfDoc.getPageCount()
-        ) {
-          addEmptyPageWithLines(
-            pdfDoc,
-            i + 1,
-            newWidth,
-            newHeight,
-            lineSpacing
-          );
-          i++;
-          numberOfAddedPages++;
-        }
+        i += 2;
+      }
+
+      if (
+        !addTwoEmptyPagesAtEnd &&
+        ((i + 1 - addedPagesNo) % addEmptyPageAfter == 0 ||
+          i + 1 == pdfDoc.getPageCount())
+      ) {
+        addEmptyPage(pdfDoc, i + 1, newWidth, newHeight);
+        addedPagesNo++;
+        i++;
       }
     }
 
     myMap.forEach((value) => {
-      addDiagonalWatermarkToPage(currentPage, {
+      addDWatermark(currentPage, {
         waterMarkHI: value,
         watermarkPhone,
       });
     });
   }
+
   const modifiedPdfBytes = await pdfDoc.save();
   await fs.writeFile(outputFilePath, modifiedPdfBytes);
+
   return {
     status: "true",
     message: "Watermark and empty pages added successfully!",
