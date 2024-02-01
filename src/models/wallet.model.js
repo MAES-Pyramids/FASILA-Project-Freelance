@@ -57,7 +57,7 @@ const operationSchema = new mongoose.Schema({
     },
     manually: {
       type: mongoose.Schema.Types.ObjectId,
-      refPath: "deposedBy",
+      ref: "Admin",
       validate: {
         validator: function (value) {
           return this.operationType === "deposit" &&

@@ -17,7 +17,12 @@ const StudentController = require("../controllers/student.controller");
 const router = require("express").Router({ mergeParams: true });
 
 // For admin to charge wallets and for students to access their wallet history
-router.use("/:id/wallet", restrictedTo("Admin", "Student"), WalletRouter);
+router.use(
+  "/:studentId/wallet",
+  requireUser,
+  restrictedTo("Admin", "Student"),
+  WalletRouter
+);
 
 router.post("/signup", Signup_Validation, StudentController.signUp);
 
