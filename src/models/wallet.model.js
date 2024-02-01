@@ -14,7 +14,7 @@ const WalletSchema = new mongoose.Schema({
         required: [true, "Please provide operation"],
       },
       amount: {
-        type: Number,
+        type: mongoose.Decimal128,
         required: [true, "Please provide operation amount"],
       },
       deposedThrough: {
