@@ -71,12 +71,14 @@ function createWorker(
   emptyPageDetails
 ) {
   return new Promise((resolve, reject) => {
+    const opacityString = waterMarkDetails.opacity.toString();
+
     const worker = new Worker("./src/utils/workerThread.js", {
       workerData: {
         inputFileURL,
         outputFilePath,
         watermarkPhone,
-        waterMarkDetails,
+        waterMarkDetails: { ...waterMarkDetails, opacity: opacityString },
         emptyPageDetails,
       },
     });

@@ -9,11 +9,13 @@ const {
   emptyPageDetails,
 } = workerData;
 
+const opacity = parseFloat(waterMarkDetails.opacity);
+
 addWatermarkAndEmptyPages(
   inputFileURL,
   outputFilePath,
   watermarkPhone,
-  waterMarkDetails,
+  { ...waterMarkDetails, opacity },
   emptyPageDetails
 )
   .then((res) => {

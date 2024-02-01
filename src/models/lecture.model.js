@@ -61,7 +61,7 @@ const LectureSchema = new mongoose.Schema(
     waterMarkDetails: {
       spaceBetweenCharacters: {
         type: Number,
-        default: 15,
+        default: 17,
       },
       opacity: {
         type: mongoose.Schema.Types.Decimal128,

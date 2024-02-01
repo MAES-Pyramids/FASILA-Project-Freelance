@@ -31,7 +31,7 @@ exports.getLecturesForDoctor = async (query) => {
 exports.getLecturesForStudent = async (query, student) => {
   try {
     excluded =
-      "-subject -doctor -type -publishedBy -publishPrice -confirmed -waterMarkDetails -__v -path";
+      "-subject -doctor -type -publishedBy -publishPrice -confirmed -waterMarkDetails -__v -path -finalLayout";
 
     let AllLectures = await lectureModel.find(query).select(excluded);
     AllLectures = await Promise.all(
@@ -98,7 +98,7 @@ exports.checkLectureStatus = async (lectureId) => {
         name: lecture.name,
         finalPrice: lecture.finalPrice,
         description: lecture.description,
-        isFree: lecture.finalPrice === 0,
+        isFree: lecture.finalPrice == 0,
       },
     };
   } catch (err) {
