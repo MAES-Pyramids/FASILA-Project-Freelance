@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+const EarningSchema = new mongoose.Schema({
+  value: mongoose.Decimal128,
+  date: Date,
+});
+
 const DoctorSchema = new mongoose.Schema(
   {
     name: {
@@ -20,17 +25,12 @@ const DoctorSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please provide password"],
     },
+    earning: [EarningSchema],
     PDFsNumber: {
       type: Map,
       of: Number,
-      default: {},
+      default: () => ({}),
     },
-    earning: [
-      {
-        value: Number,
-        date: Date,
-      },
-    ],
     faculty: {
       type: mongoose.Schema.ObjectId,
       ref: "Faculty",

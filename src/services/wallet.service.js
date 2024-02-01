@@ -1,10 +1,10 @@
 const WalletModel = require("../models/wallet.model");
 
-exports.createWallet = async (studentId) => {
+exports.createWallet = async () => {
   try {
-    const wallet = await WalletModel.create({ student: studentId });
-    return { status: true, data: wallet };
+    const data = await WalletModel.create({});
+    return { status: true, data };
   } catch (err) {
-    return { status: false, data: err.message };
+    return { status: false, message: err.message };
   }
 };

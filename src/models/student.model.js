@@ -1,3 +1,4 @@
+const { createWallet } = require("../services/wallet.service");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
@@ -51,7 +52,7 @@ const StudentSchema = new mongoose.Schema(
           ref: "Doctor",
         },
       ],
-      default: {},
+      default: () => ({}),
     },
     telegramId: {
       type: String,
@@ -97,6 +98,15 @@ StudentSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt(parseInt(process.env.SaltWorkFactor));
   student.password = bcrypt.hashSync(student.password, salt);
 
+  if (student.isNew) {
+    try {
+      const { status, data, message } = await createWallet();
+      if (!status) throw new Error(message);
+      student.wallet = data._id;
+    } catch (err) {
+      return next(err);
+    }
+  }
   if (!student.isNew) student.passwordChangedAt = Date.now() - 1000;
   return next();
 });
