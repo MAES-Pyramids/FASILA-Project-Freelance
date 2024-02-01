@@ -165,12 +165,19 @@ class LectureController {
     let status, lecture, message, walletId;
     const { lectureId } = req.params;
     const { _id } = res.locals.user;
+    const { emptyPageDetails } = req.body;
 
     ({ status, message } = await isLecturePurchased(_id, lectureId));
     if (!status) return next(new AppError(message, 400));
 
     ({ status, lecture, message } = await checkLectureStatus(lectureId));
     if (!status) return next(new AppError(message, 404));
+
+    const PLectureData = {
+      student: _id,
+      lecture: lectureId,
+      emptyPageDetails,
+    };
 
     if (!lecture.isFree) {
       try {
@@ -189,8 +196,7 @@ class LectureController {
         if (!status) throw new Error(message);
 
         ({ status, message } = await createNewPL(
-          _id,
-          lectureId,
+          PLectureData,
           lecture.price,
           session
         ));
@@ -205,7 +211,7 @@ class LectureController {
       }
     }
     if (lecture.isFree) {
-      ({ status, message } = await createNewPL(_id, lectureId));
+      ({ status, message } = await createNewPL(PLectureData));
       if (!status) return next(new AppError(message, 400));
     }
 

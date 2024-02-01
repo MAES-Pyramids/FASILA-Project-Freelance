@@ -39,16 +39,10 @@ exports.isLecturePurchased = async (student, lecture) => {
   }
 };
 
-exports.createNewPL = async (student, lecture, price = 0, session) => {
+exports.createNewPL = async (PLectureData, price = 0, session) => {
   try {
-    const PLecture = await PLModel.create(
-      {
-        student,
-        lecture,
-        price,
-      },
-      session
-    );
+    PLectureData;
+    await PLModel.create({ ...PLectureData, price }, session);
     return { status: true, message: "Lecture purchased successfully" };
   } catch (err) {
     return { status: false, message: err.message };

@@ -16,14 +16,6 @@ const StudentController = require("../controllers/student.controller");
 //---------------------------------------------------------------------//
 const router = require("express").Router({ mergeParams: true });
 
-// For admin to charge wallets and for students to access their wallet history
-router.use(
-  "/:studentId/wallet",
-  requireUser,
-  restrictedTo("Admin", "Student"),
-  WalletRouter
-);
-
 router.post("/signup", Signup_Validation, StudentController.signUp);
 
 router
@@ -35,23 +27,21 @@ router
   .route("/public/:id")
   .patch(EditPhoneNumber_Validation, StudentController.editPhoneNumber);
 
+router.use(requireUser);
+
+// For admin to charge wallets and for students to access their wallet history
+router.use("/wallet", WalletRouter);
+router.use("/:studentId/wallet", restrictedTo("Admin"), WalletRouter);
+
 router
   .route("/favorites")
-  .get(requireUser, StudentController.gatFavoritesDoctors)
-  .patch(
-    requireUser,
-    AddFavDoctor_Validation,
-    StudentController.addFavoriteDoctor
-  )
-  .delete(
-    requireUser,
-    RemoveFavDoctor_Validation,
-    StudentController.removeFavoriteDoctor
-  );
+  .get(StudentController.gatFavoritesDoctors)
+  .patch(AddFavDoctor_Validation, StudentController.addFavoriteDoctor)
+  .delete(RemoveFavDoctor_Validation, StudentController.removeFavoriteDoctor);
 
 router
   .route("/TelegramID")
-  .post(requireUser, SaveTelID_Validation, StudentController.SaveID)
-  .patch(requireUser, VerifyTelID_Validation, StudentController.verifyID);
+  .post(SaveTelID_Validation, StudentController.SaveID)
+  .patch(VerifyTelID_Validation, StudentController.verifyID);
 
 module.exports = router;

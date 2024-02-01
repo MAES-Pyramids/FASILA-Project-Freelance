@@ -9,7 +9,7 @@ router.use(requireUser);
 
 router
   .route("/")
-  .get(WalletController.getTransactionHistory)
+  .get(restrictedTo("Admin", "Student"), WalletController.getTransactionHistory)
   .patch(restrictedTo("Admin"), WalletController.chargeWallet);
 
 module.exports = router;
