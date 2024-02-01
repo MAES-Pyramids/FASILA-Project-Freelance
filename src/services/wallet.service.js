@@ -67,7 +67,7 @@ exports.deposit = async function (
 
 exports.withdraw = async function (session, _id, amount, withdrawLectureId) {
   try {
-    const data = await WalletModel.findById(_id);
+    let data = await WalletModel.findById(_id);
 
     if (parseFloat(data.balance) < parseFloat(amount))
       return { status: false, message: "Insufficient balance" };

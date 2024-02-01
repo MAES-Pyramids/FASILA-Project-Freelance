@@ -180,24 +180,24 @@ class LectureController {
     };
 
     if (!lecture.isFree) {
+      const session = await mongoose.startSession({ validateBeforeSave: true });
+      session.startTransaction();
       try {
-        ({ status, walletId, message } = await getStudentWalletId(id));
+        ({ status, walletId, message } = await getStudentWalletId(_id));
         if (!status) return next(new AppError(message, 400));
 
-        const session = await mongoose.startSession();
-        session.startTransaction();
-
+        const { finalPrice } = lecture;
         ({ status, message } = await withdraw(
           session,
           walletId,
-          lecture.price,
+          finalPrice,
           lectureId
         ));
         if (!status) throw new Error(message);
 
         ({ status, message } = await createNewPL(
           PLectureData,
-          lecture.price,
+          finalPrice,
           session
         ));
         if (!status) throw new Error(message);
@@ -211,7 +211,7 @@ class LectureController {
       }
     }
     if (lecture.isFree) {
-      ({ status, message } = await createNewPL(PLectureData));
+      ({ status, message } = await createNewPL(PLectureData, 0));
       if (!status) return next(new AppError(message, 400));
     }
 

@@ -1,4 +1,3 @@
-const { boolean } = require("joi");
 const mongoose = require("mongoose");
 const { Worker } = require("worker_threads");
 
@@ -19,7 +18,7 @@ const PurchasedLectureSchema = new mongoose.Schema(
     },
     price: {
       type: mongoose.Schema.Types.Decimal128,
-      required: [true, "Price is required"],
+      required: [true, "Please provide the price of the lecture."],
     },
     path: {
       type: String,
