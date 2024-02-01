@@ -15,6 +15,5 @@ router
   .route("/:lectureId")
   .post(restrictedTo("Student"), LectureController.byLecture)
   .patch(restrictedTo("Admin"), LectureController.confirmLecture);
-// .delete(restrictedTo("Admin"), LectureController.deleteLecture);
 
 module.exports = router;

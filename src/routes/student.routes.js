@@ -8,10 +8,16 @@ const {
   RemoveFavDoctor_Validation,
   EditPhoneNumber_Validation,
 } = require("../validations/student.validation");
+const WalletRouter = require("./wallet.routes");
 const requireUser = require("../middlewares/userRequired");
+const restrictedTo = require("../middlewares/restrictedRoute");
 const StudentController = require("../controllers/student.controller");
+
 //---------------------------------------------------------------------//
 const router = require("express").Router({ mergeParams: true });
+
+// For admin to charge wallets and for students to access their wallet history
+router.use("/:id/wallet", restrictedTo("Admin", "Student"), WalletRouter);
 
 router.post("/signup", Signup_Validation, StudentController.signUp);
 

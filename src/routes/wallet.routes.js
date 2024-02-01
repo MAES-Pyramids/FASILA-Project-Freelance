@@ -7,8 +7,6 @@ const router = require("express").Router({ mergeParams: true });
 
 router.use(requireUser);
 
-router
-  .route("/:id")
-  .patch(restrictedTo("Admin"), WalletController.chargeWallet);
+router.route("/").patch(restrictedTo("Admin"), WalletController.chargeWallet);
 
 module.exports = router;

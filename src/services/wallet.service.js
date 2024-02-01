@@ -20,8 +20,8 @@ exports.deposit = async function (
     const data = await WalletModel.findById(walletId);
 
     data.balance = parseFloat(data.balance) + parseFloat(amount);
-    data.history.set(Date.now(), {
-      operation: "deposit",
+    data.history.set(Date.now().toString(), {
+      operationType: "deposit",
       amount,
       deposedBy,
       deposedThrough,

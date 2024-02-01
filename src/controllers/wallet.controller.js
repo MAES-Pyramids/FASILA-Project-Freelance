@@ -12,15 +12,20 @@ class WalletController {
    * @access private
    */
   static chargeWallet = catchAsyncError(async (req, res, next) => {
-    let status, data, message;
+    let status, walletId, message;
     const { deposedThrough } = req.query;
     const { amount } = req.body;
     const { id } = req.params;
 
-    ({ status, id, message } = await getStudentWalletId(id));
+    ({ status, walletId, message } = await getStudentWalletId(id));
     if (!status) return next(new AppError(message, 400));
 
-    ({ status, message } = await deposit(id, amount, "Admin", deposedThrough));
+    ({ status, message } = await deposit(
+      walletId,
+      amount,
+      "Admin",
+      deposedThrough
+    ));
     if (!status) return next(new AppError(message, 400));
 
     res.status(200).json({

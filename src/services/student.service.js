@@ -217,7 +217,7 @@ exports.getStudentWalletId = async (_id) => {
     const student = await StudentModel.findById(_id).select("wallet");
     if (!student) return { status: false, message: "Student not found" };
 
-    return { status: true, id: student.wallet._id };
+    return { status: true, walletId: student.wallet._id };
   } catch (err) {
     return { status: false, message: err.message };
   }
