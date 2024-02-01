@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
 const EarningSchema = new mongoose.Schema({
-  value: mongoose.Decimal128,
+  value: mongoose.Schema.Types.Decimal128,
   date: Date,
 });
 

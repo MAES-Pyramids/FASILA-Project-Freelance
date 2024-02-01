@@ -10,12 +10,15 @@ const {
   createNewPL,
   isLecturePurchased,
 } = require("../services/purchases.service");
-const { getCardIframe } = require("../utils/payment");
-const { getStudentPaymentData } = require("../services/student.service");
-const { getLecturePaymentData } = require("../services/lecture.service");
+const { withdraw } = require("../services/wallet.service");
+const { getStudentWalletId } = require("../services/student.service");
+// const { getCardIframe } = require("../utils/payment");
+// const { getStudentPaymentData } = require("../services/student.service");
+// const { getLecturePaymentData } = require("../services/lecture.service");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
 const AppError = require("../utils/appErrorsClass");
+const mongoose = require("mongoose");
 const _ = require("lodash");
 
 class LectureController {
@@ -159,7 +162,7 @@ class LectureController {
    * @param: lectureId
    */
   static byLecture = catchAsyncError(async (req, res, next) => {
-    let status, lecture, message, customerData, IFrame, PLecture;
+    let status, lecture, message, walletId;
     const { lectureId } = req.params;
     const { _id } = res.locals.user;
 
@@ -170,15 +173,45 @@ class LectureController {
     if (!status) return next(new AppError(message, 404));
 
     if (!lecture.isFree) {
+      try {
+        ({ status, walletId, message } = await getStudentWalletId(id));
+        if (!status) return next(new AppError(message, 400));
+
+        const session = await mongoose.startSession();
+        session.startTransaction();
+
+        ({ status, message } = await withdraw(
+          session,
+          walletId,
+          lecture.price,
+          lectureId
+        ));
+        if (!status) throw new Error(message);
+
+        ({ status, message } = await createNewPL(
+          _id,
+          lectureId,
+          lecture.price,
+          session
+        ));
+        if (!status) throw new Error(message);
+
+        await session.commitTransaction();
+        session.endSession();
+      } catch (err) {
+        await session.abortTransaction();
+        session.endSession();
+        return next(new AppError(err.message, 500));
+      }
     }
     if (lecture.isFree) {
-      ({ status, PLecture, message } = await createNewPL(_id, lectureId));
+      ({ status, message } = await createNewPL(_id, lectureId));
       if (!status) return next(new AppError(message, 400));
     }
 
     res.send({
       status: "success",
-      message: "Lecture purchased successfully",
+      message,
     });
   });
 }

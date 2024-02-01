@@ -18,7 +18,7 @@ const PurchasedLectureSchema = new mongoose.Schema(
       default: "pending",
     },
     price: {
-      type: mongoose.Decimal128,
+      type: mongoose.Schema.Types.Decimal128,
       required: [true, "Price is required"],
     },
     path: {

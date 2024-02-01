@@ -11,9 +11,9 @@ exports.createWallet = async () => {
   }
 };
 
-exports.getWalletTransactions = async function (walletId) {
+exports.getWalletTransactions = async function (_id) {
   try {
-    const wallet = await WalletModel.findById(walletId).select("history");
+    const wallet = await WalletModel.findById(_id).select("history");
 
     const history = wallet.history;
     const sortedKeys = Array.from(history.keys()).sort((a, b) => b - a);
@@ -40,14 +40,14 @@ exports.getWalletTransactions = async function (walletId) {
 };
 
 exports.deposit = async function (
-  walletId,
+  _id,
   amount,
   deposedBy,
   deposedThrough,
   depositId
 ) {
   try {
-    const data = await WalletModel.findById(walletId);
+    const data = await WalletModel.findById(_id);
 
     data.balance = (parseFloat(data.balance) + parseFloat(amount)).toFixed(1);
     data.history.set(Date.now().toString(), {
@@ -65,4 +65,23 @@ exports.deposit = async function (
   }
 };
 
-exports.withdraw = async function (amount, withdrawLectureId) {};
+exports.withdraw = async function (session, _id, amount, withdrawLectureId) {
+  try {
+    const data = await WalletModel.findById(_id);
+
+    if (parseFloat(data.balance) < parseFloat(amount))
+      return { status: false, message: "Insufficient balance" };
+
+    data.balance = (parseFloat(data.balance) - parseFloat(amount)).toFixed(1);
+    data.history.set(Date.now().toString(), {
+      operationType: "withdraw",
+      amount,
+      withdrawLectureId,
+    });
+    await data.save({ session });
+
+    return { status: true, message: "Wallet updated successfully" };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};

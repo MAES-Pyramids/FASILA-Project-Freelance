@@ -33,11 +33,11 @@ const LectureSchema = new mongoose.Schema(
       refPath: "type",
     },
     publishPrice: {
-      type: mongoose.Decimal128,
+      type: mongoose.Schema.Types.Decimal128,
       required: true,
     },
     finalPrice: {
-      type: mongoose.Decimal128,
+      type: mongoose.Schema.Types.Decimal128,
       required: this.confirmed == true,
     },
     isFree: {
@@ -64,7 +64,7 @@ const LectureSchema = new mongoose.Schema(
         default: 15,
       },
       opacity: {
-        type: mongoose.Decimal128,
+        type: mongoose.Schema.Types.Decimal128,
         default: 0.4,
       },
     },

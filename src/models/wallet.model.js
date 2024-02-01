@@ -1,11 +1,10 @@
 const mongoose = require("mongoose");
 
-// Reusable validation function
 const requiredForDeposit = function () {
-  return this.operationType === "deposit" ? Boolean(this) : true;
+  return this.operationType === "deposit";
 };
 const requiredForWithdraw = function () {
-  return this.operationType === "withdraw" ? Boolean(this) : true;
+  return this.operationType === "withdraw";
 };
 
 const operationSchema = new mongoose.Schema({
@@ -15,58 +14,43 @@ const operationSchema = new mongoose.Schema({
     required: [true, "Please provide operation"],
   },
   amount: {
-    type: mongoose.Decimal128,
+    type: mongoose.Schema.Types.Decimal128,
     required: [true, "Please provide operation amount"],
   },
   deposedThrough: {
     type: String,
     enum: ["Paymob", "Vodafone", "Instapay"],
-    validate: {
-      validator: requiredForDeposit,
-      message: "Deposit way is required for deposit operation",
-    },
+    required: requiredForDeposit,
   },
   deposedBy: {
     type: String,
     enum: ["Admin", "Student"],
-    validate: {
-      validator: requiredForDeposit,
-      message: "Deposed by is required for deposit operation",
-    },
+    required: requiredForDeposit,
   },
   withdrawLectureId: {
     type: String,
-    validate: {
-      validator: requiredForWithdraw,
-      message: "Lecture ID is required for withdraw operation",
-    },
+    required: requiredForWithdraw,
   },
   depositId: {
     transaction: {
       type: String,
-      validate: {
-        validator: function (value) {
-          return this.operationType === "deposit" &&
-            this.deposedThrough === "Paymob" &&
-            this.deposedBy === "Student"
-            ? Boolean(value)
-            : true;
-        },
-        message: "Transaction ID is required for deposit operation with Paymob",
+      required: function () {
+        return (
+          this.operationType === "deposit" &&
+          this.deposedThrough === "Paymob" &&
+          this.deposedBy === "Student"
+        );
       },
     },
     manually: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Admin",
-      validate: {
-        validator: function (value) {
-          return this.operationType === "deposit" &&
-            this.deposedThrough !== "Paymob" &&
-            this.deposedBy === "Admin"
-            ? Boolean(value)
-            : true;
-        },
-        message: "Manually ID is required for deposit operation with Vodafone",
+      required: function () {
+        return (
+          this.operationType === "deposit" &&
+          this.deposedThrough !== "Paymob" &&
+          this.deposedBy === "Admin"
+        );
       },
     },
   },
@@ -74,7 +58,7 @@ const operationSchema = new mongoose.Schema({
 
 const WalletSchema = new mongoose.Schema({
   balance: {
-    type: mongoose.Decimal128,
+    type: mongoose.Schema.Types.Decimal128,
     default: 0.0,
   },
   history: {
