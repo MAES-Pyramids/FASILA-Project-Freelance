@@ -194,6 +194,34 @@ exports.removeFavDoctor = async function (_id, doctorId) {
     return { status: false, message: err.message };
   }
 };
+
+exports.getStudentPaymentData = async (_id) => {
+  try {
+    const student = await StudentModel.findOne({ _id, verified: true });
+    if (!student) return { status: false, message: "Student not found" };
+
+    const customerData = {
+      first_name: student.first_name,
+      last_name: student.last_name,
+      phone: student.phone,
+    };
+
+    return { status: true, customerData };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
+exports.getStudentWalletId = async (_id) => {
+  try {
+    const student = await StudentModel.findById(_id).select("wallet");
+    if (!student) return { status: false, message: "Student not found" };
+
+    return { status: true, id: student.wallet._id };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
 //------------------Wasage OTP---------------------//
 exports.verifyStudent = async (_id, mobile) => {
   try {
@@ -243,23 +271,6 @@ exports.forceLogout = async function (_id) {
 
     await StudentModel.updateOne({ _id }, { forceLogoutAt: Date.now() });
     return { status: true, message: "Logged out successfully" };
-  } catch (err) {
-    return { status: false, message: err.message };
-  }
-};
-
-exports.getStudentPaymentData = async (_id) => {
-  try {
-    const student = await StudentModel.findOne({ _id, verified: true });
-    if (!student) return { status: false, message: "Student not found" };
-
-    const customerData = {
-      first_name: student.first_name,
-      last_name: student.last_name,
-      phone: student.phone,
-    };
-
-    return { status: true, customerData };
   } catch (err) {
     return { status: false, message: err.message };
   }

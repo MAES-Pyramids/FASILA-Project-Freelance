@@ -9,7 +9,6 @@ router.use(requireUser);
 
 router
   .route("/:id")
-  .get(restrictedTo("Student"), WalletController.getWallet)
-  .patch(restrictedTo("Admin"), WalletController.updateWallet);
+  .patch(restrictedTo("Admin"), WalletController.chargeWallet);
 
 module.exports = router;

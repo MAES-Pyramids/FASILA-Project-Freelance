@@ -1,5 +1,57 @@
 const mongoose = require("mongoose");
 
+const operationSchema = new mongoose.Schema({
+  operationType: {
+    type: String,
+    enum: ["withdraw", "deposit"],
+    required: [true, "Please provide operation"],
+  },
+  amount: {
+    type: mongoose.Decimal128,
+    required: [true, "Please provide operation amount"],
+  },
+  deposedThrough: {
+    type: String,
+    enum: ["paymob", "vodafone", "instapay"],
+    validate: {
+      validator: function (value) {
+        return this.operation === "deposit" ? Boolean(value) : true;
+      },
+      message: "Deposit way is required for deposit operation",
+    },
+  },
+  deposedBy: {
+    type: String,
+    enum: ["admin", "student"],
+    validate: {
+      validator: function (value) {
+        return this.operation === "deposit" ? Boolean(value) : true;
+      },
+      message: "Deposed by is required for deposit operation",
+    },
+  },
+  depositTransactionId: {
+    type: String,
+    validate: {
+      validator: function (value) {
+        return this.operation === "deposit" && this.deposedThrough === "paymob"
+          ? Boolean(value)
+          : true;
+      },
+      message: "Transaction ID is required for deposit operation with Paymob",
+    },
+  },
+  withdrawLectureId: {
+    type: String,
+    validate: {
+      validator: function (value) {
+        return this.operation === "withdraw" ? Boolean(value) : true;
+      },
+      message: "Lecture ID is required for withdraw operation",
+    },
+  },
+});
+
 const WalletSchema = new mongoose.Schema({
   balance: {
     type: mongoose.Decimal128,
@@ -7,50 +59,7 @@ const WalletSchema = new mongoose.Schema({
   },
   history: {
     type: Map,
-    of: {
-      operation: {
-        type: String,
-        enum: ["withdraw", "deposit"],
-        required: [true, "Please provide operation"],
-      },
-      amount: {
-        type: mongoose.Decimal128,
-        required: [true, "Please provide operation amount"],
-      },
-      deposedThrough: {
-        type: String,
-        enum: ["paymob", "vodafone", "instapay"],
-        validate: {
-          validator: function (value) {
-            return this.operation === "deposit" ? Boolean(value) : true;
-          },
-          message: "Deposit way is required for deposit operation",
-        },
-      },
-      deposedBy: {
-        type: String,
-        enum: ["admin", "student"],
-        validate: {
-          validator: function (value) {
-            return this.operation === "deposit" ? Boolean(value) : true;
-          },
-          message: "Deposed by is required for deposit operation",
-        },
-      },
-      transactionId: {
-        type: String,
-        validate: {
-          validator: function (value) {
-            return this.operation === "deposit" &&
-              this.deposedThrough === "paymob"
-              ? Boolean(value)
-              : true;
-          },
-          message:
-            "Transaction ID is required for deposit operation with Paymob",
-        },
-      },
-    },
+    of: operationSchema,
     default: () => ({}),
   },
 });
