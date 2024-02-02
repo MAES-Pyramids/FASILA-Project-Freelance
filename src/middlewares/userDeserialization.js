@@ -9,6 +9,7 @@ const {
 const DeserializeUser = async (req, res, next) => {
   let accessToken = _.get(req, "headers.authorization", "");
   accessToken = accessToken.replace(/^Bearer\s/, "");
+
   const refreshToken = _.get(req, "headers.x-refresh", "");
 
   if (!accessToken || accessToken == "") return next();
@@ -33,8 +34,10 @@ const DeserializeUser = async (req, res, next) => {
 
   if (expired && refreshToken !== "") {
     const newAccessToken = await reIssueAccessToken(refreshToken);
-    if (newAccessToken) res.setHeader("x-access-token", newAccessToken);
-    else return next();
+    if (newAccessToken) {
+      res.setHeader("x-access-token", newAccessToken);
+      res.setHeader("Access-Control-Expose-Headers", "x-access-token");
+    } else return next();
 
     const { decoded } = verifyJWT(
       newAccessToken,
