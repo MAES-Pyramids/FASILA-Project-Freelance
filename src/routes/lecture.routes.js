@@ -1,9 +1,9 @@
 const LectureController = require("../controllers/lecture.controller");
-const router = require("express").Router({ mergeParams: true });
-
-const requireUser = require("../middlewares/userRequired");
 const restrictedTo = require("../middlewares/restrictedRoute");
+const requireUser = require("../middlewares/userRequired");
+const upload = require("../middlewares/multer");
 
+const router = require("express").Router({ mergeParams: true });
 router.use(requireUser);
 
 router
@@ -14,6 +14,10 @@ router
 router
   .route("/:lectureId")
   .post(restrictedTo("Student"), LectureController.byLecture)
-  .patch(restrictedTo("Admin"), LectureController.confirmLecture);
+  .patch(
+    restrictedTo("Admin"),
+    upload.array("preview_path"),
+    LectureController.confirmLecture
+  );
 
 module.exports = router;

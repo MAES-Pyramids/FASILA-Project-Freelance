@@ -11,6 +11,7 @@ const {
   isLecturePurchased,
 } = require("../services/purchases.service");
 const { withdraw } = require("../services/wallet.service");
+const { s3UploadV3 } = require("../services/digitalocean.service");
 const { getStudentWalletId } = require("../services/student.service");
 // const { getCardIframe } = require("../utils/payment");
 // const { getStudentPaymentData } = require("../services/student.service");
@@ -133,20 +134,27 @@ class LectureController {
    * @body: {finalPrice , waterMarkDetails}
    */
   static confirmLecture = catchAsyncError(async (req, res, next) => {
+    let status, FileNames, message;
     const { lectureId } = req.params;
-    const confirmBody = _.pick(req.body, [
+    let confirmBody = _.pick(req.body, [
       "name",
       "no_slides",
       "description",
       "finalPrice",
       "waterMarkDetails",
-      "preview_path",
     ]);
 
-    const { status, message } = await confirmLectureService(
-      lectureId,
-      confirmBody
-    );
+    if (req.files) {
+      ({ status, FileNames, message } = await s3UploadV3(
+        req.files,
+        "subject-Preview"
+      ));
+      if (!status) throw new Error(message);
+      confirmBody = { ...confirmBody, preview_path: FileNames[0] };
+    }
+
+    ({ status, message } = await confirmLectureService(lectureId, confirmBody));
+
     if (!status) return next(new AppError(message, 400));
 
     res.send({
