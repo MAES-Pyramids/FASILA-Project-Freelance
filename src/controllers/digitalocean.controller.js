@@ -6,27 +6,19 @@ const {
 } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require("uuid");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-
 const catchAsyncError = require("../utils/catchAsyncErrors");
 const policyParams = require("../utils/digitalocean");
 const AppError = require("../utils/appErrorsClass");
 
-const region = process.env.DigitalOcean_region;
-const endpoint = process.env.DigitalOcean_Endpoint;
-const bucketName = process.env.DigitalOcean_BucketName;
-const accessKeyId = process.env.DigitalOcean_accessKeyId;
-const secretAccessKey = process.env.DigitalOcean_secretAccessKey;
+const endpoint = process.env.AWS_ENDPOINT;
+const bucketName = process.env.AWS_BUCKET_NAME;
 
 const s3 = new S3({
   endpoint,
-  region,
-  credentials: {
-    accessKeyId: accessKeyId,
-    secretAccessKey: secretAccessKey,
-  },
   signatureVersion: "v4",
 });
 
+// Set the bucket policy
 // s3.send(new PutBucketPolicyCommand(policyParams))
 //   .then(() => {
 //     console.log("Bucket policy updated successfully.");
