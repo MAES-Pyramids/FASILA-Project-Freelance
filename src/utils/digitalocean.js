@@ -1,4 +1,4 @@
-const bucketName = process.env.DigitalOcean_BucketName;
+const bucketName = process.env.AWS_BUCKET_NAME;
 
 const bucketPolicy = {
   Version: "2012-10-17",

@@ -1,4 +1,10 @@
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const {
+  S3Client,
+  GetObjectCommand,
+  PutObjectCommand,
+  PutBucketPolicyCommand,
+} = require("@aws-sdk/client-s3");
+const policyParams = require("../utils/digitalocean");
 const uuid = require("uuid").v4;
 
 const endpoint = process.env.AWS_ENDPOINT;
@@ -9,7 +15,15 @@ const s3client = new S3Client({
   signatureVersion: "v4",
 });
 
-// we need getPresignedURL function to view Protected Routes
+// Set the bucket policy
+// s3client
+//   .send(new PutBucketPolicyCommand(policyParams))
+//   .then(() => {
+//     console.log("Bucket policy updated successfully.");
+//   })
+//   .catch((error) => {
+//     console.error("Error updating bucket policy:", error);
+//   });
 
 const s3UploadV3 = async (files, uploadedFor) => {
   const [params, FileNames] = [[], []];
@@ -54,5 +68,8 @@ const s3UploadV3 = async (files, uploadedFor) => {
     return { status: false, message: err.message };
   }
 };
+
+// we need getPresignedURL function to view Protected Routes
+const getPresignedURL = async (Key) => {};
 
 module.exports = { s3client, s3UploadV3 };

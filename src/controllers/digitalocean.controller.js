@@ -1,26 +1,11 @@
-const {
-  GetObjectCommand,
-  PutObjectCommand,
-  PutBucketPolicyCommand,
-} = require("@aws-sdk/client-s3");
-const uuid = require("uuid").v4;
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { s3client } = require("../services/digitalocean.service");
 const catchAsyncError = require("../utils/catchAsyncErrors");
-const policyParams = require("../utils/digitalocean");
+const { PutObjectCommand } = require("@aws-sdk/client-s3");
 const AppError = require("../utils/appErrorsClass");
+const uuid = require("uuid").v4;
 
-const endpoint = process.env.AWS_ENDPOINT;
 const bucketName = process.env.AWS_BUCKET_NAME;
-
-// Set the bucket policy
-// s3client.send(new PutBucketPolicyCommand(policyParams))
-//   .then(() => {
-//     console.log("Bucket policy updated successfully.");
-//   })
-//   .catch((error) => {
-//     console.error("Error updating bucket policy:", error);
-//   });
 
 class AWSController {
   /**
