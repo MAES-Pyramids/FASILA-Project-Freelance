@@ -2,7 +2,7 @@ const {
   createDoctor,
   getAllDoctors,
   getDoctorByID,
-  updateDoctor,
+  setDoctorPhoto,
 } = require("../services/doctor.service");
 const { s3UploadV3 } = require("../services/digitalocean.service");
 const mongoose = require("mongoose");
@@ -79,8 +79,8 @@ class DoctorController {
         ));
         if (!status) throw new Error(message);
 
-        ({ status, data, message } = await updateDoctor(
-          data._id,
+        ({ status, data, message } = await setDoctorPhoto(
+          data,
           FileNames[0],
           session
         ));

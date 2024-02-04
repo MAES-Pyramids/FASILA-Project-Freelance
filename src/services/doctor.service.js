@@ -39,12 +39,9 @@ exports.createDoctor = async function (newDoctor, session) {
   }
 };
 
-exports.updateDoctor = async function (id, updateData, session) {
+exports.setDoctorPhoto = async function (doctor, photo, session) {
   try {
-    const doctor = await DoctorModel.findById(id);
-    if (!doctor) return { status: false, message: "Doctor Not Found" };
-
-    doctor.set(updateData);
+    doctor.photo = photo;
     const updatedDoctor = await doctor.save({ session });
 
     const doctorData = _.omit(updatedDoctor.toObject(), ["password", "__v"]);

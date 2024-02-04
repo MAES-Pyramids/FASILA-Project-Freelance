@@ -53,6 +53,8 @@ const s3UploadV3 = async (files, uploadedFor) => {
       Key,
       Bucket,
       Body: file.buffer,
+      ContentType: file.mimetype,
+      ACL: uploadedFor !== "subject-Purchased" ? "public-read" : "private",
     });
     FileNames.push(`${endpoint}/${Bucket}/${Key}`);
   }
