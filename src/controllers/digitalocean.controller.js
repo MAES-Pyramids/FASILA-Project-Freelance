@@ -8,6 +8,7 @@ const { v4: uuidv4 } = require("uuid");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
+const policyParams = require("../utils/digitalocean");
 const AppError = require("../utils/appErrorsClass");
 
 const region = process.env.DigitalOcean_region;
@@ -25,6 +26,14 @@ const s3 = new S3({
   },
   signatureVersion: "v4",
 });
+
+// s3.send(new PutBucketPolicyCommand(policyParams))
+//   .then(() => {
+//     console.log("Bucket policy updated successfully.");
+//   })
+//   .catch((error) => {
+//     console.error("Error updating bucket policy:", error);
+//   });
 
 class AWSController {
   /**
