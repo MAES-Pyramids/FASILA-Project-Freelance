@@ -1,3 +1,58 @@
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const uuid = require("uuid").v4;
+
+const endpoint = process.env.AWS_ENDPOINT;
+const Bucket = process.env.AWS_BUCKET_NAME;
+
+const s3client = new S3Client({
+  endpoint,
+  signatureVersion: "v4",
+});
+
 // we need getPresignedURL function to view Protected Routes
 
-// we need normal not presigned upload function to add purchased pdf to new route (think about status of the file pending, ... )
+const s3UploadV3 = async (files, uploadedFor) => {
+  const [params, FileNames] = [[], []];
+  const generateKey = (prefix, file) => {
+    return `${prefix}/${uuid()}-${file.originalname}`;
+  };
+
+  for (let file of files) {
+    let Key;
+
+    switch (uploadedFor) {
+      case "subject-Preview":
+        Key = generateKey("PDFs/Previews", file);
+        break;
+      case "subject-Purchased":
+        Key = generateKey("PDFs/Purchased", file);
+        break;
+      case "doctor":
+        Key = generateKey("Doctors/Avatars", file);
+        break;
+      case "student":
+        Key = generateKey("Students/Faculty_Cards", file);
+        break;
+    }
+
+    params.push({
+      Key,
+      Bucket,
+      Body: file.buffer,
+    });
+
+    FileNames.push(Key);
+  }
+
+  try {
+    const result = await Promise.all(
+      params.map((param) => s3client.send(new PutObjectCommand(param)))
+    );
+    console.log(result);
+    return { status: true, FileNames };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
+module.exports = { s3client, s3UploadV3 };
