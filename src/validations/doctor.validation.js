@@ -7,6 +7,7 @@ const createDoctorSchema = Joi.object({
     phone: Joi.string().required(),
     password: Joi.string().required(),
     faculty: Joi.string().required(),
+    photo: Joi.string(),
   }),
   query: Joi.object({}),
   params: Joi.object({}),

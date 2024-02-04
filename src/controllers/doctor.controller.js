@@ -58,6 +58,7 @@ class DoctorController {
       "phone",
       "password",
       "faculty",
+      "photo",
     ]);
 
     const { status, data, message } = await createDoctor(newDoctor);

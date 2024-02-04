@@ -140,6 +140,7 @@ class LectureController {
       "description",
       "finalPrice",
       "waterMarkDetails",
+      "preview_path",
     ]);
 
     const { status, message } = await confirmLectureService(
