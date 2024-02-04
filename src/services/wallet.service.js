@@ -24,8 +24,8 @@ exports.getWalletTransactions = async function (_id) {
       if (transaction.operationType == "deposit")
         transaction = _.omit(transaction, ["depositId", "deposedBy"]);
 
-      if (transaction.operationType == "withdraw")
-        transaction = _.omit(transaction, ["withdrawLectureId"]);
+      // if (transaction.operationType == "withdraw")
+      //   transaction = _.omit(transaction, ["withdrawLectureId"]);
 
       return {
         date: new Date(parseInt(key)).toLocaleString("en-GB"),
