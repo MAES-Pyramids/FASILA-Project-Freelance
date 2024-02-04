@@ -46,7 +46,7 @@ class AWSController {
     let Key;
     const { filetype, uploadedFor } = req.query;
 
-    if (!filetype || !uploadedFor)
+    if (!filetype || (!uploadedFor && filetype !== "application/pdf"))
       return next(new AppError("filetype and uploadedFor are required"));
 
     if (filetype == "application/pdf") {
@@ -80,16 +80,15 @@ class AWSController {
           : "private",
     };
 
-    console.log(params.ACL);
-
     try {
       const command = new PutObjectCommand(params);
       const url = await getSignedUrl(s3, command, { expiresIn: 1200 });
+      const path = `https://${bucketName}.ams3.digitaloceanspaces.com/${Key}`;
 
       res.status(200).json({
         status: "success",
         message: "Presigned URL generated successfully",
-        name: Key,
+        path,
         url,
       });
     } catch (error) {
