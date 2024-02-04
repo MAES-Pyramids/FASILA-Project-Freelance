@@ -47,7 +47,6 @@ class StudentController {
     ({ status, message } = await isValidSemester(faculty, semester));
     if (!status) return next(new AppError(message));
 
-    // TODO: ensure converting it to transaction
     ({ status, data, message } = await createUser("Student", signUpData));
     if (!status) return next(new AppError(message, 500));
 

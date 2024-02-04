@@ -185,7 +185,7 @@ class LectureController {
       session.startTransaction();
       try {
         ({ status, walletId, message } = await getStudentWalletId(_id));
-        if (!status) return next(new AppError(message, 400));
+        if (!status) throw new Error(message);
 
         const { finalPrice } = lecture;
         ({ status, message } = await withdraw(
@@ -208,6 +208,7 @@ class LectureController {
       } catch (err) {
         await session.abortTransaction();
         session.endSession();
+
         return next(new AppError(err.message, 500));
       }
     }

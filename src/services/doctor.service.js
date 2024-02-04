@@ -25,13 +25,29 @@ exports.getDoctorByID = async function (id) {
   }
 };
 
-exports.createDoctor = async function (newDoctor) {
+exports.createDoctor = async function (newDoctor, session) {
   try {
     const isFaculty = await isFacultyExist(newDoctor.faculty);
     if (!isFaculty) return { status: false, message: "Faculty Not Found" };
 
-    const doctor = await DoctorModel.create(newDoctor);
-    const doctorData = _.omit(doctor.toObject(), ["password", "__v"]);
+    let doctor = new DoctorModel(newDoctor);
+    doctor = await doctor.save({ session });
+
+    return { status: true, data: doctor };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
+exports.updateDoctor = async function (id, updateData, session) {
+  try {
+    const doctor = await DoctorModel.findById(id);
+    if (!doctor) return { status: false, message: "Doctor Not Found" };
+
+    doctor.set(updateData);
+    const updatedDoctor = await doctor.save({ session });
+
+    const doctorData = _.omit(updatedDoctor.toObject(), ["password", "__v"]);
     return { status: true, data: doctorData };
   } catch (err) {
     return { status: false, message: err.message };

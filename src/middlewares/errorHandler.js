@@ -1,5 +1,6 @@
 const AppError = require("../utils/appErrorsClass");
 const logger = require("../utils/logger");
+const multer = require("multer");
 //-------------------------------------------//
 const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}.`;
@@ -18,6 +19,26 @@ const handleValidationErrorDB = (err) => {
   const errors = Object.values(err.errors).map((el) => el.message);
   const message = `Invalid input data. ${errors.join(". ")}`;
   return new AppError(message, 400);
+};
+
+const handleMulterError = (err, res) => {
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).json({
+      message: "file is too large",
+    });
+  }
+
+  if (err.code === "LIMIT_FILE_COUNT") {
+    return res.status(400).json({
+      message: "File limit Exceeded",
+    });
+  }
+
+  if (err.code === "LIMIT_UNEXPECTED_FILE") {
+    return res.status(400).json({
+      message: "File must be an image",
+    });
+  }
 };
 //-------------------------------------------//
 const sendErrorDev = (err, req, res) => {
@@ -74,13 +95,16 @@ module.exports = (err, req, res, next) => {
     let error = { ...err };
     error.message = err.message;
 
+    if (err instanceof multer.MulterError) handleMulterError(err, res);
     if (err.code === 11000) error = handleDuplicateFieldsDB(err);
     if (err.name === "CastError") error = handleCastErrorDB(err);
     if (err.name === "ValidationError") error = handleValidationErrorDB(err);
 
     sendErrorProd(error, req, res);
   } else if (process.env.NODE_ENV.trim() === "development") {
+    if (err instanceof multer.MulterError) handleMulterError(err, res);
     sendErrorDev(err, req, res);
+    if (err instanceof multer.MulterError) handleMulterError(err, res);
   } else if (process.env.NODE_ENV.trim() === "test") {
     sendErrorTesting(err, req, res);
   } else {

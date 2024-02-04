@@ -54,16 +54,16 @@ const s3UploadV3 = async (files, uploadedFor) => {
       Bucket,
       Body: file.buffer,
     });
-
-    FileNames.push(Key);
+    FileNames.push(`${endpoint}/${Bucket}/${Key}`);
   }
 
   try {
     const result = await Promise.all(
       params.map((param) => s3client.send(new PutObjectCommand(param)))
     );
-    console.log(result);
-    return { status: true, FileNames };
+
+    if (result) return { status: true, FileNames };
+    else return { status: false, message: "Error uploading files." };
   } catch (err) {
     return { status: false, message: err.message };
   }

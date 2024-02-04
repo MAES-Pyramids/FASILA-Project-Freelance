@@ -2,7 +2,10 @@ const {
   createDoctor,
   getAllDoctors,
   getDoctorByID,
+  updateDoctor,
 } = require("../services/doctor.service");
+const { s3UploadV3 } = require("../services/digitalocean.service");
+const mongoose = require("mongoose");
 const _ = require("lodash");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
@@ -53,16 +56,45 @@ class DoctorController {
    * @access private
    */
   static addDoctor = catchAsyncError(async (req, res, next) => {
+    let status, FileNames, data, message;
     const newDoctor = _.pick(req.body, [
       "name",
       "phone",
       "password",
       "faculty",
-      "photo",
     ]);
 
-    const { status, data, message } = await createDoctor(newDoctor);
-    if (!status) return next(new AppError(message, 500));
+    // we are gonna follow this technique cause in case we just created first, we won't be sure that doctor will pass validation which could lead to un used but stored images in s3
+    const session = await mongoose.startSession({ validateBeforeSave: true });
+    session.startTransaction();
+
+    try {
+      ({ status, data, message } = await createDoctor(newDoctor, session));
+      if (!status) throw new Error(message);
+
+      if (req.files) {
+        ({ status, FileNames, message } = await s3UploadV3(
+          req.files,
+          "doctor"
+        ));
+        if (!status) throw new Error(message);
+
+        ({ status, data, message } = await updateDoctor(
+          data._id,
+          FileNames[0],
+          session
+        ));
+        if (!status) throw new Error(message);
+      }
+
+      await session.commitTransaction();
+      session.endSession();
+    } catch (err) {
+      await session.abortTransaction();
+      session.endSession();
+
+      return next(new AppError(err.message, 500));
+    }
 
     res.send({
       status: "success",

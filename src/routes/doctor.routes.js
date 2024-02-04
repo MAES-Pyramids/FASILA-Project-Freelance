@@ -3,6 +3,7 @@ const {
   GetDocByID_Validation,
   GetAllDocs_Validation,
 } = require("../validations/doctor.validation");
+const upload = require("../middlewares/multer");
 const StudentRoutes = require("./student.routes");
 const SubjectRoutes = require("./subject.routes");
 const requireUser = require("../middlewares/userRequired");
@@ -27,6 +28,7 @@ router
   )
   .post(
     restrictedTo("Admin"),
+    upload.array("photo"),
     CreateDoc_Validation,
     DoctorController.addDoctor
   );
