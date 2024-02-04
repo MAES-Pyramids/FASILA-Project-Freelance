@@ -8,15 +8,20 @@ const {
   RemoveFavDoctor_Validation,
   EditPhoneNumber_Validation,
 } = require("../validations/student.validation");
+const upload = require("../middlewares/multer");
 const WalletRouter = require("./wallet.routes");
 const requireUser = require("../middlewares/userRequired");
 const restrictedTo = require("../middlewares/restrictedRoute");
 const StudentController = require("../controllers/student.controller");
-
 //---------------------------------------------------------------------//
 const router = require("express").Router({ mergeParams: true });
 
-router.post("/signup", Signup_Validation, StudentController.signUp);
+router.post(
+  "/signup",
+  upload.array("facultyCard"),
+  Signup_Validation,
+  StudentController.signUp
+);
 
 router
   .route("/public")

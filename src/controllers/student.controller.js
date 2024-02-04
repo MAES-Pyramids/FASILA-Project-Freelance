@@ -8,12 +8,15 @@ const {
   storeTelegramID,
   verifyTelegramID,
   changePhoneNumber,
+  setStudentFC,
 } = require("../services/student.service.js");
 const { invalidateUserSessions } = require("../services/session.service.js");
 const { isValidSemester } = require("../services/faculty.service.js");
 const { storeOTP, verifyOTP } = require("../services/otp.service.js");
+const { s3UploadV3 } = require("../services/digitalocean.service.js");
 const { sendOTPMessage } = require("../utils/telegramBot.js");
 const { createUser } = require("../services/user.service.js");
+const mongoose = require("mongoose");
 const crypto = require("crypto");
 const _ = require("lodash");
 
@@ -28,7 +31,7 @@ class StudentController {
    *  @access public
    */
   static signUp = catchAsyncError(async (req, res, next) => {
-    let [status, data, message] = ["", "", ""];
+    let status, data, FileNames, message;
     const signUpData = _.pick(req.body, [
       "first_name",
       "last_name",
@@ -36,7 +39,6 @@ class StudentController {
       "password",
       "gender",
       "semester",
-      "facultyCard",
       "faculty",
     ]);
     const { faculty, semester } = signUpData;
@@ -47,8 +49,35 @@ class StudentController {
     ({ status, message } = await isValidSemester(faculty, semester));
     if (!status) return next(new AppError(message));
 
-    ({ status, data, message } = await createUser("Student", signUpData));
-    if (!status) return next(new AppError(message, 500));
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      ({ status, data, message } = await createUser(
+        "Student",
+        signUpData,
+        session
+      ));
+      if (!status) throw new Error(message);
+
+      ({ status, FileNames, message } = await s3UploadV3(req.files, "student"));
+      if (!status) throw new Error(message);
+
+      ({ status, data, message } = await setStudentFC(
+        data,
+        FileNames[0],
+        session
+      ));
+      if (!status) throw new Error(message);
+
+      await session.commitTransaction();
+      session.endSession();
+    } catch (err) {
+      await session.abortTransaction();
+      session.endSession();
+
+      return next(new AppError(err.message, 500));
+    }
 
     res.send({
       status: "success",

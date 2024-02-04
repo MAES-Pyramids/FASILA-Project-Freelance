@@ -95,9 +95,9 @@ module.exports = (err, req, res, next) => {
     let error = { ...err };
     error.message = err.message;
 
-    if (err instanceof multer.MulterError) handleMulterError(err, res);
     if (err.code === 11000) error = handleDuplicateFieldsDB(err);
     if (err.name === "CastError") error = handleCastErrorDB(err);
+    if (err instanceof multer.MulterError) handleMulterError(err, res);
     if (err.name === "ValidationError") error = handleValidationErrorDB(err);
 
     sendErrorProd(error, req, res);

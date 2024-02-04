@@ -70,28 +70,29 @@ exports.findUser = async function (role, query) {
   }
 };
 
-const createAndOmitPassword = async (model, data) => {
+const createAndOmitPassword = async (model, data, session) => {
   try {
-    const createdUser = await model.create(data);
-    const userJson = createdUser.toJSON();
-    const userWithoutPassword = _.omit(userJson, "password");
+    let createdUser = new model(data);
 
-    return { status: true, data: userWithoutPassword };
+    // if (session) createdUser = await createdUser.save({ session });
+    // else createdUser = await createdUser.save();
+
+    return { status: true, data: createdUser };
   } catch (err) {
     return { status: false, message: err.message };
   }
 };
 
-exports.createUser = async function (role, data) {
+exports.createUser = async function (role, data, session) {
   switch (role) {
     case "Student":
-      return createAndOmitPassword(StudentModel, data);
+      return createAndOmitPassword(StudentModel, data, session);
     case "Doctor":
-      return createAndOmitPassword(DoctorModel, data);
+      return createAndOmitPassword(DoctorModel, data, session);
     case "Library":
-      return createAndOmitPassword(LibraryModel, data);
+      return createAndOmitPassword(LibraryModel, data, session);
     case "Admin":
-      return createAndOmitPassword(AdminModel, data);
+      return createAndOmitPassword(AdminModel, data, session);
     default:
       return { status: false, message: "Invalid role" };
   }

@@ -2,6 +2,7 @@ const { invalidateUserSessions } = require("../services/session.service");
 const { isDoctorExist } = require("../services/doctor.service");
 const StudentModel = require("../models/student.model");
 const crypto = require("crypto");
+const _ = require("lodash");
 
 exports.checkValidPhone = async function (phone) {
   try {
@@ -51,6 +52,18 @@ exports.changePhoneNumber = async function (_id, phone) {
     student.phone = phone;
     await student.save();
     return { status: true, message: "Phone number changed successfully" };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
+exports.setStudentFC = async function (student, facultyCard, session) {
+  try {
+    student.facultyCard = facultyCard;
+    const updatedStudent = await student.save({ session });
+
+    const studentData = _.omit(updatedStudent.toObject(), ["password", "__v"]);
+    return { status: true, data: studentData };
   } catch (err) {
     return { status: false, message: err.message };
   }
