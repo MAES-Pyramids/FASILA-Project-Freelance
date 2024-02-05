@@ -37,11 +37,14 @@ const s3UploadDocuments = async (files, uploadedFor) => {
     let Key;
 
     switch (uploadedFor) {
-      case "subject-Preview":
+      case "pdf-preview":
         Key = generateKey("PDFs/Previews", file);
         break;
       case "doctor":
         Key = generateKey("Doctors/Avatars", file);
+        break;
+      case "subject":
+        Key = generateKey("Subjects/Previews", file);
         break;
       case "student":
         Key = generateKey("Students/Faculty_Cards", file);
@@ -55,7 +58,10 @@ const s3UploadDocuments = async (files, uploadedFor) => {
       ContentType: file.mimetype,
       ACL: uploadedFor !== "student" ? "public-read" : "private",
     });
-    FileNames.push(`https://${Bucket}.ams3.digitaloceanspaces.com/${Key}`);
+
+    if (uploadedFor !== "student")
+      FileNames.push(`https://${Bucket}.ams3.digitaloceanspaces.com/${Key}`);
+    else FileNames.push(Key);
   }
 
   try {

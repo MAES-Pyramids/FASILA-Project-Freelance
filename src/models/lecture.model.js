@@ -89,7 +89,7 @@ LectureSchema.post(/^find/, async function (doc) {
           console.log("we have run the function");
         }
       });
-    } else {
+    } else if (!Array.isArray(doc)) {
       console.log("we are single");
       if (doc.key) {
         doc.path = await s3GetTempViewURL(doc.key);

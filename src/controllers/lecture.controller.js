@@ -148,7 +148,7 @@ class LectureController {
     if (req.files) {
       ({ status, FileNames, message } = await s3UploadDocuments(
         req.files,
-        "subject-Preview"
+        "pdf-preview"
       ));
       if (!status) throw new Error(message);
       confirmBody = { ...confirmBody, preview_path: FileNames[0] };

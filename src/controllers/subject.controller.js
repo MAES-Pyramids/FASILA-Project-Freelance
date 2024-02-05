@@ -6,6 +6,7 @@ const {
   addDoctorToSubject,
   removeDoctorFromSubject,
 } = require("../services/subject.service");
+const { s3UploadDocuments } = require("../services/digitalocean.service");
 const { isValidSemester } = require("../services/faculty.service");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
@@ -92,14 +93,23 @@ class SubjectController {
    * @access private
    */
   static addSubject = catchAsyncError(async (req, res, next) => {
+    let status, data, message, FileNames;
     const newSubject = _.pick(req.body, ["name", "faculty", "semester"]);
-    let [status, data, message] = ["", "", ""];
 
     ({ status, message } = await isValidSemester(
       newSubject.faculty,
       newSubject.semester
     ));
     if (!status) return next(new AppError(message, 400));
+
+    if (req.files) {
+      ({ status, FileNames, message } = await s3UploadDocuments(
+        req.files,
+        "pdf-preview"
+      ));
+      if (!status) throw new Error(message);
+      newSubject = { ...newSubject, photo: FileNames[0] };
+    }
 
     ({ status, data, message } = await createSubject(newSubject));
     if (!status) return next(new AppError(message, 400));

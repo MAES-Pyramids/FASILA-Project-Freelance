@@ -16,6 +16,12 @@ const bucketPolicy = {
       Resource: `arn:aws:s3:::${bucketName}/Doctors/Avatars*`,
     },
     {
+      Effect: "Allow",
+      Principal: "*",
+      Action: "s3:GetObject",
+      Resource: `arn:aws:s3:::${bucketName}/Subjects/Previews*`,
+    },
+    {
       Effect: "Deny",
       Principal: "*",
       Action: "s3:GetObject",

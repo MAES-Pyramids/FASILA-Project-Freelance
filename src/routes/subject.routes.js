@@ -5,6 +5,7 @@ const {
   GetSubByID_Validation,
 } = require("../validations/subject.validation");
 const requireUser = require("../middlewares/userRequired");
+const upload = require("../middlewares/multer");
 const lectureRoutes = require("./lecture.routes");
 const restrictedTo = require("../middlewares/restrictedRoute");
 const SubjectController = require("../controllers/subject.controller");
@@ -21,6 +22,7 @@ router
   .get(GetSubs_Validation, SubjectController.getALLSubjects)
   .post(
     restrictedTo("Admin"),
+    upload.array("photo"),
     CreateSub_Validation,
     SubjectController.addSubject
   );
