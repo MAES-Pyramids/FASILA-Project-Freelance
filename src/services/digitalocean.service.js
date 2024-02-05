@@ -18,14 +18,14 @@ const s3client = new S3Client({
 });
 
 // Set the bucket policy
-s3client
-  .send(new PutBucketPolicyCommand(policyParams))
-  .then(() => {
-    console.log("Bucket policy updated successfully.");
-  })
-  .catch((error) => {
-    console.error("Error updating bucket policy:", error);
-  });
+// s3client
+//   .send(new PutBucketPolicyCommand(policyParams))
+//   .then(() => {
+//     console.log("Bucket policy updated successfully.");
+//   })
+//   .catch((error) => {
+//     console.error("Error updating bucket policy:", error);
+//   });
 
 const s3UploadDocuments = async (files, uploadedFor) => {
   const [params, FileNames] = [[], []];

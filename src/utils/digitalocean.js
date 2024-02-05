@@ -26,6 +26,15 @@ const bucketPolicy = {
       Principal: "*",
       Action: "s3:GetObject",
       Resource: `arn:aws:s3:::${bucketName}/PDFs/Purchases*`,
+      Condition: {
+        StringNotEqualsIfExists: {
+          "aws:PrincipalType": "Service",
+        },
+        StringEquals: {
+          "aws:PrincipalType": "Service",
+          "aws:requester": "s3.amazonaws.com",
+        },
+      },
     },
     {
       Effect: "Deny",
