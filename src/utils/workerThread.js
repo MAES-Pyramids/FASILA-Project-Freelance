@@ -6,6 +6,7 @@ const { inputFileURL, watermarkPhone, waterMarkDetails, emptyPageDetails } =
 
 const opacity = parseFloat(waterMarkDetails.opacity);
 
+console.log("worker thread started");
 addWatermarkAndEmptyPages(
   inputFileURL,
   watermarkPhone,
@@ -13,7 +14,7 @@ addWatermarkAndEmptyPages(
   emptyPageDetails
 )
   .then((res) => {
-    parentPort.postMessage({ status: res.status, DigitalOcean_URL: res.path });
+    parentPort.postMessage({ status: res.status, key: res.path });
   })
   .catch((err) => {
     parentPort.postMessage({ success: false, message: err.message });

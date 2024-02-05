@@ -60,12 +60,14 @@ exports.addWatermarkAndEmptyPages = async function (
   const EPHeightP = 100;
   const EPWidthP = 100;
 
+  console.log("Start Downloading PDF File...");
   let response;
   try {
     response = await axios.get(inputFileURL, { responseType: "arraybuffer" });
   } catch (err) {
     throw new Error("Error getting file from URL");
   }
+  console.log("File Downloaded!");
 
   const myMap = new Map([
     [1, 1.3],
@@ -118,10 +120,14 @@ exports.addWatermarkAndEmptyPages = async function (
   }
 
   const PdfBytes = await pdfDoc.save();
+  console.log("PDF Processing Done!");
 
   try {
-    const { status, fileUrl, message } = await s3UploadModifiedPDF(PdfBytes);
-    if (status) return { status: "true", path: fileUrl };
+    console.log("uploading to digital ocean");
+    const { status, key, message } = await s3UploadModifiedPDF(PdfBytes);
+    console.log("uploaded to digital ocean");
+
+    if (status) return { status: "true", path: key };
     else throw new Error(`Error uploading file to DigitalOcean ${message}`);
   } catch (err) {
     throw new Error(`Error uploading file to DigitalOcean ${err.message}`);

@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const lectureModel = require("../models/lecture.model");
 const { checkSubjectDoctor } = require("./subject.service");
 const { checkStudentPurchasedLectures } = require("./purchases.service");
@@ -31,7 +32,7 @@ exports.getLecturesForDoctor = async (query) => {
 exports.getLecturesForStudent = async (query, student) => {
   try {
     excluded =
-      "-subject -doctor -type -publishedBy -publishPrice -confirmed -waterMarkDetails -__v -path -finalLayout";
+      "-subject -doctor -type -publishedBy -publishPrice -confirmed -waterMarkDetails -__v  -finalLayout";
 
     let AllLectures = await lectureModel.find(query).select(excluded);
     AllLectures = await Promise.all(
@@ -41,7 +42,7 @@ exports.getLecturesForStudent = async (query, student) => {
           lec._id
         );
         if (status) return { ...data, purchased: true };
-        else return { ...lec.toObject(), purchased: false };
+        else return { ..._.omit(lec.toObject(), "path"), purchased: false };
       })
     );
 

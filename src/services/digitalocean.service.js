@@ -84,8 +84,7 @@ const s3UploadModifiedPDF = async (PdfBytes) => {
     const result = await s3client.send(new PutObjectCommand(params));
 
     if (result) {
-      const fileUrl = Key;
-      return { status: true, fileUrl };
+      return { status: true, key: Key };
     } else {
       return { status: false, message: "Error uploading modified PDF." };
     }

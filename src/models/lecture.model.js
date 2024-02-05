@@ -7,9 +7,12 @@ const LectureSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    path: {
+    key: {
       type: String,
       required: true,
+    },
+    path: {
+      type: String,
     },
     description: {
       type: String,
@@ -76,17 +79,26 @@ const LectureSchema = new mongoose.Schema(
 );
 
 // we won't be able to use hook here so we will just call function inside the worker thread and remember we still want to return the path for the doctor
-// LectureSchema.post(/^find/, async function (doc) {
-//   if (doc) {
-//     if (Array.isArray(doc)) {
-//       doc.forEach(async (el) => {
-//         el.path = await s3GetTempViewURL(el.path);
-//       });
-//     } else {
-//       doc.path = await s3GetTempViewURL(doc.path);
-//     }
-//   }
-// });
+LectureSchema.post(/^find/, async function (doc) {
+  if (doc) {
+    if (Array.isArray(doc)) {
+      console.log("we are in the loop");
+      doc.forEach(async (el) => {
+        if (el.key) {
+          el.path = await s3GetTempViewURL(el.key);
+          console.log("we have run the function");
+        }
+      });
+    } else {
+      console.log("we are single");
+      if (doc.key) {
+        doc.path = await s3GetTempViewURL(doc.key);
+        console.log("we have run the function");
+      }
+    }
+  }
+  console.log(doc);
+});
 
 LectureSchema.pre("save", function (next) {
   let lecture = this;

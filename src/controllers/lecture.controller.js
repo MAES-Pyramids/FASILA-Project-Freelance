@@ -89,7 +89,7 @@ class LectureController {
    * -param {doctorId} req incase library is the publisher
    * @body:
    * -body {name} req
-   * -body {path} req
+   * -body {key} req
    * -body {description} req
    * -body {publishPrice} req
    */
@@ -101,7 +101,7 @@ class LectureController {
 
     let NewLecture = _.pick(req.body, [
       "name",
-      "path",
+      "key",
       "description",
       "publishPrice",
     ]);
@@ -143,6 +143,7 @@ class LectureController {
       "finalPrice",
       "waterMarkDetails",
     ]);
+    confirmBody.waterMarkDetails = JSON.parse(confirmBody.waterMarkDetails);
 
     if (req.files) {
       ({ status, FileNames, message } = await s3UploadDocuments(

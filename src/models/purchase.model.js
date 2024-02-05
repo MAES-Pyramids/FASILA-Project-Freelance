@@ -21,6 +21,9 @@ const PurchasedLectureSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Decimal128,
       required: [true, "Please provide the price of the lecture."],
     },
+    key: {
+      type: String,
+    },
     path: {
       type: String,
     },
@@ -51,26 +54,6 @@ const PurchasedLectureSchema = new mongoose.Schema(
 PurchasedLectureSchema.set("toObject", { virtuals: true });
 PurchasedLectureSchema.set("toJSON", { virtuals: true });
 
-PurchasedLectureSchema.pre(/^find/, function (next) {
-  this.populate({
-    path: "lecture",
-    select: "name description no_purchases no_slides preview_path subject",
-  });
-  next();
-});
-
-PurchasedLectureSchema.post(/^find/, async function (doc) {
-  if (doc) {
-    if (Array.isArray(doc)) {
-      doc.forEach(async (el) => {
-        el.path = await s3GetTempViewURL(el.path);
-      });
-    } else {
-      doc.path = await s3GetTempViewURL(doc.path);
-    }
-  }
-});
-
 function createWorker(
   inputFileURL,
   watermarkPhone,
@@ -89,37 +72,59 @@ function createWorker(
       },
     });
     worker.on("message", (data) => {
-      if (data.status) resolve(data);
-      else reject(data);
+      if (data.status) {
+        console.log("worker thread return", data);
+        resolve(data);
+      } else reject(data);
     });
     worker.on("error", (err) => {
       reject(err);
     });
   });
 }
+PurchasedLectureSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "lecture",
+    select: "name description no_purchases no_slides preview_path subject",
+  });
+  next();
+});
+
+PurchasedLectureSchema.post(/^find/, async function (doc) {
+  if (doc) {
+    if (Array.isArray(doc)) {
+      doc.forEach(async (el) => {
+        console.log("we didn't enter here el", el.key);
+        if (el.key) el.path = await s3GetTempViewURL(el.key);
+      });
+    } else {
+      console.log("we didn't enter here doc", doc.key);
+      if (doc.key) doc.path = await s3GetTempViewURL(doc.key);
+    }
+  }
+});
 
 PurchasedLectureSchema.pre("save", async function (next) {
   const PLecture = this;
 
   const { emptyPageDetails } = PLecture;
   const { path, waterMarkDetails } = (
-    await PLecture.populate({
-      path: "lecture",
-      select: "path waterMarkDetails",
-    })
+    await PLecture.populate({ path: "lecture" })
   ).lecture;
-  console.log(path);
+
   const { phone } = (await PLecture.populate("student", "phone")).student;
 
   try {
-    const { DigitalOcean_URL } = await createWorker(
+    console.log(path);
+    const { key } = await createWorker(
       path,
       phone.slice(1),
       waterMarkDetails,
       emptyPageDetails
     );
+    console.log("result Key", key);
     PLecture.status = "success";
-    PLecture.path = DigitalOcean_URL;
+    PLecture.key = key;
     next();
   } catch (err) {
     return next(new Error(`Error in creating worker thread ${err.message}`));
