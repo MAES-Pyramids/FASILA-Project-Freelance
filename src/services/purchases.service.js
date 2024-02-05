@@ -1,4 +1,5 @@
 const PLModel = require("../models/purchase.model");
+const { s3GetTempViewURL } = require("./digitalocean.service");
 
 exports.checkStudentPurchasedLectures = async (studentId, lectureId) => {
   try {
@@ -7,6 +8,7 @@ exports.checkStudentPurchasedLectures = async (studentId, lectureId) => {
       lecture: lectureId,
       status: "success",
     });
+    if (!data) return { status: false };
 
     const FormattedData = {
       _id: data._id,
@@ -19,8 +21,7 @@ exports.checkStudentPurchasedLectures = async (studentId, lectureId) => {
       path: data.path,
     };
 
-    if (!data) return { status: false };
-    else return { status: true, data: FormattedData };
+    return { status: true, data: FormattedData };
   } catch (err) {
     return { status: false, message: err.message };
   }

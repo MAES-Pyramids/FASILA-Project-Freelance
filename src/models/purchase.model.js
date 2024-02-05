@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { Worker } = require("worker_threads");
+const { s3GetTempViewURL } = require("../services/digitalocean.service");
 
 const PurchasedLectureSchema = new mongoose.Schema(
   {
@@ -22,10 +23,6 @@ const PurchasedLectureSchema = new mongoose.Schema(
     },
     path: {
       type: String,
-      validate: {
-        validator: (value) => /^https?:\/\/.+/.test(value),
-        message: "Invalid URL format for the document path.",
-      },
     },
     purchasedBy: {
       type: String,
@@ -60,6 +57,12 @@ PurchasedLectureSchema.pre(/^find/, function (next) {
     select: "name description no_purchases no_slides preview_path subject",
   });
   next();
+});
+
+PurchasedLectureSchema.post(/^find/, async function (doc) {
+  if (doc) {
+    doc.path = await s3GetTempViewURL(doc.path);
+  }
 });
 
 function createWorker(

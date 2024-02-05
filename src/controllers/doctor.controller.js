@@ -4,7 +4,7 @@ const {
   getDoctorByID,
   setDoctorPhoto,
 } = require("../services/doctor.service");
-const { s3UploadV3 } = require("../services/digitalocean.service");
+const { s3UploadDocuments } = require("../services/digitalocean.service");
 const mongoose = require("mongoose");
 const _ = require("lodash");
 
@@ -73,7 +73,7 @@ class DoctorController {
       if (!status) throw new Error(message);
 
       if (req.files) {
-        ({ status, FileNames, message } = await s3UploadV3(
+        ({ status, FileNames, message } = await s3UploadDocuments(
           req.files,
           "doctor"
         ));

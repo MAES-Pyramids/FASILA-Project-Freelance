@@ -11,7 +11,7 @@ const {
   isLecturePurchased,
 } = require("../services/purchases.service");
 const { withdraw } = require("../services/wallet.service");
-const { s3UploadV3 } = require("../services/digitalocean.service");
+const { s3UploadDocuments } = require("../services/digitalocean.service");
 const { getStudentWalletId } = require("../services/student.service");
 // const { getCardIframe } = require("../utils/payment");
 // const { getStudentPaymentData } = require("../services/student.service");
@@ -145,7 +145,7 @@ class LectureController {
     ]);
 
     if (req.files) {
-      ({ status, FileNames, message } = await s3UploadV3(
+      ({ status, FileNames, message } = await s3UploadDocuments(
         req.files,
         "subject-Preview"
       ));

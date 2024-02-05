@@ -4,11 +4,13 @@ const {
   PutObjectCommand,
   PutBucketPolicyCommand,
 } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const policyParams = require("../utils/digitalocean");
 const uuid = require("uuid").v4;
 
 const endpoint = process.env.AWS_ENDPOINT;
 const Bucket = process.env.AWS_BUCKET_NAME;
+const expiresIn = process.env.AWS_READ_EXPIRE_IN;
 
 const s3client = new S3Client({
   endpoint,
@@ -16,16 +18,16 @@ const s3client = new S3Client({
 });
 
 // Set the bucket policy
-// s3client
-//   .send(new PutBucketPolicyCommand(policyParams))
-//   .then(() => {
-//     console.log("Bucket policy updated successfully.");
-//   })
-//   .catch((error) => {
-//     console.error("Error updating bucket policy:", error);
-//   });
+s3client
+  .send(new PutBucketPolicyCommand(policyParams))
+  .then(() => {
+    console.log("Bucket policy updated successfully.");
+  })
+  .catch((error) => {
+    console.error("Error updating bucket policy:", error);
+  });
 
-const s3UploadV3 = async (files, uploadedFor) => {
+const s3UploadDocuments = async (files, uploadedFor) => {
   const [params, FileNames] = [[], []];
   const generateKey = (prefix, file) => {
     return `${prefix}/${uuid()}-${file.originalname}`;
@@ -82,8 +84,7 @@ const s3UploadModifiedPDF = async (PdfBytes) => {
     const result = await s3client.send(new PutObjectCommand(params));
 
     if (result) {
-      const fileUrl = `https://${Bucket}.ams3.digitaloceanspaces.com/${Key}`;
-
+      const fileUrl = Key;
       return { status: true, fileUrl };
     } else {
       return { status: false, message: "Error uploading modified PDF." };
@@ -93,7 +94,34 @@ const s3UploadModifiedPDF = async (PdfBytes) => {
   }
 };
 
-// we need getPresignedURL function to view Protected Routes
-const getPresignedURL = async (Key) => {};
+const s3GetTempViewURL = async (Key) => {
+  const params = {
+    Key,
+    Bucket,
+    ContentType: "application/pdf",
+  };
 
-module.exports = { s3client, s3UploadV3, s3UploadModifiedPDF, getPresignedURL };
+  const conditions = {
+    acl: "public-read",
+    "Content-Type": "application/pdf",
+    key: Key,
+  };
+
+  try {
+    const tempUrl = await getSignedUrl(s3client, new GetObjectCommand(params), {
+      expiresIn,
+      conditions,
+    });
+
+    return tempUrl;
+  } catch (error) {
+    return null;
+  }
+};
+
+module.exports = {
+  s3client,
+  s3GetTempViewURL,
+  s3UploadDocuments,
+  s3UploadModifiedPDF,
+};

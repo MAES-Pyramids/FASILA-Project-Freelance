@@ -6,6 +6,7 @@ const AppError = require("../utils/appErrorsClass");
 const uuid = require("uuid").v4;
 
 const bucketName = process.env.AWS_BUCKET_NAME;
+const ExpireIn = process.env.AWS_UPLOAD_EXPIRE_IN;
 
 class AWSController {
   /**
@@ -26,7 +27,9 @@ class AWSController {
 
     try {
       const command = new PutObjectCommand(params);
-      const url = await getSignedUrl(s3client, command, { expiresIn: 1200 });
+      const url = await getSignedUrl(s3client, command, {
+        expiresIn: ExpireIn,
+      });
       const path = `https://${bucketName}.ams3.digitaloceanspaces.com/${Key}`;
 
       res.status(200).json({

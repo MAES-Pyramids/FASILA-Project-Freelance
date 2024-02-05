@@ -13,7 +13,7 @@ const {
 const { invalidateUserSessions } = require("../services/session.service.js");
 const { isValidSemester } = require("../services/faculty.service.js");
 const { storeOTP, verifyOTP } = require("../services/otp.service.js");
-const { s3UploadV3 } = require("../services/digitalocean.service.js");
+const { s3UploadDocuments } = require("../services/digitalocean.service.js");
 const { sendOTPMessage } = require("../utils/telegramBot.js");
 const { createUser } = require("../services/user.service.js");
 const mongoose = require("mongoose");
@@ -60,7 +60,10 @@ class StudentController {
       ));
       if (!status) throw new Error(message);
 
-      ({ status, FileNames, message } = await s3UploadV3(req.files, "student"));
+      ({ status, FileNames, message } = await s3UploadDocuments(
+        req.files,
+        "student"
+      ));
       if (!status) throw new Error(message);
       const card = FileNames[0];
 
