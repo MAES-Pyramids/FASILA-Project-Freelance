@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { s3GetTempViewURL } = require("../services/digitalocean.service");
 
 const LectureSchema = new mongoose.Schema(
   {
@@ -73,6 +74,18 @@ const LectureSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+LectureSchema.post(/^find/, async function (doc) {
+  if (doc) {
+    if (Array.isArray(doc)) {
+      doc.forEach(async (el) => {
+        el.path = await s3GetTempViewURL(el.path);
+      });
+    } else {
+      doc.path = await s3GetTempViewURL(doc.path);
+    }
+  }
+});
 
 LectureSchema.pre("save", function (next) {
   let lecture = this;

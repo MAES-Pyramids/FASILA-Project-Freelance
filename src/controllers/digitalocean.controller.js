@@ -30,11 +30,11 @@ class AWSController {
       const url = await getSignedUrl(s3client, command, {
         expiresIn: ExpireIn,
       });
-      const path = `https://${bucketName}.ams3.digitaloceanspaces.com/${Key}`;
+      // const path = `https://${bucketName}.ams3.digitaloceanspaces.com/${Key}`;
 
       res.status(200).json({
         status: "success",
-        path,
+        Key,
         url,
       });
     } catch (error) {
