@@ -63,9 +63,13 @@ exports.addWatermarkAndEmptyPages = async function (
   console.log("Start Downloading PDF File...");
   let response;
   try {
-    response = await axios.get(inputFileURL, { responseType: "arraybuffer" });
+    response = await axios.get(inputFileURL, {
+      responseType: "arraybuffer",
+      timeout: 30000,
+    });
   } catch (err) {
-    throw new Error("Error getting file from URL");
+    if (axios.isCancel(err)) throw new Error("downloading (exceeded 30 Secs)");
+    else throw new Error("Error getting file from URL");
   }
   console.log("File Downloaded!");
 
