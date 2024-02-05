@@ -53,7 +53,7 @@ const s3UploadV3 = async (files, uploadedFor) => {
       ContentType: file.mimetype,
       ACL: uploadedFor !== "student" ? "public-read" : "private",
     });
-    FileNames.push(`${endpoint}/${Bucket}/${Key}`);
+    FileNames.push(`https://${Bucket}.ams3.digitaloceanspaces.com/${Key}`);
   }
 
   try {
@@ -82,7 +82,8 @@ const s3UploadModifiedPDF = async (PdfBytes) => {
     const result = await s3client.send(new PutObjectCommand(params));
 
     if (result) {
-      const fileUrl = `${endpoint}/${Bucket}/${Key}`;
+      const fileUrl = `https://${Bucket}.ams3.digitaloceanspaces.com/${Key}`;
+
       return { status: true, fileUrl };
     } else {
       return { status: false, message: "Error uploading modified PDF." };
