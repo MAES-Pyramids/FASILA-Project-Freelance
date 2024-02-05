@@ -62,12 +62,9 @@ class StudentController {
 
       ({ status, FileNames, message } = await s3UploadV3(req.files, "student"));
       if (!status) throw new Error(message);
+      const card = FileNames[0];
 
-      ({ status, data, message } = await setStudentFC(
-        data,
-        FileNames[0],
-        session
-      ));
+      ({ status, data, message } = await setStudentFC(data, card, session));
       if (!status) throw new Error(message);
 
       await session.commitTransaction();

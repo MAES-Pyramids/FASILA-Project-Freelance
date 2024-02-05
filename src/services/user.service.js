@@ -74,9 +74,6 @@ const createAndOmitPassword = async (model, data, session) => {
   try {
     let createdUser = new model(data);
 
-    // if (session) createdUser = await createdUser.save({ session });
-    // else createdUser = await createdUser.save();
-
     return { status: true, data: createdUser };
   } catch (err) {
     return { status: false, message: err.message };

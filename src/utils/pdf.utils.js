@@ -1,6 +1,6 @@
 const { PDFDocument, rgb, degrees } = require("pdf-lib");
-const fs = require("fs/promises");
 const axios = require("axios");
+const { s3UploadModifiedPDF } = require("../services/digitalocean.service");
 
 const addDWatermark = (page, watermarkObject, watermarkOptions) => {
   const { spaceBetweenCharacters, opacity } = watermarkOptions;
@@ -50,7 +50,6 @@ const addEmptyPage = (pdfDoc, index, newWidth, newHeight) => {
 
 exports.addWatermarkAndEmptyPages = async function (
   inputFileURL,
-  outputFilePath,
   watermarkPhone,
   waterMarkDetails,
   emptyPageDetails
@@ -118,11 +117,13 @@ exports.addWatermarkAndEmptyPages = async function (
     });
   }
 
-  const modifiedPdfBytes = await pdfDoc.save();
-  await fs.writeFile(outputFilePath, modifiedPdfBytes);
+  const PdfBytes = await pdfDoc.save();
 
-  return {
-    status: "true",
-    message: "Watermark and empty pages added successfully!",
-  };
+  try {
+    const { status, fileUrl, message } = await s3UploadModifiedPDF(PdfBytes);
+    if (status) return { status: "true", path: fileUrl };
+    else throw new Error(`Error uploading file to DigitalOcean ${message}`);
+  } catch (err) {
+    throw new Error(`Error uploading file to DigitalOcean ${err.message}`);
+  }
 };

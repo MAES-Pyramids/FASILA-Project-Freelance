@@ -64,7 +64,6 @@ PurchasedLectureSchema.pre(/^find/, function (next) {
 
 function createWorker(
   inputFileURL,
-  outputFilePath,
   watermarkPhone,
   waterMarkDetails,
   emptyPageDetails
@@ -75,7 +74,6 @@ function createWorker(
     const worker = new Worker("./src/utils/workerThread.js", {
       workerData: {
         inputFileURL,
-        outputFilePath,
         watermarkPhone,
         waterMarkDetails: { ...waterMarkDetails, opacity: opacityString },
         emptyPageDetails,
@@ -104,14 +102,14 @@ PurchasedLectureSchema.pre("save", async function (next) {
   const { phone } = (await PLecture.populate("student", "phone")).student;
 
   try {
-    await createWorker(
+    const { DigitalOcean_URL } = await createWorker(
       path,
-      `${__dirname}/../../public/pdfs/test_1.1_modified.pdf`,
       phone.slice(1),
       waterMarkDetails,
       emptyPageDetails
     );
     PLecture.status = "success";
+    PLecture.path = DigitalOcean_URL;
     next();
   } catch (err) {
     return next(new Error(`Error in creating worker thread ${err.message}`));

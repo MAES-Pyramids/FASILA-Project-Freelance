@@ -10,19 +10,19 @@ const bucketPolicy = {
       Resource: `arn:aws:s3:::${bucketName}/*`,
     },
     {
-      Effect: "Deny",
+      Effect: "Allow",
       Principal: "*",
       Action: "s3:GetObject",
       Resource: `arn:aws:s3:::${bucketName}/PDFs/Uploads*`,
     },
     {
-      Effect: "Deny",
+      Effect: "Allow",
       Principal: "*",
       Action: "s3:GetObject",
       Resource: `arn:aws:s3:::${bucketName}/PDFs/Purchases*`,
     },
     {
-      Effect: "Deny",
+      Effect: "Allow",
       Principal: "*",
       Action: "s3:GetObject",
       Resource: `arn:aws:s3:::${bucketName}/Students/Faculty_Cards*`,

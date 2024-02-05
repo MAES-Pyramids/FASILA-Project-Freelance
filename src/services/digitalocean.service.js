@@ -38,9 +38,6 @@ const s3UploadV3 = async (files, uploadedFor) => {
       case "subject-Preview":
         Key = generateKey("PDFs/Previews", file);
         break;
-      case "subject-Purchased":
-        Key = generateKey("PDFs/Purchased", file);
-        break;
       case "doctor":
         Key = generateKey("Doctors/Avatars", file);
         break;
@@ -54,10 +51,7 @@ const s3UploadV3 = async (files, uploadedFor) => {
       Bucket,
       Body: file.buffer,
       ContentType: file.mimetype,
-      ACL:
-        uploadedFor !== "subject-Purchased" && uploadedFor !== "student"
-          ? "public-read"
-          : "private",
+      ACL: uploadedFor !== "student" ? "public-read" : "private",
     });
     FileNames.push(`${endpoint}/${Bucket}/${Key}`);
   }
@@ -74,7 +68,31 @@ const s3UploadV3 = async (files, uploadedFor) => {
   }
 };
 
+const s3UploadModifiedPDF = async (PdfBytes) => {
+  const Key = `PDFs/Purchases/${uuid()}-modified.pdf`;
+  const params = {
+    Key,
+    Bucket,
+    Body: PdfBytes,
+    ContentType: "application/pdf",
+    ACL: "private",
+  };
+
+  try {
+    const result = await s3client.send(new PutObjectCommand(params));
+
+    if (result) {
+      const fileUrl = `${endpoint}/${Bucket}/${Key}`;
+      return { status: true, fileUrl };
+    } else {
+      return { status: false, message: "Error uploading modified PDF." };
+    }
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
 // we need getPresignedURL function to view Protected Routes
 const getPresignedURL = async (Key) => {};
 
-module.exports = { s3client, s3UploadV3 };
+module.exports = { s3client, s3UploadV3, s3UploadModifiedPDF, getPresignedURL };
