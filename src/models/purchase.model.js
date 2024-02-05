@@ -108,6 +108,7 @@ PurchasedLectureSchema.pre("save", async function (next) {
       select: "path waterMarkDetails",
     })
   ).lecture;
+  console.log(path);
   const { phone } = (await PLecture.populate("student", "phone")).student;
 
   try {

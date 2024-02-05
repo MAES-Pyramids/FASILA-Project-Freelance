@@ -75,17 +75,18 @@ const LectureSchema = new mongoose.Schema(
   }
 );
 
-LectureSchema.post(/^find/, async function (doc) {
-  if (doc) {
-    if (Array.isArray(doc)) {
-      doc.forEach(async (el) => {
-        el.path = await s3GetTempViewURL(el.path);
-      });
-    } else {
-      doc.path = await s3GetTempViewURL(doc.path);
-    }
-  }
-});
+// we won't be able to use hook here so we will just call function inside the worker thread and remember we still want to return the path for the doctor
+// LectureSchema.post(/^find/, async function (doc) {
+//   if (doc) {
+//     if (Array.isArray(doc)) {
+//       doc.forEach(async (el) => {
+//         el.path = await s3GetTempViewURL(el.path);
+//       });
+//     } else {
+//       doc.path = await s3GetTempViewURL(doc.path);
+//     }
+//   }
+// });
 
 LectureSchema.pre("save", function (next) {
   let lecture = this;

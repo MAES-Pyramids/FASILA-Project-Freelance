@@ -154,7 +154,6 @@ class LectureController {
     }
 
     ({ status, message } = await confirmLectureService(lectureId, confirmBody));
-
     if (!status) return next(new AppError(message, 400));
 
     res.send({
