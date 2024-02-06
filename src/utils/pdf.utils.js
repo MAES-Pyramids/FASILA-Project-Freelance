@@ -71,7 +71,7 @@ exports.addWatermarkAndEmptyPages = async function (
     if (axios.isCancel(err)) throw new Error("downloading (exceeded 30 Secs)");
     else throw new Error("Error getting file from URL");
   }
-  console.log("File Downloaded!");
+  console.log("File Downloaded Successfully...");
 
   const myMap = new Map([
     [1, 1.3],
@@ -124,12 +124,11 @@ exports.addWatermarkAndEmptyPages = async function (
   }
 
   const PdfBytes = await pdfDoc.save();
-  console.log("PDF Processing Done!");
 
   try {
-    console.log("uploading to digital ocean");
+    console.log("Start uploading to digital ocean");
     const { status, key, message } = await s3UploadModifiedPDF(PdfBytes);
-    console.log("uploaded to digital ocean");
+    console.log("File uploaded to digital ocean ..");
 
     if (status) return { status: "true", path: key };
     else throw new Error(`Error uploading file to DigitalOcean ${message}`);

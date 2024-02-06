@@ -6,7 +6,6 @@ const { inputFileURL, watermarkPhone, waterMarkDetails, emptyPageDetails } =
 
 const opacity = parseFloat(waterMarkDetails.opacity);
 
-console.log("worker thread started");
 addWatermarkAndEmptyPages(
   inputFileURL,
   watermarkPhone,

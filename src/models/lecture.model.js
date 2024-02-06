@@ -82,18 +82,14 @@ const LectureSchema = new mongoose.Schema(
 LectureSchema.post(/^find/, async function (doc) {
   if (doc) {
     if (Array.isArray(doc)) {
-      console.log("we are in the loop");
       doc.forEach(async (el) => {
         if (el.key) {
           el.path = await s3GetTempViewURL(el.key);
-          console.log("we have run the function");
         }
       });
     } else if (!Array.isArray(doc)) {
-      console.log("we are single");
       if (doc.key) {
         doc.path = await s3GetTempViewURL(doc.key);
-        console.log("we have run the function");
       }
     }
   }

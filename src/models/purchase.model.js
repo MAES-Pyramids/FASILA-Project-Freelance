@@ -72,10 +72,8 @@ function createWorker(
       },
     });
     worker.on("message", (data) => {
-      if (data.status) {
-        console.log("worker thread return", data);
-        resolve(data);
-      } else reject(data);
+      if (data.status) resolve(data);
+      else reject(data);
     });
     worker.on("error", (err) => {
       reject(err);
@@ -94,11 +92,9 @@ PurchasedLectureSchema.post(/^find/, async function (doc) {
   if (doc) {
     if (Array.isArray(doc)) {
       doc.forEach(async (el) => {
-        console.log("we didn't enter here el", el.key);
         if (el.key) el.path = await s3GetTempViewURL(el.key);
       });
     } else {
-      console.log("we didn't enter here doc", doc.key);
       if (doc.key) doc.path = await s3GetTempViewURL(doc.key);
     }
   }
@@ -131,8 +127,5 @@ PurchasedLectureSchema.pre("save", async function (next) {
   }
 });
 //-------------------------Export-----------------------//
-const PurchasedLecture = mongoose.model(
-  "PurchasedLecture",
-  PurchasedLectureSchema
-);
-module.exports = PurchasedLecture;
+const PLecture = mongoose.model("PLecture", PurchasedLectureSchema);
+module.exports = PLecture;

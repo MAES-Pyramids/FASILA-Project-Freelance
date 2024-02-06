@@ -94,7 +94,7 @@ class SubjectController {
    */
   static addSubject = catchAsyncError(async (req, res, next) => {
     let status, data, message, FileNames;
-    const newSubject = _.pick(req.body, ["name", "faculty", "semester"]);
+    let newSubject = _.pick(req.body, ["name", "faculty", "semester"]);
 
     ({ status, message } = await isValidSemester(
       newSubject.faculty,
@@ -105,7 +105,7 @@ class SubjectController {
     if (req.files) {
       ({ status, FileNames, message } = await s3UploadDocuments(
         req.files,
-        "pdf-preview"
+        "subject"
       ));
       if (!status) throw new Error(message);
       newSubject = { ...newSubject, photo: FileNames[0] };
