@@ -16,6 +16,7 @@ router.use(requireUser);
 
 // While there is a nested route for students to access lectures,it get used directly by doctors.
 router.use("/:subjectId/Lectures", lectureRoutes);
+router.get("/My", SubjectController.getMySubjects);
 
 router
   .route("/")

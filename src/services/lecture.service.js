@@ -3,6 +3,19 @@ const lectureModel = require("../models/lecture.model");
 const { checkSubjectDoctor } = require("./subject.service");
 const { checkStudentPurchasedLectures } = require("./purchases.service");
 
+exports.getSubjectLectures = async (subjectId) => {
+  try {
+    const lectures = await lectureModel
+      .find({ subject: subjectId })
+      .select("_id");
+    const lecturesArray = lectures.map((lec) => lec._id);
+
+    return { status: true, data: lecturesArray };
+  } catch (error) {
+    return { status: false, message: error.message };
+  }
+};
+
 exports.getLecturesForAdmin = async (query) => {
   try {
     excluded = "-waterMarkDetails  -__v";

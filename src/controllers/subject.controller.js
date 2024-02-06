@@ -6,7 +6,11 @@ const {
   addDoctorToSubject,
   removeDoctorFromSubject,
 } = require("../services/subject.service");
+const {
+  checkStudentPurchasedLectures,
+} = require("../services/purchases.service");
 const { s3UploadDocuments } = require("../services/digitalocean.service");
+const { getSubjectLectures } = require("../services/lecture.service");
 const { isValidSemester } = require("../services/faculty.service");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
@@ -20,14 +24,37 @@ class SubjectController {
    * @access private
    */
   static getMySubjects = catchAsyncError(async (req, res, next) => {
-    const { faculty, semester } = res.locals.user;
+    const { faculty, semester, _id } = res.locals.user;
+    let PurchasedSubjects = [];
+    const studentId = _id;
 
-    const { status, data, message } = await getSubjects({ faculty, semester });
+    const { status, data, message } = await getSubjects({
+      faculty,
+      semester,
+    });
     if (!status) return next(new AppError(message, 404));
+
+    for (const subject of data) {
+      const { status, data } = await getSubjectLectures(subject._id);
+
+      if (!status) continue;
+      if (data.length == 0) continue;
+
+      for (const lecture of data) {
+        const { status } = await checkStudentPurchasedLectures(
+          studentId,
+          lecture
+        );
+
+        if (!status) continue;
+        PurchasedSubjects.push(subject);
+        break;
+      }
+    }
 
     res.send({
       status: "success",
-      data,
+      PurchasedSubjects,
     });
   });
 
