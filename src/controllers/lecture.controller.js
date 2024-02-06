@@ -2,6 +2,7 @@ const {
   uploadLecture,
   checkLectureStatus,
   getLecturesForAdmin,
+  getPurchasedLectures,
   getLecturesForDoctor,
   getLecturesForStudent,
   confirmLectureService,
@@ -228,6 +229,28 @@ class LectureController {
     res.send({
       status: "success",
       message,
+    });
+  });
+
+  /**
+   * @description Get all Purchased lectures for a specific student
+   * @route  /api/v1/doctors/{doctorId}/Subjects/{lectureId}/Lectures/My
+   * @method Get
+   * @access Private
+   */
+  static getMyLectures = catchAsyncError(async (req, res, next) => {
+    const { _id } = res.locals.user;
+    const { subjectId } = req.params;
+
+    const { status, data, message } = await getPurchasedLectures(
+      { subject: subjectId },
+      _id
+    );
+    if (!status) return next(new AppError(message, 404));
+
+    res.send({
+      status: "success",
+      data,
     });
   });
 }

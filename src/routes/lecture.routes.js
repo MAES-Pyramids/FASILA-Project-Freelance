@@ -6,6 +6,8 @@ const upload = require("../middlewares/multer");
 const router = require("express").Router({ mergeParams: true });
 router.use(requireUser);
 
+router.get("/My", LectureController.getMyLectures);
+
 router
   .route("/")
   .get(LectureController.getAllLectures)

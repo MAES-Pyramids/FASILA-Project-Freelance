@@ -42,6 +42,28 @@ exports.getLecturesForDoctor = async (query) => {
   }
 };
 
+exports.getPurchasedLectures = async (query, student) => {
+  try {
+    const PurchasedLectures = [];
+    excluded =
+      "-subject -doctor -type -publishedBy -publishPrice -confirmed -waterMarkDetails -__v  -finalLayout";
+
+    let AllLectures = await lectureModel.find(query).select(excluded);
+
+    for (const lecture of AllLectures) {
+      const { status, data } = await checkStudentPurchasedLectures(
+        student,
+        lecture._id
+      );
+      if (status) PurchasedLectures.push({ ...data, purchased: true });
+    }
+
+    return { status: true, data: PurchasedLectures };
+  } catch (error) {
+    return { status: false, message: error.message };
+  }
+};
+
 exports.getLecturesForStudent = async (query, student) => {
   try {
     excluded =
