@@ -93,7 +93,6 @@ LectureSchema.post(/^find/, async function (doc) {
       }
     }
   }
-  console.log(doc);
 });
 
 LectureSchema.pre("save", function (next) {

@@ -111,14 +111,12 @@ PurchasedLectureSchema.pre("save", async function (next) {
   const { phone } = (await PLecture.populate("student", "phone")).student;
 
   try {
-    console.log(path);
     const { key } = await createWorker(
       path,
       phone.slice(1),
       waterMarkDetails,
       emptyPageDetails
     );
-    console.log("result Key", key);
     PLecture.status = "success";
     PLecture.key = key;
     next();
