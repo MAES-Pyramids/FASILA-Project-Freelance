@@ -130,7 +130,6 @@ PurchasedLectureSchema.pre("save", async function (next) {
     PLecture.status = "success";
     PLecture.key = key;
 
-    await increaseLecturePurchaseCount(PLecture.lecture);
     next();
   } catch (err) {
     return next(new Error(`Error in creating worker thread ${err.message}`));
