@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { Worker } = require("worker_threads");
 const { s3GetTempViewURL } = require("../services/digitalocean.service");
+const { increaseLecturePurchaseCount } = require("../services/lecture.service");
 
 const PurchasedLectureSchema = new mongoose.Schema(
   {
@@ -128,6 +129,8 @@ PurchasedLectureSchema.pre("save", async function (next) {
 
     PLecture.status = "success";
     PLecture.key = key;
+
+    await increaseLecturePurchaseCount(PLecture.lecture);
     next();
   } catch (err) {
     return next(new Error(`Error in creating worker thread ${err.message}`));

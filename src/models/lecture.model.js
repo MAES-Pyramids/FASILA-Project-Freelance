@@ -78,7 +78,6 @@ const LectureSchema = new mongoose.Schema(
   }
 );
 
-// we won't be able to use hook here so we will just call function inside the worker thread and remember we still want to return the path for the doctor
 LectureSchema.post(/^find/, async function (doc) {
   if (doc) {
     if (Array.isArray(doc)) {

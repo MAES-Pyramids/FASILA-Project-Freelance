@@ -154,4 +154,17 @@ exports.getLecturePaymentData = (lecture) => {
   };
 };
 
+exports.increaseLecturePurchaseCount = async (lectureId) => {
+  try {
+    const lecture = await lectureModel.findOne({ _id: lectureId });
+
+    lecture.no_purchases += 1;
+    await lecture.save();
+
+    return { status: true };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
 exports.deleteLecture = async (lectureId) => {};
