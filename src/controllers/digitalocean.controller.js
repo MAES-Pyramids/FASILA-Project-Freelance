@@ -16,7 +16,11 @@ class AWSController {
    *  @access public
    */
   static getPresignedURL = catchAsyncError(async (req, res, next) => {
-    const Key = `PDFs/Uploads/${uuid()}.pdf`;
+    const { user } = req.query;
+
+    let Key;
+    if (user == "Doctor") Key = `PDFs/Uploads/${uuid()}.pdf`;
+    if (user == "Student") Key = `PDFs/Purchases/${uuid()}-updated.pdf`;
 
     const params = {
       Key,

@@ -15,8 +15,9 @@ router
 
 router
   .route("/:lectureId")
-  .post(restrictedTo("Student"), LectureController.byLecture)
-  .patch(
+  .get(restrictedTo("Student"), LectureController.byLecture)
+  .patch(restrictedTo("Student"), LectureController.saveLecture)
+  .post(
     restrictedTo("Admin"),
     upload.array("preview_path"),
     LectureController.confirmLecture

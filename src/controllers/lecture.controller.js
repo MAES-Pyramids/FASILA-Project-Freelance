@@ -9,11 +9,17 @@ const {
 } = require("../services/lecture.service");
 const {
   createNewPL,
+  updatePLectureKey,
   isLecturePurchased,
+  isPurchasedLectureAllowed,
 } = require("../services/purchases.service");
 const { withdraw } = require("../services/wallet.service");
-const { s3UploadDocuments } = require("../services/digitalocean.service");
 const { getStudentWalletId } = require("../services/student.service");
+const {
+  deleteDocument,
+  s3UploadDocuments,
+  checkIfDocumentExist,
+} = require("../services/digitalocean.service");
 // const { getCardIframe } = require("../utils/payment");
 // const { getStudentPaymentData } = require("../services/student.service");
 // const { getLecturePaymentData } = require("../services/lecture.service");
@@ -175,7 +181,12 @@ class LectureController {
     let status, lecture, message, walletId;
     const { lectureId } = req.params;
     const { _id } = res.locals.user;
-    const { emptyPageDetails } = req.body;
+
+    const emptyPageDetails = _.pick(req.query, [
+      "addEmptyPages",
+      "addEmptyPageAfter",
+      "addTwoEmptyPagesAtEnd",
+    ]);
 
     ({ status, message } = await isLecturePurchased(_id, lectureId));
     if (!status) return next(new AppError(message, 400));
@@ -229,6 +240,42 @@ class LectureController {
     res.send({
       status: "success",
       message,
+    });
+  });
+
+  /**
+   * @description Used by student to save a updated lecture
+   * @route  /api/lectures/:lectureId
+   * @method Patch
+   * @access Private
+   * @param: lectureId
+   */
+  static saveLecture = catchAsyncError(async (req, res, next) => {
+    let status, data, oldKey, message;
+    const { lectureId } = req.params;
+    const { _id } = res.locals.user;
+    const { key } = req.body;
+
+    ({ status, data, message } = await isPurchasedLectureAllowed(
+      _id,
+      lectureId
+    ));
+    if (!status) return next(new AppError(message, 400));
+
+    ({ status, message } = await checkIfDocumentExist(key));
+    if (!status) return next(new AppError(message, 400));
+
+    oldKey = data.key;
+
+    ({ status, message } = await updatePLectureKey(lectureId, key));
+    if (!status) return next(new AppError(message, 400));
+
+    ({ status, message } = await deleteDocument(oldKey));
+    if (!status) return next(new AppError(message, 400));
+
+    res.send({
+      status: "success",
+      message: "Lecture updated successfully",
     });
   });
 
