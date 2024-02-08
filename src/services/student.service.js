@@ -14,7 +14,10 @@ exports.getStudents = async function (filter, page, limit) {
 
     const studentsWithTempURL = await Promise.all(
       students.map(async (student) => {
-        const tempURL = await s3GetTempViewURL(student.facultyCard);
+        const tempURL = await s3GetTempViewURL(
+          student.facultyCard,
+          "image/jpg"
+        );
         return { ...student.toObject(), facultyCard: tempURL };
       })
     );

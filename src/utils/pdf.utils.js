@@ -1,8 +1,9 @@
-const { PDFDocument, rgb, degrees } = require("pdf-lib");
-const axios = require("axios");
 const { s3UploadModifiedPDF } = require("../services/digitalocean.service");
+const { PDFDocument, rgb, degrees } = require("pdf-lib");
+const sizeOf = require("image-size");
+const axios = require("axios");
 
-const addDWatermark = (page, watermarkObject, watermarkOptions) => {
+const addDWatermarkText = (page, watermarkObject, watermarkOptions) => {
   const { spaceBetweenCharacters, opacity } = watermarkOptions;
   const { watermarkPhone } = watermarkObject;
   const { width, height } = page.getSize();
@@ -31,6 +32,31 @@ const addDWatermark = (page, watermarkObject, watermarkOptions) => {
   }
 };
 
+const addDWatermarkImage = (watermarkImage, image, currentPage) => {
+  const dimensions = sizeOf(image);
+  const { height: imageHeight, width: imageWidth } = dimensions;
+  const aspectRatio = imageWidth / imageHeight;
+
+  const { width, height } = currentPage.getSize();
+  const watermarkWidth = parseInt(width / 2);
+  const watermarkHeight = parseInt(watermarkWidth / aspectRatio);
+
+  const watermarkOptions = {
+    x: width / 4,
+    y: height / 2 - watermarkHeight / 2,
+    width: watermarkWidth,
+    height: watermarkHeight,
+  };
+
+  currentPage.drawImage(watermarkImage, {
+    x: watermarkOptions.x,
+    y: watermarkOptions.y,
+    width: watermarkOptions.width,
+    height: watermarkOptions.height,
+    opacity: 0.3,
+  });
+};
+
 const addEmptyPage = (pdfDoc, index, newWidth, newHeight) => {
   const lineSpacing = 30;
   const newPage = pdfDoc.insertPage(index);
@@ -51,16 +77,23 @@ const addEmptyPage = (pdfDoc, index, newWidth, newHeight) => {
 exports.addWatermarkAndEmptyPages = async function (
   inputFileURL,
   watermarkPhone,
+  facultyCardPath,
   waterMarkDetails,
   emptyPageDetails
 ) {
+  const myMap = new Map([
+    [1, 1.3],
+    [2, 2.3],
+    [3, 10],
+  ]);
+
   const { addEmptyPages, addTwoEmptyPagesAtEnd, addEmptyPageAfter } =
     emptyPageDetails;
 
   const EPHeightP = 100;
   const EPWidthP = 100;
 
-  console.log("Start Downloading PDF File...");
+  // console.log("Start Downloading PDF File...");
   let response;
   try {
     response = await axios.get(inputFileURL, {
@@ -71,16 +104,23 @@ exports.addWatermarkAndEmptyPages = async function (
     if (axios.isCancel(err)) throw new Error("downloading (exceeded 30 Secs)");
     else throw new Error("Error getting file from URL");
   }
-  console.log("File Downloaded Successfully...");
-
-  const myMap = new Map([
-    [1, 1.3],
-    [2, 2.3],
-    [3, 10],
-  ]);
+  // console.log("File Downloaded Successfully...");
 
   const pdfBytes = Buffer.from(response.data);
   const pdfDoc = await PDFDocument.load(pdfBytes);
+
+  // console.log("Start Downloading Image...");
+  let image;
+  try {
+    const imageResponse = await axios.get(facultyCardPath, {
+      responseType: "arraybuffer",
+    });
+    image = Buffer.from(imageResponse.data);
+  } catch (err) {
+    throw new Error("Error getting Image from URL");
+  }
+  // console.log("Image File Downloaded Successfully...");
+  const watermarkImage = await pdfDoc.embedPng(image);
 
   let addedPagesNo = 0;
   for (let i = 0; i < pdfDoc.getPageCount(); i++) {
@@ -112,23 +152,22 @@ exports.addWatermarkAndEmptyPages = async function (
     }
 
     myMap.forEach((value) => {
-      addDWatermark(
-        currentPage,
-        {
-          waterMarkHI: value,
-          watermarkPhone,
-        },
-        waterMarkDetails
-      );
+      if (value == 2.3) addDWatermarkImage(watermarkImage, image, currentPage);
+      else
+        addDWatermarkText(
+          currentPage,
+          { waterMarkHI: value, watermarkPhone },
+          waterMarkDetails
+        );
     });
   }
 
   const PdfBytes = await pdfDoc.save();
 
   try {
-    console.log("Start uploading to digital ocean");
+    // console.log("Start uploading to digital ocean");
     const { status, key, message } = await s3UploadModifiedPDF(PdfBytes);
-    console.log("File uploaded to digital ocean ..");
+    // console.log("File uploaded to digital ocean ..");
 
     if (status) return { status: "true", path: key };
     else throw new Error(`Error uploading file to DigitalOcean ${message}`);

@@ -26,6 +26,7 @@
     "express-rate-limit": "^7.1.5",
     "fontkit": "^2.0.2",
     "hpp": "^0.2.3",
+    "image-size": "^1.1.1",
     "ioredis": "^5.3.2",
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
@@ -39,6 +40,7 @@
     "pdf-lib": "^1.17.1",
     "pino": "^8.17.2",
     "pm2": "^5.3.1",
+    "sharp": "^0.33.2",
     "socket.io": "^4.7.4",
     "xss-clean": "^0.1.4"
   },

@@ -57,6 +57,7 @@ PurchasedLectureSchema.set("toJSON", { virtuals: true });
 function createWorker(
   inputFileURL,
   watermarkPhone,
+  facultyCardPath,
   waterMarkDetails,
   emptyPageDetails
 ) {
@@ -67,6 +68,7 @@ function createWorker(
       workerData: {
         inputFileURL,
         watermarkPhone,
+        facultyCardPath,
         waterMarkDetails: { ...waterMarkDetails, opacity: opacityString },
         emptyPageDetails,
       },
@@ -92,10 +94,11 @@ PurchasedLectureSchema.post(/^find/, async function (doc) {
   if (doc) {
     if (Array.isArray(doc)) {
       doc.forEach(async (el) => {
-        if (el.key) el.path = await s3GetTempViewURL(el.key);
+        if (el.key) el.path = await s3GetTempViewURL(el.key, "application/pdf");
       });
     } else {
-      if (doc.key) doc.path = await s3GetTempViewURL(doc.key);
+      if (doc.key)
+        doc.path = await s3GetTempViewURL(doc.key, "application/pdf");
     }
   }
 });
@@ -108,12 +111,17 @@ PurchasedLectureSchema.pre("save", async function (next) {
     await PLecture.populate({ path: "lecture" })
   ).lecture;
 
-  const { phone } = (await PLecture.populate("student", "phone")).student;
+  const { phone, facultyCard } = (
+    await PLecture.populate("student", "phone facultyCard")
+  ).student;
+
+  const facultyCardPath = await s3GetTempViewURL(facultyCard, "image/png");
 
   try {
     const { key } = await createWorker(
       path,
       phone.slice(1),
+      facultyCardPath,
       waterMarkDetails,
       emptyPageDetails
     );

@@ -84,12 +84,12 @@ LectureSchema.post(/^find/, async function (doc) {
     if (Array.isArray(doc)) {
       doc.forEach(async (el) => {
         if (el.key) {
-          el.path = await s3GetTempViewURL(el.key);
+          el.path = await s3GetTempViewURL(el.key, "application/pdf");
         }
       });
     } else if (!Array.isArray(doc)) {
       if (doc.key) {
-        doc.path = await s3GetTempViewURL(doc.key);
+        doc.path = await s3GetTempViewURL(doc.key, "application/pdf");
       }
     }
   }

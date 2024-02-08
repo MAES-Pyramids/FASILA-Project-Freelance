@@ -1,14 +1,20 @@
 const { parentPort, workerData } = require("worker_threads");
 const { addWatermarkAndEmptyPages } = require("./pdf.utils");
 
-const { inputFileURL, watermarkPhone, waterMarkDetails, emptyPageDetails } =
-  workerData;
+const {
+  inputFileURL,
+  watermarkPhone,
+  facultyCardPath,
+  waterMarkDetails,
+  emptyPageDetails,
+} = workerData;
 
 const opacity = parseFloat(waterMarkDetails.opacity);
 
 addWatermarkAndEmptyPages(
   inputFileURL,
   watermarkPhone,
+  facultyCardPath,
   { ...waterMarkDetails, opacity },
   emptyPageDetails
 )

@@ -1,5 +1,4 @@
 const PLModel = require("../models/purchase.model");
-const { s3GetTempViewURL } = require("./digitalocean.service");
 
 exports.checkStudentPurchasedLectures = async (studentId, lectureId) => {
   try {

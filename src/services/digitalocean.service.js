@@ -6,6 +6,7 @@ const {
 } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const policyParams = require("../utils/digitalocean");
+const sharp = require("sharp");
 const uuid = require("uuid").v4;
 
 const endpoint = process.env.AWS_ENDPOINT;
@@ -29,8 +30,14 @@ const s3client = new S3Client({
 
 const s3UploadDocuments = async (files, uploadedFor) => {
   const [params, FileNames] = [[], []];
+
   const generateKey = (prefix, file) => {
-    return `${prefix}/${uuid()}-${file.originalname}`;
+    const isImage = file.mimetype.startsWith("image/");
+    const fileExtension = isImage ? "png" : file.originalname.split(".").pop();
+    return `${prefix}/${uuid()}-${file.originalname.replace(
+      /\.[^/.]+$/,
+      ""
+    )}.${fileExtension}`;
   };
 
   for (let file of files) {
@@ -51,11 +58,16 @@ const s3UploadDocuments = async (files, uploadedFor) => {
         break;
     }
 
+    const isImage = file.mimetype.startsWith("image/");
+    const buffer = isImage
+      ? await sharp(file.buffer).toFormat("png").toBuffer()
+      : file.buffer;
+
     params.push({
       Key,
       Bucket,
-      Body: file.buffer,
-      ContentType: file.mimetype,
+      Body: buffer,
+      ContentType: uploadedFor == "student" ? "image/png" : file.mimetype,
       ACL: uploadedFor !== "student" ? "public-read" : "private",
     });
 
@@ -99,16 +111,15 @@ const s3UploadModifiedPDF = async (PdfBytes) => {
   }
 };
 
-const s3GetTempViewURL = async (Key) => {
+const s3GetTempViewURL = async (Key, format) => {
   const params = {
     Key,
     Bucket,
-    ContentType: "application/pdf",
+    ContentType: format,
   };
 
   const conditions = {
     acl: "public-read",
-    "Content-Type": "application/pdf",
     key: Key,
   };
 
