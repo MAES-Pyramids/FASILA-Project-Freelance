@@ -1,4 +1,6 @@
 const {
+  getStudents,
+  setStudentFC,
   getStudentID,
   addFavDoctor,
   getFavDoctors,
@@ -8,7 +10,6 @@ const {
   storeTelegramID,
   verifyTelegramID,
   changePhoneNumber,
-  setStudentFC,
 } = require("../services/student.service.js");
 const { invalidateUserSessions } = require("../services/session.service.js");
 const { isValidSemester } = require("../services/faculty.service.js");
@@ -267,5 +268,49 @@ class StudentController {
       message,
     });
   });
+
+  /**
+   *  @description Get All Students for Admin with pagination and filtering options
+   *  @route /api/v1/student/
+   *  @method Get
+   *  @access private
+   */
+  static getStudents = catchAsyncError(async (req, res, next) => {
+    const { page, limit, ...filter } = req.query;
+    const filterDate = _.pick(filter, [
+      "faculty",
+      "suspended",
+      "gender",
+      "isActive",
+    ]);
+
+    const { status, data, message } = await getStudents(
+      filterDate,
+      page,
+      limit
+    );
+    if (!status) return next(new AppError(message));
+
+    res.send({
+      status: "success",
+      data,
+    });
+  });
+
+  /**
+   *  @description Update Student Data for Admin to change (isActive, suspended, ...et)
+   *  @route /api/v1/student/:id
+   *  @method Patch
+   *  @access private
+   */
+  static updateStudent = catchAsyncError(async (req, res, next) => {});
+
+  /**
+   *  @description Suspend Student Account
+   *  @route /api/v1/student/:id
+   *  @method Delete
+   *  @access private
+   */
+  static suspendStudent = catchAsyncError(async (req, res, next) => {});
 }
 module.exports = StudentController;

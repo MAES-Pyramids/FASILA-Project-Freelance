@@ -34,10 +34,6 @@ router
 
 router.use(requireUser);
 
-// For admin to charge wallets and for students to access their wallet history
-router.use("/wallet", WalletRouter);
-router.use("/:studentId/wallet", restrictedTo("Admin"), WalletRouter);
-
 router
   .route("/favorites")
   .get(StudentController.gatFavoritesDoctors)
@@ -48,5 +44,14 @@ router
   .route("/TelegramID")
   .post(SaveTelID_Validation, StudentController.SaveID)
   .patch(VerifyTelID_Validation, StudentController.verifyID);
+
+router.use("/wallet", WalletRouter);
+router.use("/:studentId/wallet", restrictedTo("Admin"), WalletRouter);
+
+router.get("/", restrictedTo("Admin"), StudentController.getStudents);
+router
+  .route("/:id")
+  .patch(restrictedTo("Admin"), StudentController.updateStudent)
+  .delete(restrictedTo("Student"), StudentController.suspendStudent);
 
 module.exports = router;

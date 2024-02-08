@@ -71,6 +71,10 @@ const StudentSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
     resetPassToken: {
       type: String,
       select: false,

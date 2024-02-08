@@ -4,6 +4,18 @@ const StudentModel = require("../models/student.model");
 const crypto = require("crypto");
 const _ = require("lodash");
 
+exports.getStudents = async function (filter, page, limit) {
+  try {
+    const students = await StudentModel.find(filter)
+      .select("-password -__v")
+      .skip(page * limit)
+      .limit(limit);
+    return { status: true, data: students };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
 exports.checkValidPhone = async function (phone) {
   try {
     const student = await StudentModel.findOne({ phone });
