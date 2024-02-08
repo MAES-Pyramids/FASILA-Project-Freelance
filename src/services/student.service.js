@@ -26,7 +26,21 @@ exports.getStudents = async function (filter, page, limit) {
 
 exports.updateStudentById = async function (_id, updateData) {
   try {
-    await StudentModel.findByIdAndUpdate(_id, updateData);
+    const student = await StudentModel.findById(_id);
+    if (!student) return { status: false, message: "Student not found" };
+
+    Object.keys(updateData).forEach((key) => {
+      console.log(key, updateData[key]);
+      if (key === "suspended") {
+        const { value, reason } = updateData[key];
+        student.suspended.value = value;
+        student.suspended.history.set(`${Date.now()}`, reason);
+      } else {
+        student[key] = updateData[key];
+      }
+    });
+
+    await student.save();
     return { status: true, message: "Student updated successfully" };
   } catch (err) {
     return { status: false, message: err.message };

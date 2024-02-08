@@ -36,6 +36,21 @@ const studentIDSchema = Joi.object({
   params: Joi.object({}),
 });
 
+const activateAndSuspendSChema = Joi.object({
+  body: Joi.object({
+    isActive: Joi.boolean(),
+    suspended: Joi.boolean(),
+    suspendedReason: Joi.string().when("suspended", {
+      is: true,
+      then: Joi.required(),
+    }),
+  }),
+  query: Joi.object({}),
+  params: Joi.object({
+    id: Joi.string().required(),
+  }),
+});
+
 const changePassSchema = Joi.object({
   body: Joi.object({
     password: Joi.string()
@@ -101,6 +116,9 @@ const AddFavDoctor_Validation = validationMiddleWare(addFavDoctorSchema);
 const VerifyTelID_Validation = validationMiddleWare(verifyTelegramIDSchema);
 const RemoveFavDoctor_Validation = validationMiddleWare(removeFavDoctorSchema);
 const EditPhoneNumber_Validation = validationMiddleWare(EditPhoneNumberSchema);
+const ActivateAndSuspend_Validation = validationMiddleWare(
+  activateAndSuspendSChema
+);
 
 module.exports = {
   Signup_Validation,
@@ -111,4 +129,5 @@ module.exports = {
   AddFavDoctor_Validation,
   EditPhoneNumber_Validation,
   RemoveFavDoctor_Validation,
+  ActivateAndSuspend_Validation,
 };

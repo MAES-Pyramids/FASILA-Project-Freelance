@@ -301,14 +301,30 @@ class StudentController {
   });
 
   /**
-   *  @description Update Student Data for Admin to change (isActive, suspended, ...et)
+   *  @description Update Student Data for Admin to change (isActive, suspended)
    *  @route /api/v1/student/:id
    *  @method Patch
    *  @access private
    */
-  static updateStudent = catchAsyncError(async (req, res, next) => {
+  static activateAndSuspendStudent = catchAsyncError(async (req, res, next) => {
     const { id } = req.params;
-    const updateData = _.pick(req.body, ["isActive", "suspended"]);
+    const parsedData = _.pick(req.body, [
+      "isActive",
+      "suspended",
+      "suspendedReason",
+    ]);
+    const updateData = {};
+
+    if (parsedData.isActive) {
+      updateData.isActive = parsedData.isActive;
+    }
+
+    if (_.isBoolean(parsedData.suspended)) {
+      updateData.suspended = {
+        value: parsedData.suspended,
+        reason: parsedData?.suspendedReason || "resuming student account",
+      };
+    }
 
     const { status, message } = await updateStudentById(id, updateData);
     if (!status) return next(new AppError(message));

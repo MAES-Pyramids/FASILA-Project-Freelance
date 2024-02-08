@@ -7,6 +7,7 @@ const {
   AddFavDoctor_Validation,
   RemoveFavDoctor_Validation,
   EditPhoneNumber_Validation,
+  ActivateAndSuspend_Validation,
 } = require("../validations/student.validation");
 const upload = require("../middlewares/multer");
 const WalletRouter = require("./wallet.routes");
@@ -52,8 +53,12 @@ router
   .route("/")
   .get(restrictedTo("Admin"), StudentController.getStudents)
   .delete(restrictedTo("Student"), StudentController.deleteStudent);
-router
-  .route("/:id")
-  .patch(restrictedTo("Admin"), StudentController.updateStudent);
+
+router.patch(
+  "/:id",
+  restrictedTo("Admin"),
+  ActivateAndSuspend_Validation,
+  StudentController.activateAndSuspendStudent
+);
 
 module.exports = router;

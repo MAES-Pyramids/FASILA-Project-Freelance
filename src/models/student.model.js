@@ -72,8 +72,12 @@ const StudentSchema = new mongoose.Schema(
       default: false,
     },
     suspended: {
-      type: Boolean,
-      default: false,
+      value: { type: Boolean, default: false },
+      history: {
+        type: Map,
+        of: String,
+        default: () => ({}),
+      },
     },
     deleted: {
       value: { type: Boolean, default: false },
