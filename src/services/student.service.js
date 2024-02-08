@@ -1,4 +1,5 @@
 const { invalidateUserSessions } = require("../services/session.service");
+const { s3GetTempViewURL } = require("../services/digitalocean.service");
 const { isDoctorExist } = require("../services/doctor.service");
 const StudentModel = require("../models/student.model");
 const crypto = require("crypto");
@@ -10,7 +11,14 @@ exports.getStudents = async function (filter, page, limit) {
       .select("-password -__v")
       .skip(page * limit)
       .limit(limit);
-    return { status: true, data: students };
+
+    const studentsWithTempURL = await Promise.all(
+      students.map(async (student) => {
+        const tempURL = await s3GetTempViewURL(student.facultyCard);
+        return { ...student.toObject(), facultyCard: tempURL };
+      })
+    );
+    return { status: true, data: studentsWithTempURL };
   } catch (err) {
     return { status: false, message: err.message };
   }

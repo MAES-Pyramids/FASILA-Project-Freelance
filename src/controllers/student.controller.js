@@ -278,10 +278,11 @@ class StudentController {
   static getStudents = catchAsyncError(async (req, res, next) => {
     const { page, limit, ...filter } = req.query;
     const filterDate = _.pick(filter, [
-      "faculty",
       "suspended",
-      "gender",
       "isActive",
+      "gender",
+      "faculty",
+      "semester",
     ]);
 
     const { status, data, message } = await getStudents(
