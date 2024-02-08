@@ -105,6 +105,7 @@ PurchasedLectureSchema.post(/^find/, async function (doc) {
 
 PurchasedLectureSchema.pre("save", async function (next) {
   const PLecture = this;
+  if (!PLecture.isNew) return next();
 
   const { emptyPageDetails } = PLecture;
   const { path, waterMarkDetails } = (
@@ -114,7 +115,6 @@ PurchasedLectureSchema.pre("save", async function (next) {
   const { phone, facultyCard } = (
     await PLecture.populate("student", "phone facultyCard")
   ).student;
-
   const facultyCardPath = await s3GetTempViewURL(facultyCard, "image/png");
 
   try {
@@ -125,6 +125,7 @@ PurchasedLectureSchema.pre("save", async function (next) {
       waterMarkDetails,
       emptyPageDetails
     );
+
     PLecture.status = "success";
     PLecture.key = key;
     next();

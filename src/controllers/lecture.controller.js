@@ -142,6 +142,7 @@ class LectureController {
    */
   static confirmLecture = catchAsyncError(async (req, res, next) => {
     let status, FileNames, message;
+    const { role } = res.locals.user.role;
     const { lectureId } = req.params;
     let confirmBody = _.pick(req.body, [
       "name",
