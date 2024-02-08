@@ -24,6 +24,30 @@ exports.getStudents = async function (filter, page, limit) {
   }
 };
 
+exports.updateStudentById = async function (_id, updateData) {
+  try {
+    await StudentModel.findByIdAndUpdate(_id, updateData);
+    return { status: true, message: "Student updated successfully" };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
+exports.deleteStudentById = async function (_id) {
+  try {
+    const student = await StudentModel.findById(_id);
+    if (!student) return { status: false, message: "Student not found" };
+
+    student.deleted.value = true;
+    student.deleted.deletedAt = Date.now();
+    await student.save();
+
+    return { status: true, message: "Student deleted successfully" };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
 exports.checkValidPhone = async function (phone) {
   try {
     const student = await StudentModel.findOne({ phone });

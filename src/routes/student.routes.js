@@ -48,10 +48,12 @@ router
 router.use("/wallet", WalletRouter);
 router.use("/:studentId/wallet", restrictedTo("Admin"), WalletRouter);
 
-router.get("/", restrictedTo("Admin"), StudentController.getStudents);
+router
+  .route("/")
+  .get(restrictedTo("Admin"), StudentController.getStudents)
+  .delete(restrictedTo("Student"), StudentController.deleteStudent);
 router
   .route("/:id")
-  .patch(restrictedTo("Admin"), StudentController.updateStudent)
-  .delete(restrictedTo("Student"), StudentController.suspendStudent);
+  .patch(restrictedTo("Admin"), StudentController.updateStudent);
 
 module.exports = router;

@@ -63,6 +63,10 @@ const StudentSchema = new mongoose.Schema(
       enum: ["active", "inactive", "pending"],
       default: "inactive",
     },
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
     verified: {
       type: Boolean,
       default: false,
@@ -71,9 +75,9 @@ const StudentSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    isActive: {
-      type: Boolean,
-      default: false,
+    deleted: {
+      value: { type: Boolean, default: false },
+      deletedAt: { type: Date, default: null },
     },
     resetPassToken: {
       type: String,
@@ -97,10 +101,6 @@ const StudentSchema = new mongoose.Schema(
 
 StudentSchema.pre("save", async function (next) {
   let student = this;
-  if (!student.isModified("password")) return next();
-
-  const salt = await bcrypt.genSalt(parseInt(process.env.SaltWorkFactor));
-  student.password = bcrypt.hashSync(student.password, salt);
 
   if (student.isNew) {
     try {
@@ -111,6 +111,10 @@ StudentSchema.pre("save", async function (next) {
       return next(err);
     }
   }
+
+  if (!student.isModified("password")) return next();
+  const salt = await bcrypt.genSalt(parseInt(process.env.SaltWorkFactor));
+  student.password = bcrypt.hashSync(student.password, salt);
   if (!student.isNew) student.passwordChangedAt = Date.now() - 1000;
   return next();
 });

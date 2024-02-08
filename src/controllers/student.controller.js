@@ -9,6 +9,8 @@ const {
   checkValidPhone,
   storeTelegramID,
   verifyTelegramID,
+  updateStudentById,
+  deleteStudentById,
   changePhoneNumber,
 } = require("../services/student.service.js");
 const { invalidateUserSessions } = require("../services/session.service.js");
@@ -304,14 +306,35 @@ class StudentController {
    *  @method Patch
    *  @access private
    */
-  static updateStudent = catchAsyncError(async (req, res, next) => {});
+  static updateStudent = catchAsyncError(async (req, res, next) => {
+    const { id } = req.params;
+    const updateData = _.pick(req.body, ["isActive", "suspended"]);
+
+    const { status, message } = await updateStudentById(id, updateData);
+    if (!status) return next(new AppError(message));
+
+    res.send({
+      status: "success",
+      message,
+    });
+  });
 
   /**
-   *  @description Suspend Student Account
-   *  @route /api/v1/student/:id
+   *  @description Suspend Student Account for Student
+   *  @route /api/v1/student
    *  @method Delete
    *  @access private
    */
-  static suspendStudent = catchAsyncError(async (req, res, next) => {});
+  static deleteStudent = catchAsyncError(async (req, res, next) => {
+    const { _id } = res.locals.user;
+
+    const { status, message } = await deleteStudentById(_id);
+    if (!status) return next(new AppError(message));
+
+    res.send({
+      status: "success",
+      message,
+    });
+  });
 }
 module.exports = StudentController;
