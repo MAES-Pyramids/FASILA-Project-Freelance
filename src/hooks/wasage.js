@@ -32,13 +32,13 @@ exports.receiveOTP = async (req, res) => {
       break;
 
     case "reset":
-      ({ status, message } = await getPassResetToken(Reference));
+      ({ status, message } = await getPassResetToken(Reference, Mobile));
       if (socketID)
         socketServer.to(socketID).emit("otp-passReset", { status, message });
       break;
 
     case "force":
-      ({ status, message } = await forceLogout(Reference));
+      ({ status, message } = await forceLogout(Reference, Mobile));
       if (socketID)
         socketServer.to(socketID).emit("otp-forceLogout", { status, message });
       break;

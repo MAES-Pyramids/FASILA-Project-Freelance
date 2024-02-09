@@ -5,6 +5,8 @@ const DoctorModel = require("../models/doctor.model");
 const AdminModel = require("../models/admin.model");
 const models = [AdminModel, LibraryModel, DoctorModel, StudentModel];
 
+exports.validateUserMobileAssociation = async function (userId, phone) {};
+
 exports.validatePassword = async function (phone, password) {
   try {
     let { user, type } = {};
