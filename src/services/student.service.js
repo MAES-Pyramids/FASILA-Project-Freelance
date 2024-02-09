@@ -307,8 +307,8 @@ exports.verifyStudent = async (_id, mobile) => {
     if (!student)
       return { status: false, message: "Student not found or actually active" };
 
-    // if (mobile != student.phone)
-    //   return { status: false, message: "Wrong mobile number, Edit it please" };
+    if (mobile != student.phone)
+      return { status: false, message: "Wrong mobile number, Edit it please" };
 
     student.verified = true;
     await student.save();
@@ -330,10 +330,13 @@ exports.validateUserMobileAssociation = async function (userId, phone) {
   return { status: true, message: "mobile number associated with user" };
 };
 
-exports.getPassResetToken = async function (_id) {
+exports.getPassResetToken = async function (_id, phone) {
   try {
     const student = await StudentModel.findOne({ _id, verified: true });
     if (!student) return { status: false, message: "Student not found" };
+
+    if (phone != student.phone)
+      return { status: false, message: "Please send OTP from Account Mobile" };
 
     const resetToken = crypto.randomBytes(32).toString("hex");
     const hashedRT = crypto
@@ -352,8 +355,14 @@ exports.getPassResetToken = async function (_id) {
   }
 };
 
-exports.forceLogout = async function (_id) {
+exports.forceLogout = async function (_id, phone) {
   try {
+    const student = await StudentModel.findOne({ _id, verified: true });
+    if (!student) return { status: false, message: "Student not found" };
+
+    if (phone != student.phone)
+      return { status: false, message: "Please send OTP from Account Mobile" };
+
     const { status } = await invalidateUserSessions(_id);
     if (!status) return { status: false, message: "Something went wrong" };
 
