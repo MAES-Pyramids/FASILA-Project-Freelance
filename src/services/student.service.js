@@ -220,7 +220,10 @@ exports.getFavDoctors = async function (_id, semester) {
       })
       .select("favoritesDoctors");
 
-    return { status: true, data: favoritesDoctors.get(semester.toString()) };
+    return {
+      status: true,
+      data: favoritesDoctors.get(semester.toString()) || [],
+    };
   } catch (err) {
     return { status: false, message: err.message };
   }
@@ -304,8 +307,8 @@ exports.verifyStudent = async (_id, mobile) => {
     if (!student)
       return { status: false, message: "Student not found or actually active" };
 
-    if (mobile != student.phone)
-      return { status: false, message: "Wrong mobile number, Edit it please" };
+    // if (mobile != student.phone)
+    //   return { status: false, message: "Wrong mobile number, Edit it please" };
 
     student.verified = true;
     await student.save();
@@ -314,6 +317,17 @@ exports.verifyStudent = async (_id, mobile) => {
   } catch (err) {
     return { status: false, message: err.message };
   }
+};
+
+exports.validateUserMobileAssociation = async function (userId, phone) {
+  const student = await StudentModel.findById(userId);
+
+  if (!student) return { status: false, message: "User not found" };
+
+  if (student.phone != phone)
+    return { status: false, message: "mobile number not associated with user" };
+
+  return { status: true, message: "mobile number associated with user" };
 };
 
 exports.getPassResetToken = async function (_id) {

@@ -40,6 +40,8 @@
 //     if (msg.text === "/start") {
 //       await sendWelcomeMessage(msg);
 //     }
+//     // if (msg.text === "") {
+//     // }
 //   });
 // }
 // //------------------------------------------//

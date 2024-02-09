@@ -19,7 +19,7 @@ exports.receiveOTP = async (req, res) => {
 
   let status, message, type;
 
-  ({ status, message, type } = await verifyOTP(Reference, OTP));
+  ({ status, message, type } = await verifyOTP(Reference, OTP, Mobile));
   if (!status) return res.status(403).send(message);
 
   const socketID = await getUserConnection(Reference);
@@ -32,13 +32,13 @@ exports.receiveOTP = async (req, res) => {
       break;
 
     case "reset":
-      ({ status, message } = await getPassResetToken(Reference, Mobile));
+      ({ status, message } = await getPassResetToken(Reference));
       if (socketID)
         socketServer.to(socketID).emit("otp-passReset", { status, message });
       break;
 
     case "force":
-      ({ status, message } = await forceLogout(Reference, Mobile));
+      ({ status, message } = await forceLogout(Reference));
       if (socketID)
         socketServer.to(socketID).emit("otp-forceLogout", { status, message });
       break;
