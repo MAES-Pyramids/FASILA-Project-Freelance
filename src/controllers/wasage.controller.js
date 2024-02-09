@@ -28,7 +28,12 @@ exports.getOTP = catchAsync(async (req, res) => {
       break;
   }
 
-  const response = await axios.post(URl);
+  let response;
+  try {
+    response = await axios.post(URl);
+  } catch (err) {
+    return next(new AppError(`Error getting wassage response ${err}`, 500));
+  }
 
   if (response.data.Code != 5500)
     return next(new AppError("Error sending OTP", 500));
