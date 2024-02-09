@@ -200,6 +200,24 @@ exports.isForceLogoutAfter = async function (_id, JWT_TS) {
   return false;
 };
 
+exports.isAccountSuspendedOrUnVerified = async function (_id) {
+  const student = await StudentModel.findOne({ _id });
+
+  if (student.suspended.value || !student.verified) return true;
+  else return false;
+};
+
+exports.isStudentActive = async function (_id) {
+  try {
+    const student = await StudentModel.findOne({ _id });
+
+    if (student.isActive) return true;
+    else return false;
+  } catch (err) {
+    return false;
+  }
+};
+
 exports.getStudentsNumber = async function () {
   try {
     const studentsNumber = await StudentModel.countDocuments();

@@ -18,8 +18,11 @@ const {
   s3UploadDocuments,
   checkIfDocumentExist,
 } = require("../services/digitalocean.service");
+const {
+  isStudentActive,
+  getStudentWalletId,
+} = require("../services/student.service");
 const { withdraw } = require("../services/wallet.service");
-const { getStudentWalletId } = require("../services/student.service");
 const { increaseLecturePurchaseCount } = require("../services/lecture.service");
 // const { getCardIframe } = require("../utils/payment");
 // const { getStudentPaymentData } = require("../services/student.service");
@@ -183,6 +186,9 @@ class LectureController {
     let status, lecture, message, walletId;
     const { lectureId } = req.params;
     const { _id } = res.locals.user;
+
+    const isActive = await isStudentActive(_id);
+    if (!isActive) return next(new AppError("Account is not active yet", 400));
 
     const emptyPageDetails = _.pick(req.query, [
       "addEmptyPages",

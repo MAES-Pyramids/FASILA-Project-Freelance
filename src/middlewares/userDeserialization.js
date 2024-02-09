@@ -5,6 +5,9 @@ const {
   isPassChangedAfter,
   isForceLogoutAfter,
 } = require("../services/student.service");
+const {
+  isAccountSuspendedOrUnVerified,
+} = require("../services/student.service");
 
 const DeserializeUser = async (req, res, next) => {
   let accessToken = _.get(req, "headers.authorization", "");
@@ -23,7 +26,8 @@ const DeserializeUser = async (req, res, next) => {
     if (decoded.role == "Student") {
       if (
         (await isPassChangedAfter(decoded._id, decoded.iat)) ||
-        (await isForceLogoutAfter(decoded._id, decoded.iat))
+        (await isForceLogoutAfter(decoded._id, decoded.iat)) ||
+        (await isAccountSuspendedOrUnVerified(decoded._id))
       )
         return next();
     }

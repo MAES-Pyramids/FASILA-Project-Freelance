@@ -22,6 +22,8 @@ class SessionController {
 
     const [user, type] = await validatePassword(phone, password);
     if (!user) return next(new AppError("Invalid credentials", 401));
+    if (user.suspended.value)
+      return next(new AppError("Account suspended", 401));
 
     // if (type === "Student") {
     //   const result = await checkExistingSession(user._id);
@@ -54,7 +56,6 @@ class SessionController {
       { expiresIn: process.env.refreshTokenTtl }
     );
 
-    // TODO: we still need to set cookies in the browser and check for the best way and what is the path used for
     return res.send({ role: type, object: user, accessToken, refreshToken });
   });
 
