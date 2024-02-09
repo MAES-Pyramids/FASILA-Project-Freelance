@@ -22,10 +22,11 @@ class SessionController {
 
     const [user, type] = await validatePassword(phone, password);
     if (!user) return next(new AppError("Invalid credentials", 401));
-    if (user.suspended.value)
-      return next(new AppError("Account suspended", 401));
 
     if (type === "Student") {
+      if (user.suspended.value)
+        return next(new AppError("Account suspended", 401));
+
       const result = await checkExistingSession(user._id);
 
       if (result.status === "error")
