@@ -154,12 +154,12 @@ exports.getLecturePaymentData = (lecture) => {
   };
 };
 
-exports.increaseLecturePurchaseCount = async (lectureId) => {
+exports.increaseLecturePurchaseCount = async (lectureId, session) => {
   try {
     const lecture = await lectureModel.findOne({ _id: lectureId });
 
     lecture.no_purchases += 1;
-    await lecture.save();
+    await lecture.save({ session });
 
     return { status: true };
   } catch (err) {

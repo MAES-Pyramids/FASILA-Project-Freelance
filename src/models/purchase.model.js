@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const { Worker } = require("worker_threads");
 const { s3GetTempViewURL } = require("../services/digitalocean.service");
-const { increaseLecturePurchaseCount } = require("../services/lecture.service");
 
 const PurchasedLectureSchema = new mongoose.Schema(
   {
