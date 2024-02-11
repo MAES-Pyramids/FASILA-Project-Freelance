@@ -38,12 +38,13 @@ const addDWatermarkImage = (watermarkImage, image, currentPage) => {
   const aspectRatio = imageWidth / imageHeight;
 
   const { width, height } = currentPage.getSize();
-  const watermarkWidth = parseInt(width / 2);
+  const watermarkWidth = parseInt(width / 3);
   const watermarkHeight = parseInt(watermarkWidth / aspectRatio);
 
   const watermarkOptions = {
-    x: width / 4,
-    y: height / 2 - watermarkHeight / 2,
+    x: width / 3 + watermarkWidth / 2,
+    y: 0,
+    // y: height / 2 - watermarkHeight / 2,
     width: watermarkWidth,
     height: watermarkHeight,
   };
@@ -53,7 +54,7 @@ const addDWatermarkImage = (watermarkImage, image, currentPage) => {
     y: watermarkOptions.y,
     width: watermarkOptions.width,
     height: watermarkOptions.height,
-    opacity: 0.3,
+    opacity: 0.2,
   });
 };
 
