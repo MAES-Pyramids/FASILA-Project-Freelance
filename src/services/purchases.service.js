@@ -76,3 +76,27 @@ exports.updatePLectureKey = async (PLectureId, key) => {
     return { status: false, message: err.message };
   }
 };
+
+exports.calculateLectureEarning = async (lectureId, createdAfter) => {
+  try {
+    const data = await PLModel.aggregate([
+      {
+        $match: {
+          lecture: lectureId,
+          status: "success",
+          purchasedAt: { $gte: new Date(`${createdAfter}`) },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    return { status: true, data: data };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};

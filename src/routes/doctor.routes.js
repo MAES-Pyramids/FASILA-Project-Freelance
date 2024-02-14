@@ -41,4 +41,8 @@ router
     DoctorController.getDoctorById
   );
 
+router
+  .route("/:id/earning")
+  .get(restrictedTo("Admin", "Doctor"), DoctorController.getDoctorEarnings);
+
 module.exports = router;

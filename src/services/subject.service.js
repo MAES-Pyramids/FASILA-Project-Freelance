@@ -17,6 +17,15 @@ exports.getSubjects = async function (query, excluded = "") {
   }
 };
 
+exports.getDoctorAllSubjects = async function (doctorID) {
+  try {
+    const subjects = await SubjectModel.find({ doctors: { $in: [doctorID] } });
+    return { status: true, data: subjects };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
 exports.getSubjectByID = async function (id, excluded = "") {
   try {
     const subject = await SubjectModel.findById(id)

@@ -5,6 +5,10 @@ const {
   setDoctorPhoto,
 } = require("../services/doctor.service");
 const { s3UploadDocuments } = require("../services/digitalocean.service");
+const { calculateLectureEarning } = require("../services/purchases.service");
+const { getDoctorAllSubjects } = require("../services/subject.service");
+const { getLecturesForDoctor } = require("../services/lecture.service");
+const { isDoctorExist } = require("../services/doctor.service");
 const mongoose = require("mongoose");
 const _ = require("lodash");
 
@@ -99,6 +103,61 @@ class DoctorController {
     res.send({
       status: "success",
       data,
+    });
+  });
+
+  /**
+   * @description Get doctor Current Earnings for each subject with each lecture specific return
+   * @route /api/v1/doctors/:id/earnings
+   * @method PUT
+   * @access private
+   */
+  static getDoctorEarnings = catchAsyncError(async (req, res, next) => {
+    let [result, lectures] = [[], []];
+    let status, data, message;
+    let totalEarnings = 0;
+    const { id } = req.params;
+
+    ({ status, data, message } = await isDoctorExist(id));
+    if (!status) return next(new AppError(message, 404));
+
+    ({ status, data, message } = await getDoctorAllSubjects(id));
+    if (!status) return { status: false, message };
+
+    for (const subject of data) {
+      ({ status, data, message } = await getLecturesForDoctor({
+        subject: subject._id,
+      }));
+      if (!status) return { status: false, message: message };
+
+      for (const lec of data) {
+        const { status, data, message } = await calculateLectureEarning(
+          lec._id,
+          "2024-02-09T08:41:05.193+00:00"
+        );
+        if (!status) throw new Error(message);
+
+        lectures.push({
+          id: lec._id,
+          name: lec.name,
+          new_purchases: data.length,
+          earning: lec.publishPrice * data.length,
+        });
+        totalEarnings += lec.publishPrice * data.length;
+      }
+
+      result.push({
+        subjectId: subject._id,
+        subjectName: subject.name,
+        subjectPhoto: subject.photo,
+        totalEarnings,
+        lectures,
+      });
+    }
+
+    res.send({
+      status: "success",
+      data: result,
     });
   });
 }

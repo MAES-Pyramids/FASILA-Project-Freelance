@@ -25,7 +25,10 @@ const DoctorSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please provide password"],
     },
-    earning: [EarningSchema],
+    earning: {
+      type: Map,
+      of: [EarningSchema],
+    },
     PDFsNumber: {
       type: Map,
       of: Number,
@@ -44,8 +47,8 @@ const DoctorSchema = new mongoose.Schema(
 
 DoctorSchema.pre("save", async function (next) {
   let doctor = this;
-  if (!doctor.isModified("password")) return next();
 
+  if (!doctor.isModified("password")) return next();
   const salt = await bcrypt.genSalt(parseInt(process.env.SaltWorkFactor));
   doctor.password = bcrypt.hashSync(doctor.password, salt);
 

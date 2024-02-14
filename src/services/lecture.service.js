@@ -142,16 +142,4 @@ exports.checkLectureStatus = async (lectureId) => {
   }
 };
 
-exports.getLecturePaymentData = (lecture) => {
-  return {
-    amount: lecture.finalPrice * 100,
-    item: {
-      name: lecture.name,
-      amount_cents: lecture.finalPrice * 100,
-      description: lecture.description,
-      quantity: 1,
-    },
-  };
-};
-
 exports.deleteLecture = async (lectureId) => {};

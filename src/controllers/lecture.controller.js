@@ -25,7 +25,6 @@ const {
 const { withdraw } = require("../services/wallet.service");
 // const { getCardIframe } = require("../utils/payment");
 // const { getStudentPaymentData } = require("../services/student.service");
-// const { getLecturePaymentData } = require("../services/lecture.service");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
 const AppError = require("../utils/appErrorsClass");
@@ -310,16 +309,3 @@ class LectureController {
 }
 
 module.exports = LectureController;
-
-// const orderData = getLecturePaymentData(lecture);
-
-// ({ status, customerData, message } = await getStudentPaymentData(_id));
-// if (!status) return next(new AppError(message, 400));
-
-// const merchant_id = `${lectureId}-${_id}-${Date.now()}`;
-// ({ status, IFrame, message } = await getCardIframe(
-//   merchant_id,
-//   customerData,
-//   orderData
-// ));
-// if (!status) return next(new AppError(message, 400));

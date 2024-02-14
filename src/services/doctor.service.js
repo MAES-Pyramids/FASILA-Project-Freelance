@@ -1,5 +1,5 @@
-const DoctorModel = require("../models/doctor.model");
 const { isFacultyExist } = require("./faculty.service");
+const DoctorModel = require("../models/doctor.model");
 const _ = require("lodash");
 
 exports.getAllDoctors = async function (filter = {}) {
