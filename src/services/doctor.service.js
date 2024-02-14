@@ -68,6 +68,27 @@ exports.isDoctorExist = async function (id, faculty = "") {
   }
 };
 
+exports.addSubjectId = async function (doctorId, subjectId, session) {
+  try {
+    const doctor = await DoctorModel.findById(doctorId);
+    if (!doctor) return { status: false, message: "Doctor Not Found" };
+
+    if (doctor.earning.hasOwnProperty(subjectId)) {
+      return { status: true, message: "Doctor already added" };
+    }
+
+    doctor.earning.set(subjectId, {
+      value: 0,
+      date: new Date(),
+    });
+    await doctor.save({ session });
+
+    return { status: true, message: "Doctor added successfully" };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
 exports.getDoctorsNumber = async function (query) {
   try {
     const doctorsNumber = await DoctorModel.countDocuments(query);

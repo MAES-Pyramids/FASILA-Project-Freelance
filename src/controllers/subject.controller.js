@@ -12,9 +12,11 @@ const {
 const { s3UploadDocuments } = require("../services/digitalocean.service");
 const { getSubjectLectures } = require("../services/lecture.service");
 const { isValidSemester } = require("../services/faculty.service");
+const { addSubjectId } = require("../services/doctor.service");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
 const AppError = require("../utils/appErrorsClass");
+const mongoose = require("mongoose");
 
 class SubjectController {
   /**
@@ -154,15 +156,33 @@ class SubjectController {
    * @access private
    */
   static updateSubject = catchAsyncError(async (req, res, next) => {
+    let status, data, message;
     const { id } = req.params;
     const { type } = req.query;
     const { doctor } = _.pick(req.body, ["doctor"]);
 
-    const { status, data, message } =
-      type == "remove"
-        ? await removeDoctorFromSubject(id, doctor)
-        : await addDoctorToSubject(id, doctor);
-    if (!status) return next(new AppError(message, 400));
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      ({ status, data, message } =
+        type == "remove"
+          ? await removeDoctorFromSubject(id, doctor)
+          : await addDoctorToSubject(id, doctor, session));
+      if (!status) throw new Error(message);
+
+      if (type == "add") {
+        ({ status, data, message } = await addSubjectId(doctor, id, session));
+        if (!status) throw new Error(message);
+      }
+
+      await session.commitTransaction();
+      session.endSession();
+    } catch (err) {
+      await session.abortTransaction();
+      session.endSession();
+
+      return next(new AppError(err.message, 500));
+    }
 
     res.send({
       status: "success",

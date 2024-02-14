@@ -113,7 +113,7 @@ class DoctorController {
    * @access private
    */
   static getDoctorEarnings = catchAsyncError(async (req, res, next) => {
-    let [result, lectures] = [[], []];
+    let result = [];
     const { id } = req.params;
     let status, data, message;
     let totalEarnings = 0;
@@ -126,13 +126,17 @@ class DoctorController {
     if (!status) return { status: false, message };
 
     for (const subject of data) {
+      let lectures = [];
       ({ status, data, message } = await getLecturesForDoctor({
+        doctor: id,
         subject: subject._id,
       }));
       if (!status) return { status: false, message: message };
 
       for (const lec of data) {
-        const Date = earning.get(lec._id) ? earning.get(lec._id).date : 0;
+        const Date = earning.get(subject._id)
+          ? earning.get(lec._id).at(-1).date
+          : 0;
         const { status, data, message } = await calculateLectureEarning(
           lec._id,
           Date

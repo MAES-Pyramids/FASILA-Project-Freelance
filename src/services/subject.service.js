@@ -47,7 +47,7 @@ exports.createSubject = async function (data) {
   }
 };
 
-exports.addDoctorToSubject = async function (subjectID, doctorID) {
+exports.addDoctorToSubject = async function (subjectID, doctorID, session) {
   try {
     const subject = await SubjectModel.findById(subjectID);
 
@@ -58,7 +58,7 @@ exports.addDoctorToSubject = async function (subjectID, doctorID) {
       return { status: false, message: "Doctor already added" };
 
     subject.doctors.push(doctorID);
-    await subject.save();
+    await subject.save({ session });
 
     return { status: true, data: subject };
   } catch (err) {
