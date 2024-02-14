@@ -13,7 +13,7 @@ exports.checkStudentPurchasedLectures = async (studentId, lectureId) => {
       _id: data._id,
       name: data.lecture.name,
       description: data.lecture.description,
-      no_purchases: data.lecture.no_purchases,
+      no_purchases: data.no_purchases,
       no_slides: data.lecture.no_slides,
       preview_path: data.lecture.preview_path,
       createdAt: data.createdAt,

@@ -23,7 +23,6 @@ const {
   getStudentWalletId,
 } = require("../services/student.service");
 const { withdraw } = require("../services/wallet.service");
-const { increaseLecturePurchaseCount } = require("../services/lecture.service");
 // const { getCardIframe } = require("../utils/payment");
 // const { getStudentPaymentData } = require("../services/student.service");
 // const { getLecturePaymentData } = require("../services/lecture.service");
@@ -230,12 +229,6 @@ class LectureController {
           session
         ));
         if (!status) throw new Error(message);
-
-        // ({ status, message } = await increaseLecturePurchaseCount(
-        //   lectureId,
-        //   session
-        // ));
-        // if (!status) throw new Error(message);
 
         await session.commitTransaction();
         session.endSession();

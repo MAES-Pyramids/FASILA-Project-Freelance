@@ -53,6 +53,7 @@ const PurchasedLectureSchema = new mongoose.Schema(
 );
 PurchasedLectureSchema.set("toObject", { virtuals: true });
 PurchasedLectureSchema.set("toJSON", { virtuals: true });
+PurchasedLectureSchema.virtual("no_purchases");
 
 function createWorker(
   inputFileURL,
@@ -82,10 +83,11 @@ function createWorker(
     });
   });
 }
+
 PurchasedLectureSchema.pre(/^find/, function (next) {
   this.populate({
     path: "lecture",
-    select: "name description no_purchases no_slides preview_path subject",
+    select: "name description no_slides preview_path subject",
   });
   next();
 });
@@ -94,11 +96,20 @@ PurchasedLectureSchema.post(/^find/, async function (doc) {
   if (doc) {
     if (Array.isArray(doc)) {
       doc.forEach(async (el) => {
-        if (el.key) el.path = await s3GetTempViewURL(el.key, "application/pdf");
+        if (el.key) {
+          el.path = await s3GetTempViewURL(el.key, "application/pdf");
+        }
+        el.no_purchases = await PLecture.countDocuments({
+          lecture: el.lecture,
+        });
       });
     } else {
-      if (doc.key)
+      if (doc.key) {
         doc.path = await s3GetTempViewURL(doc.key, "application/pdf");
+      }
+      doc.no_purchases = await PLecture.countDocuments({
+        lecture: doc.lecture,
+      });
     }
   }
 });

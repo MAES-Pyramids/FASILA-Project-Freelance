@@ -154,17 +154,4 @@ exports.getLecturePaymentData = (lecture) => {
   };
 };
 
-exports.increaseLecturePurchaseCount = async (lectureId, session) => {
-  try {
-    const lecture = await lectureModel.findOne({ _id: lectureId });
-
-    lecture.no_purchases += 1;
-    await lecture.save({ session });
-
-    return { status: true };
-  } catch (err) {
-    return { status: false, message: err.message };
-  }
-};
-
 exports.deleteLecture = async (lectureId) => {};

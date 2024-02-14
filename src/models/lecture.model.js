@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const PLecture = require("./purchase.model");
 const { s3GetTempViewURL } = require("../services/digitalocean.service");
 
 const LectureSchema = new mongoose.Schema(
@@ -52,10 +53,6 @@ const LectureSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    no_purchases: {
-      type: Number,
-      default: 0,
-    },
     no_slides: {
       type: Number,
     },
@@ -78,6 +75,10 @@ const LectureSchema = new mongoose.Schema(
   }
 );
 
+LectureSchema.set("toObject", { virtuals: true });
+LectureSchema.set("toJSON", { virtuals: true });
+LectureSchema.virtual("no_purchases");
+
 LectureSchema.post(/^find/, async function (doc) {
   if (doc) {
     if (Array.isArray(doc)) {
@@ -85,11 +86,13 @@ LectureSchema.post(/^find/, async function (doc) {
         if (el.key) {
           el.path = await s3GetTempViewURL(el.key, "application/pdf");
         }
+        el.no_purchases = await PLecture.countDocuments({ lecture: el._id });
       });
     } else if (!Array.isArray(doc)) {
       if (doc.key) {
         doc.path = await s3GetTempViewURL(doc.key, "application/pdf");
       }
+      doc.no_purchases = await PLecture.countDocuments({ lecture: doc._id });
     }
   }
 });

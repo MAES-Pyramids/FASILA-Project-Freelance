@@ -43,8 +43,7 @@ const addDWatermarkImage = (watermarkImage, image, currentPage) => {
 
   const watermarkOptions = {
     x: width / 3,
-    y: 0,
-    // y: height / 2 - watermarkHeight / 2,
+    y: height / 2 - watermarkHeight / 2,
     width: watermarkWidth,
     height: watermarkHeight,
   };
