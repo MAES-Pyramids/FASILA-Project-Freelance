@@ -29,11 +29,6 @@ const DoctorSchema = new mongoose.Schema(
       type: Map,
       of: [EarningSchema],
     },
-    PDFsNumber: {
-      type: Map,
-      of: Number,
-      default: () => ({}),
-    },
     faculty: {
       type: mongoose.Schema.ObjectId,
       ref: "Faculty",

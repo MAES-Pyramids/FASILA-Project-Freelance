@@ -114,12 +114,13 @@ class DoctorController {
    */
   static getDoctorEarnings = catchAsyncError(async (req, res, next) => {
     let [result, lectures] = [[], []];
+    const { id } = req.params;
     let status, data, message;
     let totalEarnings = 0;
-    const { id } = req.params;
 
     ({ status, data, message } = await isDoctorExist(id));
     if (!status) return next(new AppError(message, 404));
+    const { earning } = data;
 
     ({ status, data, message } = await getDoctorAllSubjects(id));
     if (!status) return { status: false, message };
@@ -131,9 +132,10 @@ class DoctorController {
       if (!status) return { status: false, message: message };
 
       for (const lec of data) {
+        const Date = earning.get(lec._id) ? earning.get(lec._id).date : 0;
         const { status, data, message } = await calculateLectureEarning(
           lec._id,
-          "2024-02-09T08:41:05.193+00:00"
+          Date
         );
         if (!status) throw new Error(message);
 
