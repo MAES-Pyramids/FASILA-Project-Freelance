@@ -116,7 +116,8 @@ class DoctorController {
     let result = [];
     const { id } = req.params;
     let status, data, message;
-    let totalEarnings = 0;
+    let SubjectEarnings = 0;
+    let TotalEarnings = 0;
 
     ({ status, data, message } = await isDoctorExist(id));
     if (!status) return next(new AppError(message, 404));
@@ -149,21 +150,25 @@ class DoctorController {
           new_purchases: data.length,
           earning: lec.publishPrice * data.length,
         });
-        totalEarnings += lec.publishPrice * data.length;
+        SubjectEarnings += lec.publishPrice * data.length;
       }
 
       result.push({
         subjectId: subject._id,
         subjectName: subject.name,
         subjectPhoto: subject.photo,
-        totalEarnings,
+        SubjectEarnings,
         lectures,
       });
+      TotalEarnings += SubjectEarnings;
     }
 
     res.send({
       status: "success",
-      data: result,
+      data: {
+        TotalEarnings,
+        Subjects: result,
+      },
     });
   });
 }
