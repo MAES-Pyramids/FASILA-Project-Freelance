@@ -43,7 +43,8 @@ const addDWatermarkImage = (watermarkImage, image, currentPage) => {
 
   const watermarkOptions = {
     x: width / 3,
-    y: height / 2 - watermarkHeight / 2,
+    // y: height / 2 - watermarkHeight / 2,
+    y: 0,
     width: watermarkWidth,
     height: watermarkHeight,
   };
@@ -152,7 +153,7 @@ exports.addWatermarkAndEmptyPages = async function (
     }
 
     myMap.forEach((value) => {
-      if (value == 2.3) addDWatermarkImage(watermarkImage, image, currentPage);
+      if (value == 10) addDWatermarkImage(watermarkImage, image, currentPage);
       else
         addDWatermarkText(
           currentPage,
