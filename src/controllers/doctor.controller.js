@@ -112,11 +112,70 @@ class DoctorController {
    * @method PUT
    * @access private
    */
+  //   static getDoctorEarnings = catchAsyncError(async (req, res, next) => {
+  //     let result = [];
+  //     const { id } = req.params;
+  //     let status, data, message;
+  //     let SubjectEarnings = 0;
+  //     let TotalEarnings = 0;
+
+  //     ({ status, data, message } = await isDoctorExist(id));
+  //     if (!status) return next(new AppError(message, 404));
+  //     const { earning } = data;
+
+  //     ({ status, data, message } = await getDoctorAllSubjects(id));
+  //     if (!status) return { status: false, message };
+
+  //     for (const subject of data) {
+  //       let lectures = [];
+  //       ({ status, data, message } = await getLecturesForDoctor({
+  //         doctor: id,
+  //         subject: subject._id,
+  //       }));
+  //       if (!status) return { status: false, message: message };
+
+  //       for (const lec of data) {
+  //         const Date = earning.get(subject._id)
+  //           ? earning.get(subject._id).at(-1).date
+  //           : 0;
+  //         const { status, data, message } = await calculateLectureEarning(
+  //           lec._id,
+  //           Date
+  //         );
+  //         if (!status) throw new Error(message);
+
+  //         lectures.push({
+  //           id: lec._id,
+  //           name: lec.name,
+  //           new_purchases: data.length,
+  //           earning: lec.publishPrice * data.length,
+  //         });
+  //         SubjectEarnings += lec.publishPrice * data.length;
+  //       }
+
+  //       result.push({
+  //         subjectId: subject._id,
+  //         subjectName: subject.name,
+  //         subjectPhoto: subject.photo,
+  //         SubjectEarnings,
+  //         lectures,
+  //       });
+  //       TotalEarnings += SubjectEarnings;
+  //     }
+
+  //     res.send({
+  //       status: "success",
+  //       data: {
+  //         TotalEarnings,
+  //         Subjects: result,
+  //       },
+  //     });
+  //   });
+  // }
   static getDoctorEarnings = catchAsyncError(async (req, res, next) => {
     let result = [];
     const { id } = req.params;
     let status, data, message;
-    let SubjectEarnings = 0;
     let TotalEarnings = 0;
 
     ({ status, data, message } = await isDoctorExist(id));
@@ -127,40 +186,13 @@ class DoctorController {
     if (!status) return { status: false, message };
 
     for (const subject of data) {
-      let lectures = [];
-      ({ status, data, message } = await getLecturesForDoctor({
-        doctor: id,
-        subject: subject._id,
-      }));
-      if (!status) return { status: false, message: message };
-
-      for (const lec of data) {
-        const Date = earning.get(subject._id)
-          ? earning.get(subject._id).at(-1).date
-          : 0;
-        const { status, data, message } = await calculateLectureEarning(
-          lec._id,
-          Date
-        );
-        if (!status) throw new Error(message);
-
-        lectures.push({
-          id: lec._id,
-          name: lec.name,
-          new_purchases: data.length,
-          earning: lec.publishPrice * data.length,
-        });
-        SubjectEarnings += lec.publishPrice * data.length;
-      }
-
-      result.push({
-        subjectId: subject._id,
-        subjectName: subject.name,
-        subjectPhoto: subject.photo,
-        SubjectEarnings,
-        lectures,
-      });
-      TotalEarnings += SubjectEarnings;
+      const subjectEarnings = await calculateSubjectEarnings(
+        id,
+        subject,
+        earning
+      );
+      result.push(subjectEarnings);
+      TotalEarnings += subjectEarnings.SubjectEarnings;
     }
 
     res.send({
@@ -172,4 +204,49 @@ class DoctorController {
     });
   });
 }
+
+const calculateSubjectEarnings = async (doctorId, subject, earning) => {
+  let lectures = [];
+  let SubjectEarnings = 0;
+
+  const {
+    status: lecturesStatus,
+    data: lecturesData,
+    message: lecturesMessage,
+  } = await getLecturesForDoctor({
+    doctor: doctorId,
+    subject: subject._id,
+  });
+
+  if (!lecturesStatus) return { status: false, message: lecturesMessage };
+
+  for (const lec of lecturesData) {
+    const lastLectureDate = earning.get(subject._id)
+      ? earning.get(subject._id).at(-1).date
+      : 0;
+
+    const { status, data, message } = await calculateLectureEarning(
+      lec._id,
+      lastLectureDate
+    );
+
+    if (!status) throw new Error(message);
+
+    lectures.push({
+      id: lec._id,
+      name: lec.name,
+      new_purchases: data.length,
+      earning: lec.publishPrice * data.length,
+    });
+    SubjectEarnings += lec.publishPrice * data.length;
+  }
+
+  return {
+    subjectId: subject._id,
+    subjectName: subject.name,
+    subjectPhoto: subject.photo,
+    SubjectEarnings,
+    lectures,
+  };
+};
 module.exports = DoctorController;
