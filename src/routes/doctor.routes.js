@@ -17,7 +17,11 @@ router.use(requireUser);
 // Marking or unmarking a doctor as a favorite for a student
 router.use("/:doctorId/Student", restrictedTo("Student"), StudentRoutes);
 // Getting all Doctor lectures for student
-router.use("/:doctorId/Subjects", restrictedTo("Student"), SubjectRoutes);
+router.use(
+  "/:doctorId/Subjects",
+  restrictedTo("Student", "Admin"),
+  SubjectRoutes
+);
 
 router
   .route("/")

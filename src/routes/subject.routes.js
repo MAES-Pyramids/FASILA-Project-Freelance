@@ -14,9 +14,20 @@ const router = require("express").Router({ mergeParams: true });
 
 router.use(requireUser);
 
-// While there is a nested route for students to access lectures,it get used directly by doctors.
 router.use("/:subjectId/Lectures", lectureRoutes);
 router.get("/My", SubjectController.getMySubjects);
+
+router.get(
+  "/:subjectId/Payment",
+  restrictedTo("Admin"),
+  SubjectController.settleSubjectPayment
+);
+
+router.get(
+  "/Payment",
+  restrictedTo("Admin"),
+  SubjectController.settleAllSubjectsPayment
+);
 
 router
   .route("/")

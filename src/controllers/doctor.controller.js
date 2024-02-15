@@ -136,7 +136,7 @@ class DoctorController {
 
       for (const lec of data) {
         const Date = earning.get(subject._id)
-          ? earning.get(lec._id).at(-1).date
+          ? earning.get(subject._id).at(-1).date
           : 0;
         const { status, data, message } = await calculateLectureEarning(
           lec._id,
