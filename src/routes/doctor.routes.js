@@ -8,7 +8,7 @@ const StudentRoutes = require("./student.routes");
 const SubjectRoutes = require("./subject.routes");
 const requireUser = require("../middlewares/userRequired");
 const restrictedTo = require("../middlewares/restrictedRoute");
-const DoctorController = require("../controllers/doctor.controller");
+const { DoctorController } = require("../controllers/doctor.controller");
 //---------------------------------------------------------------------//
 const router = require("express").Router();
 

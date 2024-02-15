@@ -9,9 +9,15 @@ const {
 const {
   checkStudentPurchasedLectures,
 } = require("../services/purchases.service");
-const { addSubjectId, settlePayment } = require("../services/doctor.service");
+const {
+  addSubjectId,
+  getDoctorByID,
+  settleAllPayment,
+  settleSubjectPayment,
+} = require("../services/doctor.service");
 const { s3UploadDocuments } = require("../services/digitalocean.service");
 const { getSubjectLectures } = require("../services/lecture.service");
+const { calculateSubjectEarnings } = require("./doctor.controller");
 const { isValidSemester } = require("../services/faculty.service");
 
 const catchAsyncError = require("../utils/catchAsyncErrors");
@@ -197,9 +203,29 @@ class SubjectController {
    * @access private
    */
   static settleSubjectPayment = catchAsyncError(async (req, res, next) => {
+    let status, message, data;
     const { subjectId, doctorId } = req.params;
 
-    const { status, message } = await settlePayment(doctorId, subjectId);
+    ({ status, data, message } = await getDoctorByID(doctorId));
+    if (!status) return next(new AppError(message, 404));
+
+    const { earning } = data;
+
+    ({ status, data, message } = await getSubjectByID(subjectId));
+    if (!status) return next(new AppError(message, 404));
+
+    ({ status, data, message } = await calculateSubjectEarnings(
+      doctorId,
+      data,
+      earning
+    ));
+    if (!status) return next(new AppError(message, 500));
+
+    ({ status, message } = await settleSubjectPayment(
+      doctorId,
+      subjectId,
+      data.SubjectEarnings
+    ));
     if (!status) return next(new AppError(message, 400));
 
     res.send({
@@ -217,7 +243,7 @@ class SubjectController {
   static settleAllSubjectsPayment = catchAsyncError(async (req, res, next) => {
     const { doctorId } = req.params;
 
-    const { status, message } = await settlePayment(doctorId);
+    const { status, message } = await settleAllPayment(doctorId);
     if (!status) return next(new AppError(message, 400));
 
     res.send({

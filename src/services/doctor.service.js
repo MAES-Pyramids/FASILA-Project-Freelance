@@ -98,31 +98,44 @@ exports.getDoctorsNumber = async function (query) {
   }
 };
 
-exports.settlePayment = async function (doctorId, subjectId = "") {
+exports.settleSubjectPayment = async function (
+  doctorId,
+  subjectId,
+  subjectEarnings
+) {
   try {
     const doctor = await DoctorModel.findById(doctorId);
     if (!doctor) return { status: false, message: "Doctor Not Found" };
 
-    if (subjectId) {
-      if (doctor.earning.get(subjectId) == undefined)
-        return { status: false, message: "Doctor not added to subject" };
+    if (doctor.earning.get(subjectId) == undefined)
+      return { status: false, message: "Doctor not added to subject" };
 
-      const subjectEarning = doctor.earning.get(subjectId);
+    const subjectEarning = doctor.earning.get(subjectId);
+    subjectEarning.push({
+      value: subjectEarnings,
+      date: new Date(),
+    });
+    await doctor.save();
+
+    return { status: true, message: "Doctor payment settled successfully" };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
+exports.settleAllPayment = async function (doctorId) {
+  try {
+    const doctor = await DoctorModel.findById(doctorId);
+    if (!doctor) return { status: false, message: "Doctor Not Found" };
+
+    doctor.earning.forEach((subjectEarning) => {
       subjectEarning.push({
-        value: 55,
+        value: 22,
         date: new Date(),
       });
-      await doctor.save();
-    } else {
-      doctor.earning.forEach((subjectEarning) => {
-        subjectEarning.push({
-          value: 22,
-          date: new Date(),
-        });
-      });
+    });
 
-      await doctor.save();
-    }
+    await doctor.save();
 
     return { status: true, message: "Doctor payment settled successfully" };
   } catch (err) {
