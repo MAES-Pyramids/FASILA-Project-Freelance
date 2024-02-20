@@ -81,7 +81,8 @@ const s3UploadDocuments = async (files, uploadedFor) => {
       Bucket,
       Body: buffer,
       ContentType: uploadedFor == "student" ? "image/png" : file.mimetype,
-      ACL: uploadedFor !== "student" ? "public-read" : "private",
+      // ACL: uploadedFor !== "student" ? "public-read" : "private",
+      ACL: "private",
     });
 
     if (uploadedFor !== "student")
