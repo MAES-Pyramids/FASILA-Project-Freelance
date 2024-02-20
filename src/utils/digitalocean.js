@@ -8,19 +8,24 @@ const bucketPolicy = {
       Principal: "*",
       Action: "s3:GetObject",
       Resource: [
-        "arn:aws:s3:::${bucketName}/PDFs/Previews*",
-        "arn:aws:s3:::${bucketName}/Doctors/Avatars*",
-        "arn:aws:s3:::${bucketName}/Subjects/Previews*",
+        `arn:aws:s3:::${bucketName}/PDFs/Previews*`,
+        `arn:aws:s3:::${bucketName}/Doctors/Avatars*`,
+        `arn:aws:s3:::${bucketName}/Subjects/Previews*`,
       ],
+      Condition: {
+        StringLike: {
+          "aws:Referer": ["https://fasila-lib-electronic.vercel.app/*"],
+        },
+      },
     },
     {
       Effect: "Deny",
       Principal: "*",
       Action: "s3:GetObject",
       Resource: [
-        "arn:aws:s3:::${bucketName}/PDFs/Uploads*",
-        "arn:aws:s3:::${bucketName}/PDFs/Purchases*",
-        "arn:aws:s3:::${bucketName}/Students/Faculty_Cards*",
+        `arn:aws:s3:::${bucketName}/PDFs/Uploads*`,
+        `arn:aws:s3:::${bucketName}/PDFs/Purchases*`,
+        `arn:aws:s3:::${bucketName}/Students/Faculty_Cards*`,
       ],
       Condition: {
         StringNotEqualsIfExists: {
@@ -37,12 +42,12 @@ const bucketPolicy = {
       Principal: "*",
       Action: "s3:DeleteObject",
       Resource: [
-        "arn:aws:s3:::${bucketName}/PDFs/Uploads*",
-        "arn:aws:s3:::${bucketName}/PDFs/Previews*",
-        "arn:aws:s3:::${bucketName}/PDFs/Purchases*",
-        "arn:aws:s3:::${bucketName}/Doctors/Avatars*",
-        "arn:aws:s3:::${bucketName}/Subjects/Previews*",
-        "arn:aws:s3:::${bucketName}/Students/Faculty_Cards",
+        `arn:aws:s3:::${bucketName}/PDFs/Uploads*`,
+        `arn:aws:s3:::${bucketName}/PDFs/Previews*`,
+        `arn:aws:s3:::${bucketName}/PDFs/Purchases*`,
+        `arn:aws:s3:::${bucketName}/Doctors/Avatars*`,
+        `arn:aws:s3:::${bucketName}/Subjects/Previews*`,
+        `arn:aws:s3:::${bucketName}/Students/Faculty_Cards`,
       ],
       Condition: {
         StringNotEqualsIfExists: {
@@ -59,12 +64,12 @@ const bucketPolicy = {
       Principal: "*",
       Action: "s3:PutBucketPolicy",
       Resource: [
-        "arn:aws:s3:::${bucketName}/PDFs/Uploads*",
-        "arn:aws:s3:::${bucketName}/PDFs/Previews*",
-        "arn:aws:s3:::${bucketName}/PDFs/Purchases*",
-        "arn:aws:s3:::${bucketName}/Doctors/Avatars*",
-        "arn:aws:s3:::${bucketName}/Subjects/Previews*",
-        "arn:aws:s3:::${bucketName}/Students/Faculty_Cards",
+        `arn:aws:s3:::${bucketName}/PDFs/Uploads*`,
+        `arn:aws:s3:::${bucketName}/PDFs/Previews*`,
+        `arn:aws:s3:::${bucketName}/PDFs/Purchases*`,
+        `arn:aws:s3:::${bucketName}/Doctors/Avatars*`,
+        `arn:aws:s3:::${bucketName}/Subjects/Previews*`,
+        `arn:aws:s3:::${bucketName}/Students/Faculty_Cards`,
       ],
       Condition: {
         StringNotEqualsIfExists: {
@@ -84,7 +89,21 @@ const policyParams = {
   Policy: JSON.stringify(bucketPolicy),
 };
 
-module.exports = policyParams;
+const corsParams = {
+  Bucket: bucketName,
+  CORSConfiguration: {
+    CORSRules: [
+      {
+        AllowedHeaders: ["*"],
+        AllowedMethods: ["GET", "PUT", "PUT"],
+        AllowedOrigins: ["https://fasila-lib-electronic.vercel.app"],
+        MaxAgeSeconds: 3000,
+      },
+    ],
+  },
+};
+
+module.exports = { corsParams, policyParams };
 
 // {
 //   Effect: "Allow",

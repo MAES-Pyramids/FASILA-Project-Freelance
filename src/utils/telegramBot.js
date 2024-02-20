@@ -14,7 +14,7 @@ const sendWelcomeMessage = async (msg) => {
   const chatId = msg.chat.id;
   const { first_name } = msg.chat;
 
-  const otpMessage = `Hello ${first_name}, we're glad you're here. Your Chat ID is ${chatId}, use it to complete registration.`;
+  const otpMessage = `Hello ${first_name}, we're glad you're here. Your Chat ID is , ${chatId} , use it to complete registration.`;
 
   try {
     const sent = await bot.sendMessage(chatId, otpMessage);

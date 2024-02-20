@@ -4,10 +4,11 @@ const {
   PutObjectCommand,
   HeadObjectCommand,
   DeleteObjectCommand,
+  PutBucketCorsCommand,
   PutBucketPolicyCommand,
 } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const policyParams = require("../utils/digitalocean");
+const { policyParams, corsParams } = require("../utils/digitalocean");
 const sharp = require("sharp");
 const uuid = require("uuid").v4;
 
@@ -20,14 +21,24 @@ const s3client = new S3Client({
   signatureVersion: "v4",
 });
 
-// Set the bucket policy
+// // Set the bucket policy
+s3client
+  .send(new PutBucketPolicyCommand(policyParams))
+  .then(() => {
+    console.log("Bucket policy updated successfully.");
+  })
+  .catch((error) => {
+    console.error("Error updating bucket policy:", error);
+  });
+
+// // Set the CORS configuration
 // s3client
-//   .send(new PutBucketPolicyCommand(policyParams))
+//   .send(new PutBucketCorsCommand(corsParams))
 //   .then(() => {
-//     console.log("Bucket policy updated successfully.");
+//     console.log("CORS configuration updated successfully.");
 //   })
 //   .catch((error) => {
-//     console.error("Error updating bucket policy:", error);
+//     console.error("Error updating CORS configuration:", error);
 //   });
 
 const s3UploadDocuments = async (files, uploadedFor) => {
