@@ -6,18 +6,40 @@ const bucketPolicy = {
     {
       Effect: "Allow",
       Principal: "*",
-      Action: "s3:GetObject",
+      Action: ["s3:GetObject", "s3:GetObjectVersion"],
       Resource: [
         `arn:aws:s3:::${bucketName}/PDFs/Previews*`,
         `arn:aws:s3:::${bucketName}/Doctors/Avatars*`,
         `arn:aws:s3:::${bucketName}/Subjects/Previews*`,
+        `arn:aws:s3:::${bucketName}/PDFs/Uploads*`,
+        `arn:aws:s3:::${bucketName}/PDFs/Purchases*`,
+        `arn:aws:s3:::${bucketName}/Students/Faculty_Cards*`,
       ],
       Condition: {
         StringLike: {
-          "aws:Referer": ["https://fasila-lib-electronic.vercel.app/*"],
+          "aws:Referer": [
+            "https://fasila-lib-electronic.vercel.app/*",
+            "https://www.fasila-lib-electronic.vercel.app/*",
+          ],
         },
       },
     },
+    // {
+    //   Effect: "Allow",
+    //   Principal: "*",
+    //   Action: ["s3:GetObject", "s3:GetObjectVersion"],
+    //   Resource: [
+    //     `arn:aws:s3:::${bucketName}/PDFs/Uploads*`,
+    //     `arn:aws:s3:::${bucketName}/PDFs/Purchases*`,
+    //     `arn:aws:s3:::${bucketName}/Students/Faculty_Cards*`,
+    //   ],
+    //   Condition: {
+    //     StringEquals: {
+    //       "aws:PrincipalType": "Service",
+    //       "aws:requester": "s3.amazonaws.com",
+    //     },
+    //   },
+    // },
     {
       Effect: "Deny",
       Principal: "*",
@@ -28,10 +50,7 @@ const bucketPolicy = {
         `arn:aws:s3:::${bucketName}/Students/Faculty_Cards*`,
       ],
       Condition: {
-        StringNotEqualsIfExists: {
-          "aws:PrincipalType": "Service",
-        },
-        StringEquals: {
+        StringNotEquals: {
           "aws:PrincipalType": "Service",
           "aws:requester": "s3.amazonaws.com",
         },
@@ -50,10 +69,7 @@ const bucketPolicy = {
         `arn:aws:s3:::${bucketName}/Students/Faculty_Cards`,
       ],
       Condition: {
-        StringNotEqualsIfExists: {
-          "aws:PrincipalType": "Service",
-        },
-        StringEquals: {
+        StringNotEquals: {
           "aws:PrincipalType": "Service",
           "aws:requester": "s3.amazonaws.com",
         },
@@ -72,10 +88,7 @@ const bucketPolicy = {
         `arn:aws:s3:::${bucketName}/Students/Faculty_Cards`,
       ],
       Condition: {
-        StringNotEqualsIfExists: {
-          "aws:PrincipalType": "Service",
-        },
-        StringEquals: {
+        StringNotEquals: {
           "aws:PrincipalType": "Service",
           "aws:requester": "s3.amazonaws.com",
         },
