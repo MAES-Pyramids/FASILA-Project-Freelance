@@ -12,7 +12,7 @@ const bucketPolicy = {
         `arn:aws:s3:::${bucketName}/Doctors/Avatars*`,
         `arn:aws:s3:::${bucketName}/Subjects/Previews*`,
         `arn:aws:s3:::${bucketName}/Students/Faculty_Cards*`,
-        `arn:aws:s3:::${bucketName}/PDFs/Purchases*`, //TODO:Remove
+        // `arn:aws:s3:::${bucketName}/PDFs/Purchases*`, //TODO:Remove
       ],
       Condition: {
         StringLike: {
