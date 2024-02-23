@@ -53,7 +53,14 @@ app.options("*", cors(corsOptions));
 //   next();
 // });
 
-app.use(express.static(path.join(__dirname, "..", "public")));
+// app.use(express.static(path.join(__dirname, "..", "public")));
+
+app.use("/public", (req, res, next) => {
+  console.log(req);
+  accessLogStream.write(`${logMessage}\n`);
+
+  express.static(path.join(__dirname, "..", "public"))(req, res, next);
+});
 
 const accessLogStream = fs.createWriteStream(
   path.join(__dirname, "..", "logs", "access.log"),
