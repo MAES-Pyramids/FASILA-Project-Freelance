@@ -57,7 +57,7 @@ app.options("*", cors(corsOptions));
 
 app.use("/public", (req, res, next) => {
   console.log(req);
-  accessLogStream.write(`${logMessage}\n`);
+  accessLogStream.write(`${req}\n`);
 
   express.static(path.join(__dirname, "..", "public"))(req, res, next);
 });
