@@ -1,3 +1,4 @@
+const fs = require("fs");
 const cors = require("cors");
 const path = require("path");
 const morgan = require("morgan");
@@ -54,8 +55,14 @@ app.options("*", cors(corsOptions));
 
 app.use(express.static(path.join(__dirname, "..", "public")));
 
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "..", "logs", "access.log"),
+  { flags: "a" }
+);
 app.use(
-  process.env.NODE_ENV === "development" ? morgan("dev") : morgan("combined")
+  process.env.NODE_ENV === "development"
+    ? morgan("dev")
+    : morgan("combined", { stream: accessLogStream })
 );
 
 const limiter = rateLimit({
