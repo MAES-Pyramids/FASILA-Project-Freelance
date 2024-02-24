@@ -66,9 +66,7 @@ app.get("/test/:shortID", (req, res, next) => {
   });
   // console.log(req.rawHeaders);
   if (req.params.shortID === "123456789") {
-    res.redirect(
-      "https://fasila.onrender.com/public/pdfs/Conginital%20Anomalies.pdf"
-    );
+    res.redirect("https://fasila.onrender.com/pdfs/Conginital%20Anomalies.pdf");
   }
   // express.static(path.join(__dirname, "..", "public"))(req, res, next);
 });
