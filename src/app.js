@@ -9,6 +9,7 @@ const hpp = require("hpp");
 const xss = require("xss-clean");
 // const helmet = require('helmet');
 const compression = require("compression");
+const CircularJSON = require("circular-json");
 const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
 
@@ -37,6 +38,7 @@ const app = express();
 // app.enable("trust proxy", 1);
 
 const corsOptions = {
+  // origin: "https://fasila-lib-electronic.vercel.app",
   origin: "*",
   methods: "GET,PUT,PATCH,POST,DELETE",
   credentials: true,
@@ -53,13 +55,22 @@ app.options("*", cors(corsOptions));
 //   next();
 // });
 
-// app.use(express.static(path.join(__dirname, "..", "public")));
+app.use(express.static(path.join(__dirname, "..", "public")));
 
-app.use("/public", (req, res, next) => {
-  console.log(req);
-  accessLogStream.write(`${req}\n`);
-
-  express.static(path.join(__dirname, "..", "public"))(req, res, next);
+app.get("/test/:shortID", (req, res, next) => {
+  // console.log(req);
+  req.rawHeaders.forEach((header, index) => {
+    if (header == "Accept-Encoding") {
+      console.log("woooooooooooooooooo", req.rawHeaders[index + 1]);
+    }
+  });
+  // console.log(req.rawHeaders);
+  if (req.params.shortID === "123456789") {
+    res.redirect(
+      "https://fasila.onrender.com/public/pdfs/Conginital%20Anomalies.pdf"
+    );
+  }
+  // express.static(path.join(__dirname, "..", "public"))(req, res, next);
 });
 
 const accessLogStream = fs.createWriteStream(
