@@ -138,12 +138,10 @@ const s3GetTempViewURL = async (Key, format) => {
   };
 
   try {
-    // const tempUrl = await getSignedUrl(s3client, new GetObjectCommand(params), {
-    //   expiresIn,
-    //   conditions,
-    // });
-
-    const tempUrl = `https://${Bucket}.ams3.digitaloceanspaces.com/${Key}`; //TODO:Remove
+    const tempUrl = await getSignedUrl(s3client, new GetObjectCommand(params), {
+      expiresIn,
+      conditions,
+    });
 
     return tempUrl;
   } catch (error) {

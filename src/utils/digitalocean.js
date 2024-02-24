@@ -12,7 +12,6 @@ const bucketPolicy = {
         `arn:aws:s3:::${bucketName}/Doctors/Avatars*`,
         `arn:aws:s3:::${bucketName}/Subjects/Previews*`,
         `arn:aws:s3:::${bucketName}/Students/Faculty_Cards*`,
-        `arn:aws:s3:::${bucketName}/PDFs/Purchases*`, //TODO:Remove
       ],
       Condition: {
         StringLike: {
@@ -23,22 +22,22 @@ const bucketPolicy = {
         },
       },
     },
-    // {
-    //   Effect: "Deny",
-    //   Principal: "*",
-    //   Action: "s3:GetObject",
-    //   Resource: [
-    //     `arn:aws:s3:::${bucketName}/PDFs/Uploads*`,
-    //     `arn:aws:s3:::${bucketName}/PDFs/Purchases*`,
-    //     `arn:aws:s3:::${bucketName}/Students/Faculty_Cards*`,
-    //   ],
-    //   Condition: {
-    //     StringNotEquals: {
-    //       "aws:PrincipalType": "Service",
-    //       "aws:requester": "s3.amazonaws.com",
-    //     },
-    //   },
-    // },
+    {
+      Effect: "Deny",
+      Principal: "*",
+      Action: "s3:GetObject",
+      Resource: [
+        `arn:aws:s3:::${bucketName}/PDFs/Uploads*`,
+        `arn:aws:s3:::${bucketName}/PDFs/Purchases*`,
+        `arn:aws:s3:::${bucketName}/Students/Faculty_Cards*`,
+      ],
+      Condition: {
+        StringNotEquals: {
+          "aws:PrincipalType": "Service",
+          "aws:requester": "s3.amazonaws.com",
+        },
+      },
+    },
     {
       Effect: "Deny",
       Principal: "*",
