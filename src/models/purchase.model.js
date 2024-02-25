@@ -12,6 +12,9 @@ const PurchasedLectureSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
     },
+    password: {
+      type: String,
+    },
     status: {
       type: String,
       enum: ["pending", "success", "failed"],
@@ -129,7 +132,7 @@ PurchasedLectureSchema.pre("save", async function (next) {
   const facultyCardPath = await s3GetTempViewURL(facultyCard, "image/png");
 
   try {
-    const { key } = await createWorker(
+    const { key, password } = await createWorker(
       path,
       phone.slice(1),
       facultyCardPath,
@@ -138,6 +141,7 @@ PurchasedLectureSchema.pre("save", async function (next) {
     );
 
     PLecture.status = "success";
+    PLecture.password = password;
     PLecture.key = key;
 
     next();

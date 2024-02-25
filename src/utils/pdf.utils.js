@@ -1,9 +1,11 @@
 const { s3UploadModifiedPDF } = require("../services/digitalocean.service");
 const { PDFDocument, rgb, degrees } = require("pdf-lib");
+const generator = require("generate-password");
 const sizeOf = require("image-size");
 const qpdf = require("node-qpdf");
 const uuid = require("uuid").v4;
 const axios = require("axios");
+const path = require("path");
 const fs = require("fs");
 
 const addDWatermarkText = (page, watermarkObject, watermarkOptions) => {
@@ -78,6 +80,19 @@ const addEmptyPage = (pdfDoc, index, newWidth, newHeight) => {
   }
 };
 
+async function encryptPDF(pdfPath, outputFile, password) {
+  const options = {
+    keyLength: 256,
+    password,
+    outputFile,
+    restrictions: {
+      print: "none",
+    },
+  };
+
+  await qpdf.encrypt(pdfPath, options);
+}
+
 exports.addWatermarkAndEmptyPages = async function (
   inputFileURL,
   watermarkPhone,
@@ -97,7 +112,7 @@ exports.addWatermarkAndEmptyPages = async function (
   const EPHeightP = 100;
   const EPWidthP = 100;
 
-  // console.log("Start Downloading PDF File...");
+  console.log("Start Downloading PDF File...");
   let response;
   try {
     response = await axios.get(inputFileURL, {
@@ -108,12 +123,12 @@ exports.addWatermarkAndEmptyPages = async function (
     if (axios.isCancel(err)) throw new Error("downloading (exceeded 30 Secs)");
     else throw new Error("Error getting file from URL");
   }
-  // console.log("File Downloaded Successfully...");
+  console.log("File Downloaded Successfully...");
 
   const pdfBytes = Buffer.from(response.data);
   const pdfDoc = await PDFDocument.load(pdfBytes);
 
-  // console.log("Start Downloading Image...");
+  console.log("Start Downloading Image...");
   let image;
   try {
     const imageResponse = await axios.get(facultyCardPath, {
@@ -123,7 +138,7 @@ exports.addWatermarkAndEmptyPages = async function (
   } catch (err) {
     throw new Error("Error getting Image from URL");
   }
-  // console.log("Image File Downloaded Successfully...");
+  console.log("Image File Downloaded Successfully...");
   const watermarkImage = await pdfDoc.embedPng(image);
 
   let addedPagesNo = 0;
@@ -168,45 +183,44 @@ exports.addWatermarkAndEmptyPages = async function (
 
   const PdfBytes = await pdfDoc.save();
 
-  // Store the PDF file on disk
-  const inputFilePath = `../../temp/${uuid()}.pdf`;
+  const inputFilePath = path.join(
+    __dirname,
+    "..",
+    "..",
+    "temp",
+    `${uuid()}.pdf`
+  );
   const outputFilePath = inputFilePath.replace(".pdf", "-modified.pdf");
-
+  const password = generator.generate({
+    length: 12,
+    numbers: true,
+    uppercase: true,
+    lowercase: true,
+    excludeSimilarCharacters: false,
+  });
   fs.writeFileSync(inputFilePath, PdfBytes);
+  console.log("Files got stored on Disk");
 
   try {
-    // Encrypt the PDF file
-    await encryptPDF(inputFilePath, outputFilePath, "12345678HHaal021");
+    console.log("Start Encrypting File");
+    await encryptPDF(inputFilePath, outputFilePath, password);
+    console.log("File got Encrypted");
 
-    // Read the encrypted file
-    const encryptedPdfBytes = fs.readFileSync("../output/encrypted.pdf");
+    const encryptedPdfBytes = fs.readFileSync(outputFilePath);
 
-    // console.log("Start uploading to digital ocean");
+    console.log("Start uploading to digital ocean");
     const { status, key, message } = await s3UploadModifiedPDF(
       encryptedPdfBytes
     );
-    // console.log("File uploaded to digital ocean ..");
+    console.log("File uploaded to digital ocean ..");
 
-    // Remove the input and output files stored at disk
     fs.unlinkSync(inputFilePath);
-    fs.unlinkSync("../output/encrypted.pdf");
+    fs.unlinkSync(outputFilePath);
+    console.log("Temp files got deleted");
 
-    if (status) return { status: "true", path: key };
+    if (status) return { status: "true", path: key, password };
     else throw new Error(`Error uploading file to DigitalOcean ${message}`);
   } catch (err) {
     throw new Error(`Error uploading file to DigitalOcean ${err.message}`);
   }
 };
-
-async function encryptPDF(pdfPath, outputFile, password) {
-  const options = {
-    keyLength: 256,
-    password,
-    outputFile,
-    restrictions: {
-      print: "low",
-    },
-  };
-
-  await qpdf.encrypt(pdfPath, options);
-}

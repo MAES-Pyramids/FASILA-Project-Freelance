@@ -19,7 +19,11 @@ addWatermarkAndEmptyPages(
   emptyPageDetails
 )
   .then((res) => {
-    parentPort.postMessage({ status: res.status, key: res.path });
+    parentPort.postMessage({
+      status: res.status,
+      key: res.path,
+      password: res.password,
+    });
   })
   .catch((err) => {
     parentPort.postMessage({ success: false, message: err.message });
