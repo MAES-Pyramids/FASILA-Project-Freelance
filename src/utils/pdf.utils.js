@@ -1,7 +1,10 @@
 const { s3UploadModifiedPDF } = require("../services/digitalocean.service");
 const { PDFDocument, rgb, degrees } = require("pdf-lib");
 const sizeOf = require("image-size");
+const qpdf = require("node-qpdf");
+const uuid = require("uuid").v4;
 const axios = require("axios");
+const fs = require("fs");
 
 const addDWatermarkText = (page, watermarkObject, watermarkOptions) => {
   const { spaceBetweenCharacters, opacity } = watermarkOptions;
@@ -165,10 +168,28 @@ exports.addWatermarkAndEmptyPages = async function (
 
   const PdfBytes = await pdfDoc.save();
 
+  // Store the PDF file on disk
+  const inputFilePath = `../../temp/${uuid()}.pdf`;
+  const outputFilePath = inputFilePath.replace(".pdf", "-modified.pdf");
+
+  fs.writeFileSync(inputFilePath, PdfBytes);
+
   try {
+    // Encrypt the PDF file
+    await encryptPDF(inputFilePath, outputFilePath, "12345678HHaal021");
+
+    // Read the encrypted file
+    const encryptedPdfBytes = fs.readFileSync("../output/encrypted.pdf");
+
     // console.log("Start uploading to digital ocean");
-    const { status, key, message } = await s3UploadModifiedPDF(PdfBytes);
+    const { status, key, message } = await s3UploadModifiedPDF(
+      encryptedPdfBytes
+    );
     // console.log("File uploaded to digital ocean ..");
+
+    // Remove the input and output files stored at disk
+    fs.unlinkSync(inputFilePath);
+    fs.unlinkSync("../output/encrypted.pdf");
 
     if (status) return { status: "true", path: key };
     else throw new Error(`Error uploading file to DigitalOcean ${message}`);
@@ -176,3 +197,16 @@ exports.addWatermarkAndEmptyPages = async function (
     throw new Error(`Error uploading file to DigitalOcean ${err.message}`);
   }
 };
+
+async function encryptPDF(pdfPath, outputFile, password) {
+  const options = {
+    keyLength: 256,
+    password,
+    outputFile,
+    restrictions: {
+      print: "low",
+    },
+  };
+
+  await qpdf.encrypt(pdfPath, options);
+}
