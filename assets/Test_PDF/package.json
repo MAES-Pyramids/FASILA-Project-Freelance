@@ -12,9 +12,13 @@
     "hummus": "^1.0.116",
     "image-size": "^1.1.1",
     "muhammara": "^4.1.0",
+    "node-qpdf": "^1.0.3",
+    "node-qpdf2": "^6.0.0",
     "nodemon": "^3.0.3",
+    "pdf-creator-node": "^2.3.5",
     "pdf-lib": "^1.17.1",
     "pdf-manip": "^1.0.3",
-    "pdf-watermark": "^1.0.4"
+    "pdf-watermark": "^1.0.4",
+    "pdfkit": "^0.14.0"
   }
 }
