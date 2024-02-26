@@ -24,9 +24,10 @@ const StudentRoutes = require("./routes/student.routes.js");
 const FacultyRoutes = require("./routes/faculty.routes.js");
 const LectureRoutes = require("./routes/lecture.routes.js");
 const SubjectRoutes = require("./routes/subject.routes.js");
+const PLectureRoutes = require("./routes/plecture.routes.js");
 const DigitalOcean = require("./routes/digitalocean.routes.js");
-const statisticsRoutes = require("./routes/statistics.routes.js");
-const universityRoutes = require("./routes/university.routes.js");
+const StatisticsRoutes = require("./routes/statistics.routes.js");
+const UniversityRoutes = require("./routes/university.routes.js");
 
 const { receiveOTP } = require("./hooks/wasage");
 const { receivePayment } = require("./hooks/paymob.js");
@@ -122,9 +123,10 @@ app.use("/api/v1/sessions", SessionRoutes);
 app.use("/api/v1/Lectures", LectureRoutes);
 app.use("/api/v1/Students", StudentRoutes);
 app.use("/api/v1/Faculties", FacultyRoutes);
+app.use("/api/v1/PLectures", PLectureRoutes);
 app.use("/api/v1/DigitalOcean", DigitalOcean);
-app.use("/api/v1/statistics", statisticsRoutes);
-app.use("/api/v1/Universities", universityRoutes);
+app.use("/api/v1/statistics", StatisticsRoutes);
+app.use("/api/v1/Universities", UniversityRoutes);
 
 app.all("*", (req, res, next) => {
   next(

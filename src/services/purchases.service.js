@@ -17,7 +17,6 @@ exports.checkStudentPurchasedLectures = async (studentId, lectureId) => {
       no_slides: data.lecture.no_slides,
       preview_path: data.lecture.preview_path,
       createdAt: data.createdAt,
-      path: data.path,
     };
 
     return { status: true, data: FormattedData };
@@ -96,6 +95,22 @@ exports.calculateLectureEarning = async (lectureId, createdAfter) => {
     ]);
 
     return { status: true, data: data };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
+exports.getPLecturePath = async (PLectureId) => {
+  try {
+    const PLecture = await PLModel.findById(PLectureId);
+
+    return {
+      status: true,
+      data: {
+        path: PLecture.path,
+        password: PLecture.password,
+      },
+    };
   } catch (err) {
     return { status: false, message: err.message };
   }
