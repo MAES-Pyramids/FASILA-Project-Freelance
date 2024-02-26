@@ -7,7 +7,7 @@ const logger = require("./utils/logger");
 
 const socket = require("./utils/sockets");
 const payment = require("./utils/payment");
-// const { startTelegramBot } = require("./utils/telegramBot");
+const { startTelegramBot } = require("./utils/telegramBot");
 const { mongoConnect, mongoDisconnect } = require("./utils/mongoDB");
 //------------------Listener----------------//
 const port = process.env.PORT || 3000;
@@ -16,7 +16,7 @@ const app = require("./app");
 const server = http.createServer(app);
 
 (async function startServer() {
-  // startTelegramBot();
+  startTelegramBot();
   await mongoConnect();
 
   server.listen(port, () => {

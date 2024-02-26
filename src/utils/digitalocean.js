@@ -90,7 +90,7 @@ const corsParams = {
     CORSRules: [
       {
         AllowedHeaders: ["*"],
-        AllowedMethods: ["GET", "PUT", "PUT"],
+        AllowedMethods: ["GET", "PUT", "DELETE"],
         AllowedOrigins: ["https://fasila-lib-electronic.vercel.app"],
         MaxAgeSeconds: 3000,
       },
@@ -99,67 +99,3 @@ const corsParams = {
 };
 
 module.exports = { corsParams, policyParams };
-
-// {
-//   Effect: "Allow",
-//   Principal: "*",
-//   Action: "s3:GetObject",
-//   Resource: `arn:aws:s3:::${bucketName}/PDFs/Previews*`,
-// },
-// {
-//   Effect: "Allow",
-//   Principal: "*",
-//   Action: "s3:GetObject",
-//   Resource: `arn:aws:s3:::${bucketName}/Doctors/Avatars*`,
-// },
-// {
-//   Effect: "Allow",
-//   Principal: "*",
-//   Action: "s3:GetObject",
-//   Resource: `arn:aws:s3:::${bucketName}/Subjects/Previews*`,
-// },
-// {
-//   Effect: "Deny",
-//   Principal: "*",
-//   Action: "s3:GetObject",
-//   Resource: `arn:aws:s3:::${bucketName}/PDFs/Uploads*`,
-//   Condition: {
-//     StringNotEqualsIfExists: {
-//       "aws:PrincipalType": "Service",
-//     },
-//     StringEquals: {
-//       "aws:PrincipalType": "Service",
-//       "aws:requester": "s3.amazonaws.com",
-//     },
-//   },
-// },
-// {
-//   Effect: "Deny",
-//   Principal: "*",
-//   Action: "s3:GetObject",
-//   Resource: `arn:aws:s3:::${bucketName}/PDFs/Purchases*`,
-//   Condition: {
-//     StringNotEqualsIfExists: {
-//       "aws:PrincipalType": "Service",
-//     },
-//     StringEquals: {
-//       "aws:PrincipalType": "Service",
-//       "aws:requester": "s3.amazonaws.com",
-//     },
-//   },
-// },
-// {
-//   Effect: "Deny",
-//   Principal: "*",
-//   Action: "s3:GetObject",
-//   Resource: `arn:aws:s3:::${bucketName}/Students/Faculty_Cards*`,
-//   Condition: {
-//     StringNotEqualsIfExists: {
-//       "aws:PrincipalType": "Service",
-//     },
-//     StringEquals: {
-//       "aws:PrincipalType": "Service",
-//       "aws:requester": "s3.amazonaws.com",
-//     },
-//   },
-// },
