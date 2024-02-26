@@ -57,20 +57,6 @@ app.options("*", cors(corsOptions));
 
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-// app.get("/test/:shortID", (req, res, next) => {
-//   // console.log(req);
-//   req.rawHeaders.forEach((header, index) => {
-//     if (header == "Accept-Encoding") {
-//       console.log("woooooooooooooooooo", req.rawHeaders[index + 1]);
-//     }
-//   });
-//   // console.log(req.rawHeaders);
-//   if (req.params.shortID === "123456789") {
-//     res.redirect("https://fasila.onrender.com/pdfs/Conginital%20Anomalies.pdf");
-//   }
-//   // express.static(path.join(__dirname, "..", "public"))(req, res, next);
-// });
-
 const accessLogStream = fs.createWriteStream(
   path.join(__dirname, "..", "logs", "access.log"),
   { flags: "a" }
