@@ -6,15 +6,21 @@ COPY config.env ./
 COPY package.json ./
 COPY docker-compose.yml ./
 
-RUN npm install --only=production
+# Install dependencies as the root user
+RUN npm install --omit=dev
 
+# Create necessary directories and set permissions
+RUN mkdir -p logs temp public \
+    && chown -R node:node /server
 
-COPY src/ src/
-COPY public/ public/
-
-
+# Switch to the 'node' user for running the application
 USER node
 
+# Copy application source code
+COPY src/ src/
+
+# Specify the start command
 CMD [ "npm", "start" ]
 
+# Expose the application port
 EXPOSE 3000
