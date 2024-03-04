@@ -13,6 +13,9 @@ RUN npm install --omit=dev
 RUN mkdir -p logs temp public \
     && chown -R node:node /server
 
+# Install qpdf
+RUN apk update && apk add qpdf
+
 # Switch to the 'node' user for running the application
 USER node
 
