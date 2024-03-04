@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  redis:
+    image: redis
+    container_name: my-redis-container
+    restart: always
+    networks:
+      - mynetwork
+    ports:
+      - "6379:6379"
+
+  node_app:
+    image: maespyramids/fasila:2.2
+    container_name: my-node-app-container
+    restart: always
+    networks:
+      - mynetwork
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+    environment:
+      - redisHost=my-redis-container
+
+networks:
+  mynetwork:
+    driver: bridge
