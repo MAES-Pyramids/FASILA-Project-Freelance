@@ -1,0 +1,46 @@
+.n-collapse-item__header-main {
+  justify-content: space-between !important;
+}
+
+.n-pagination-item.n-pagination-item--active.n-pagination-item--clickable {
+  background-color: #18a058 !important;
+  border-color: #18a058 !important;
+  color: #fff !important;
+}
+
+.n-carousel__dot.n-carousel__dot--active {
+  background-color: #18a058 !important;
+}
+
+.n-carousel__dot {
+  background-color: #d8d8d8 !important;
+}
+
+.n-carousel__arrow {
+  background-color: #18a058 !important;
+}
+
+.n-input-number .n-input.n-input--resizable.n-input--stateful {
+  padding: 0.375rem;
+}
+
+.n-upload-file-list
+  .n-upload-file
+  .n-upload-file-info
+  .n-upload-file-info__action {
+  right: auto;
+  left: 0 !important;
+}
+
+.v-binder-follower-content {
+  position: absolute;
+  z-index: auto;
+  left: 0;
+}
+
+.n-tabs .n-tabs-rail .n-tabs-capsule {
+  background-color: #18a058;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
+  color: #fff !important;
+  left: 20px;
+}

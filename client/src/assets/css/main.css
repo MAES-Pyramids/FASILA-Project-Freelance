@@ -1,0 +1,58 @@
+@font-face {
+  font-family: "Cairo";
+  src: url("../fonts/Cairo-VariableFont_slnt,wght.ttf") format("truetype");
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  outline: none;
+  box-sizing: border-box;
+  font-family: "Cairo", sans-serif !important;
+}
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+  direction: rtl;
+}
+
+.Vue-Toastification__container {
+  width: 100% !important;
+  text-align: right !important;
+  direction: rtl !important;
+}
+
+.Vue-Toastification__toast {
+  direction: rtl !important;
+  gap: 10px !important;
+  padding: 22px 15px !important;
+}
+
+html::-webkit-scrollbar {
+  width: 0.3rem;
+}
+
+html::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+html::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+  border-radius: 50px;
+}
+
+svg {
+    vertical-align: bottom;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
