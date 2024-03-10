@@ -22,6 +22,11 @@ USER node
 # Copy application source code
 COPY src/ src/
 
+# Copy the public & views directory
+COPY public/ public/
+COPY views/ views/
+
+
 # Specify the start command
 CMD [ "npm", "start" ]
 

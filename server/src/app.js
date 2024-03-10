@@ -36,7 +36,11 @@ const DeserializeUser = require("./middlewares/userDeserialization");
 //-------------------------------------------//
 const app = express();
 //------------Global middleware--------------//
-// app.enable("trust proxy", 1);
+app.set("trust proxy", 1);
+
+// Set the view engine and the views directory
+app.set("view engine", "pug");
+app.set("views", path.join(__dirname, "..", "views"));
 
 const corsOptions = {
   origin: "*",
@@ -109,12 +113,13 @@ app.use("/api/v1/statistics", StatisticsRoutes);
 app.use("/api/v1/Universities", UniversityRoutes);
 
 app.all("*", (req, res, next) => {
-  next(
-    new AppError(
-      `Sorry, the requested URL ${req.originalUrl} was not found on this server.`,
-      404
-    )
+  const error = new AppError(
+    `Sorry, the requested URL ${req.originalUrl} was not found on this server.`,
+    404
   );
+
+  // Render the 404 Pug template
+  res.status(error.statusCode).render("404", { message: error.message });
 });
 
 //-------------------------------------------//
