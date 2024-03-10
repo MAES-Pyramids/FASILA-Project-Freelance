@@ -10,7 +10,7 @@ COPY docker-compose.yml ./
 RUN npm install --omit=dev
 
 # Create necessary directories and set permissions
-RUN mkdir -p logs temp public \
+RUN mkdir -p logs temp  \
     && chown -R node:node /server
 
 # Install qpdf
