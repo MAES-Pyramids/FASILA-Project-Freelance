@@ -18,7 +18,7 @@ exports.receivePayment = async (req, res) => {
     if (success && paid_amount_cents === amount_cents) {
       const { status, message } = await createNewPL(
         student,
-        lecture,
+        lecture, 
         paid_amount_cents,
         {
           transactionId: id,
