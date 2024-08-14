@@ -53,7 +53,7 @@ async function convertPdfToImages(pdfPath, zipPath, password) {
 }
 
 convertPdfToImages(
-  "./Spinal Cord Trauma 2024.pdf",
+  "./uploaded_test_resources/Spinal Cord Trauma 2024.pdf",
   "password-protected.zip",
   "your-password-here"
 );
