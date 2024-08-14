@@ -13,6 +13,7 @@
     "archiver": "^7.0.1",
     "archiver-zip-encrypted": "^2.0.0",
     "canvas": "^2.11.2",
+    "fontkit": "^2.0.4",
     "fs": "^0.0.1-security",
     "fs-extra": "^11.2.0",
     "pdf-img-convert": "^1.2.1",
@@ -20,5 +21,8 @@
     "pdf-poppler": "^0.2.1",
     "pdf-to-img": "^4.1.0",
     "pdf2pic": "^3.1.1"
+  },
+  "devDependencies": {
+    "pdf-to-png-converter": "^3.2.0"
   }
 }
