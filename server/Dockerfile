@@ -36,6 +36,7 @@ COPY src/ src/
 # Copy the public & views directory
 COPY public/ public/
 COPY views/ views/
+COPY fonts/ fonts/
 
 # Specify the start command
 CMD [ "npm", "start" ]
