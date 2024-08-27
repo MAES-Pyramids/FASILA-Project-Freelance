@@ -12,7 +12,7 @@ const {
 
 const opacity = parseFloat(waterMarkDetails.opacity);
 
-addWatermarkAndEmptyPages(
+addWatermarkAndEmptyPagesAndConvertToImages(
   inputFileURL,
   watermarkPhone,
   facultyCardPath,

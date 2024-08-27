@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
-const uuid = require("uuid").v4;
 const fontkit = require("fontkit");
 const sizeOf = require("image-size");
 const archiver = require("archiver");
@@ -79,10 +78,9 @@ const downloadFile = async (url, responseType = "arraybuffer") => {
   }
 };
 
-const createPasswordProtectedZip = (images, password, tempFilePath) => {
+const createPasswordProtectedZip = (images, password) => {
   return new Promise((resolve, reject) => {
     try {
-      const output = fs.createWriteStream(tempFilePath);
       archiver.registerFormat("zip-encrypted", zipEncryptedPlugin);
       const archive = archiver("zip-encrypted", {
         password,
@@ -90,11 +88,10 @@ const createPasswordProtectedZip = (images, password, tempFilePath) => {
         encryptionMethod: "aes256",
       });
 
-      output.on("close", resolve);
-      output.on("error", reject);
+      const chunks = [];
+      archive.on("data", (chunk) => chunks.push(chunk));
+      archive.on("end", () => resolve(Buffer.concat(chunks)));
       archive.on("error", reject);
-
-      archive.pipe(output);
 
       images.forEach((imageBuffer, index) => {
         const imageStream = new PassThrough();
@@ -109,17 +106,10 @@ const createPasswordProtectedZip = (images, password, tempFilePath) => {
   });
 };
 
-const convertPdfToImages = async function (pdfBuffer) {
+const convertPdfToImages = async (pdfBuffer) => {
   try {
-    console.log("Starting PDF to image conversion");
-    const images = await pdf2img.convert(pdfBuffer, {
-      width: 1240,
-      height: 1754,
-    });
-    console.log("PDF to image conversion completed successfully");
-    return images;
+    return await pdf2img.convert(pdfBuffer, { width: 1240, height: 1754 });
   } catch (error) {
-    console.error(`Error converting PDF to images: ${error.message}`);
     throw new Error(`Error converting PDF to images: ${error.message}`);
   }
 };
@@ -204,13 +194,11 @@ exports.addWatermarkAndEmptyPagesAndConvertToImages = async function (
     }
 
     const pdfBytes = await pdfDoc.save();
-    const tempFilePath = path.join(
-      __dirname,
-      "..",
-      "..",
-      "temp",
-      `${uuid()}.zip`
-    );
+    const password = generator.generate({
+      length: 12,
+      numbers: true,
+      uppercase: true,
+    });
 
     console.log(
       `${
@@ -222,16 +210,11 @@ exports.addWatermarkAndEmptyPagesAndConvertToImages = async function (
       `${performance.now() - startTime} ms passed, PDF converted to images.`
     );
 
-    const password = generator.generate({
-      length: 12,
-      numbers: true,
-      uppercase: true,
-    });
+    console.log(`Start Creating password-protected zip, password: ${password}`);
 
     const passwordProtectedZip = await createPasswordProtectedZip(
       pdfImages,
-      password,
-      tempFilePath
+      password
     );
     console.log(
       `Password-protected zip created successfully, password: ${password}`
@@ -239,12 +222,10 @@ exports.addWatermarkAndEmptyPagesAndConvertToImages = async function (
 
     console.log("Start uploading to digital ocean");
     const { status, key, message } = await s3UploadPasswordProtectedZip(
-      passwordProtectedZipBytes
+      passwordProtectedZip
     );
     console.log("File uploaded to digital ocean ..");
     console.log(`before returning`);
-
-    // fs.unlinkSync(tempFilePath);
 
     if (status) {
       return {
