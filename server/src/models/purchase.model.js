@@ -132,6 +132,7 @@ PurchasedLectureSchema.pre("save", async function (next) {
   const facultyCardPath = await s3GetTempViewURL(facultyCard, "image/png");
 
   try {
+    console.log("Creating worker thread...");
     const { key, password } = await createWorker(
       path,
       phone.slice(1),
@@ -139,10 +140,13 @@ PurchasedLectureSchema.pre("save", async function (next) {
       waterMarkDetails,
       emptyPageDetails
     );
+    console.log("Received key and password from worker:", key, password);
 
     PLecture.status = "success";
     PLecture.password = password;
     PLecture.key = key;
+
+    console.log("this is the final PLecture", PLecture);
 
     next();
   } catch (err) {

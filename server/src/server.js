@@ -7,7 +7,7 @@ const logger = require("./utils/logger");
 
 const socket = require("./utils/sockets");
 const payment = require("./utils/payment");
-const { startTelegramBot } = require("./utils/telegramBot");
+// const { startTelegramBot } = require("./utils/telegramBot");
 const { mongoConnect, mongoDisconnect } = require("./utils/mongoDB");
 //------------------Listener----------------//
 const port = process.env.PORT || 3000;
@@ -16,7 +16,7 @@ const app = require("./app");
 const server = http.createServer(app);
 
 (async function startServer() {
-  startTelegramBot();
+  // startTelegramBot();
   await mongoConnect();
 
   server.listen(port, () => {
@@ -27,13 +27,13 @@ const server = http.createServer(app);
   socket.listen(server);
 })();
 //------------Rejection Handling-------------//
-// process.on("unhandledRejection", (err) => {
-//   logger.fatal("UNHANDLED REJECTION! 💥 Shutting down...");
-//   logger.error(err.name, err.message);
-//   server.close(() => {
-//     process.exit(1);
-//   });
-// });
+process.on("unhandledRejection", (err) => {
+  logger.fatal("UNHANDLED REJECTION! 💥 Shutting down...");
+  logger.error(err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  });
+});
 
 process.on("SIGTERM", async () => {
   logger.error("👋 SIGTERM RECEIVED. Shutting down gracefully");

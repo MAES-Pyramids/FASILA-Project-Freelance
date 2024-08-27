@@ -125,6 +125,29 @@ const s3UploadModifiedPDF = async (PdfBytes) => {
   }
 };
 
+const s3UploadPasswordProtectedZip = async (PdfBytes) => {
+  const Key = `PDFs/Purchases/${uuid()}-modified.zip`;
+  const params = {
+    Key,
+    Bucket,
+    Body: PdfBytes,
+    ContentType: "application/zip",
+    ACL: "private",
+  };
+
+  try {
+    const result = await s3client.send(new PutObjectCommand(params));
+
+    if (result) {
+      return { status: true, key: Key };
+    } else {
+      return { status: false, message: "Error uploading modified PDF." };
+    }
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
 const s3GetTempViewURL = async (Key, format) => {
   const params = {
     Key,
@@ -196,4 +219,5 @@ module.exports = {
   s3UploadDocuments,
   s3UploadModifiedPDF,
   checkIfDocumentExist,
+  s3UploadPasswordProtectedZip,
 };

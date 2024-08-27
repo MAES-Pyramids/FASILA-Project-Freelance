@@ -1,5 +1,6 @@
 const { parentPort, workerData } = require("worker_threads");
 const { addWatermarkAndEmptyPages } = require("./pdf.utils");
+const { addWatermarkAndEmptyPagesAndConvertToImages } = require("./pdf2.utils");
 
 const {
   inputFileURL,

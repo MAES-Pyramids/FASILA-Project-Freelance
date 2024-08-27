@@ -112,7 +112,7 @@ exports.addWatermarkAndEmptyPages = async function (
   const EPHeightP = 100;
   const EPWidthP = 100;
 
-  // console.log("Start Downloading PDF File...");
+  console.log("Start Downloading PDF File...");
   let response;
   try {
     response = await axios.get(inputFileURL, {
@@ -123,12 +123,12 @@ exports.addWatermarkAndEmptyPages = async function (
     if (axios.isCancel(err)) throw new Error("downloading (exceeded 30 Secs)");
     else throw new Error("Error getting file from URL");
   }
-  // console.log("File Downloaded Successfully...");
+  console.log("File Downloaded Successfully...");
 
   const pdfBytes = Buffer.from(response.data);
   const pdfDoc = await PDFDocument.load(pdfBytes);
 
-  // console.log("Start Downloading Image...");
+  console.log("Start Downloading Image...");
   let image;
   try {
     const imageResponse = await axios.get(facultyCardPath, {
@@ -138,7 +138,7 @@ exports.addWatermarkAndEmptyPages = async function (
   } catch (err) {
     throw new Error("Error getting Image from URL");
   }
-  // console.log("Image File Downloaded Successfully...");
+  console.log("Image File Downloaded Successfully...");
   const watermarkImage = await pdfDoc.embedPng(image);
 
   let addedPagesNo = 0;
@@ -199,24 +199,24 @@ exports.addWatermarkAndEmptyPages = async function (
     excludeSimilarCharacters: false,
   });
   fs.writeFileSync(inputFilePath, PdfBytes);
-  // console.log("Files got stored on Disk");
+  console.log("Files got stored on Disk");
 
   try {
-    // console.log("Start Encrypting File");
+    console.log("Start Encrypting File");
     await encryptPDF(inputFilePath, outputFilePath, password);
-    // console.log("File got Encrypted");
+    console.log("File got Encrypted");
 
     const encryptedPdfBytes = fs.readFileSync(outputFilePath);
 
-    // console.log("Start uploading to digital ocean");
+    console.log("Start uploading to digital ocean");
     const { status, key, message } = await s3UploadModifiedPDF(
       encryptedPdfBytes
     );
-    // console.log("File uploaded to digital ocean ..");
+    console.log("File uploaded to digital ocean ..");
 
     fs.unlinkSync(inputFilePath);
     fs.unlinkSync(outputFilePath);
-    // console.log("Temp files got deleted");
+    console.log("Temp files got deleted");
 
     if (status) return { status: "true", path: key, password };
     else throw new Error(`Error uploading file to DigitalOcean ${message}`);
