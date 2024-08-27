@@ -1,5 +1,16 @@
 FROM node:lts-alpine
 
+# Install build dependencies
+RUN apk add --no-cache --virtual .gyp \
+    python3 \
+    make \
+    g++ \
+    cairo-dev \
+    pango-dev \
+    giflib-dev \
+    pixman-dev \
+    pangomm-dev
+
 WORKDIR /server
 
 COPY config.env ./
@@ -25,7 +36,6 @@ COPY src/ src/
 # Copy the public & views directory
 COPY public/ public/
 COPY views/ views/
-
 
 # Specify the start command
 CMD [ "npm", "start" ]
