@@ -1,6 +1,7 @@
 FROM node:lts-alpine
 
-# Install build dependencies
+RUN apk update && apk upgrade
+
 RUN apk add --no-cache --virtual .gyp \
     python3 \
     make \
@@ -9,7 +10,10 @@ RUN apk add --no-cache --virtual .gyp \
     pango-dev \
     giflib-dev \
     pixman-dev \
-    pangomm-dev
+    pangomm-dev \
+    libjpeg-turbo-dev \
+    libpng-dev
+
 
 WORKDIR /server
 

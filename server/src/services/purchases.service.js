@@ -76,6 +76,15 @@ exports.updatePLectureKey = async (PLectureId, key) => {
   }
 };
 
+exports.updatePLectureUpdatesFileKey = async (PLectureId, key) => {
+  try {
+    await PLModel.findByIdAndUpdate(PLectureId, { updatesFileKey: key });
+    return { status: true, message: "Key updated successfully" };
+  } catch (err) {
+    return { status: false, message: err.message };
+  }
+};
+
 exports.calculateLectureEarning = async (lectureId, createdAfter) => {
   try {
     const data = await PLModel.aggregate([
@@ -108,6 +117,7 @@ exports.getPLecturePath = async (PLectureId) => {
       status: true,
       data: {
         path: PLecture.path,
+        updatesFilePath: PLecture.updatesFilePath,
         password: PLecture.password,
       },
     };

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { Worker } = require("worker_threads");
-const { s3GetTempViewURL } = require("../services/digitalocean.service");
+// const { s3GetTempViewURL } = require("../services/digitalocean.service");
 
 const PurchasedLectureSchema = new mongoose.Schema(
   {
@@ -23,6 +23,12 @@ const PurchasedLectureSchema = new mongoose.Schema(
     price: {
       type: mongoose.Schema.Types.Decimal128,
       required: [true, "Please provide the price of the lecture."],
+    },
+    updatesFileKey: {
+      type: String,
+    },
+    updatesFilePath: {
+      type: String,
     },
     key: {
       type: String,
@@ -102,6 +108,12 @@ PurchasedLectureSchema.post(/^find/, async function (doc) {
         if (el.key) {
           el.path = await s3GetTempViewURL(el.key, "application/pdf");
         }
+        if (el.updatesFileKey) {
+          el.updatesFilePath = await s3GetTempViewURL(
+            el.updatesFileKey,
+            "application/json"
+          );
+        }
         el.no_purchases = await PLecture.countDocuments({
           lecture: el.lecture,
         });
@@ -109,6 +121,12 @@ PurchasedLectureSchema.post(/^find/, async function (doc) {
     } else {
       if (doc.key) {
         doc.path = await s3GetTempViewURL(doc.key, "application/pdf");
+      }
+      if (doc.updatesFileKey) {
+        doc.updatesFilePath = await s3GetTempViewURL(
+          doc.updatesFileKey,
+          "application/json"
+        );
       }
       doc.no_purchases = await PLecture.countDocuments({
         lecture: doc.lecture,
@@ -140,13 +158,13 @@ PurchasedLectureSchema.pre("save", async function (next) {
       waterMarkDetails,
       emptyPageDetails
     );
-    console.log("Received key and password from worker:", key, password);
+    // console.log("Received key and password from worker:", key, password);
 
     PLecture.status = "success";
     PLecture.password = password;
     PLecture.key = key;
 
-    console.log("this is the final PLecture", PLecture);
+    // console.log("this is the final PLecture", PLecture);
 
     next();
   } catch (err) {

@@ -10,6 +10,7 @@ const {
 const {
   createNewPL,
   updatePLectureKey,
+  updatePLectureUpdatesFileKey,
   isLecturePurchased,
   isPurchasedLectureAllowed,
 } = require("../services/purchases.service");
@@ -271,9 +272,10 @@ class LectureController {
     ({ status, message } = await checkIfDocumentExist(key));
     if (!status) return next(new AppError(message, 400));
 
-    oldKey = data.key;
+    oldKey = data.updatesFileKey;
 
-    ({ status, message } = await updatePLectureKey(lectureId, key));
+    // ({ status, message } = await updatePLectureKey(lectureId, key));
+    ({ status, message } = await updatePLectureUpdatesFileKey(lectureId, key));
     if (!status) return next(new AppError(message, 400));
 
     ({ status, message } = await deleteDocument(oldKey));

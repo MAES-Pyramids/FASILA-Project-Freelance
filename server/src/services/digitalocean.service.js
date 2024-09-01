@@ -172,6 +172,34 @@ const s3GetTempViewURL = async (Key, format) => {
   }
 };
 
+// const checkIfDocumentExist = async (Key) => {
+//   const headObjectCommand = new HeadObjectCommand({ Bucket, Key });
+
+//   try {
+//     const data = await s3client.send(headObjectCommand);
+//     const contentType = data.ContentType;
+//     const creationDate = data.LastModified;
+
+//     if (!contentType.startsWith("application/pdf"))
+//       return { status: false, message: "Invalid document type." };
+
+//     if (new Date() - creationDate > 1000 * 60)
+//       return {
+//         status: false,
+//         message: "Document was created more than 1 minute ago",
+//       };
+
+//     return { status: true, contentType, creationDate };
+//   } catch (err) {
+//     if (err.name === "NotFound") {
+//       console.log("Document does not exist in the bucket.");
+//       return { status: false, message: err.message };
+//     } else {
+//       return { status: false, message: err };
+//     }
+//   }
+// };
+
 const checkIfDocumentExist = async (Key) => {
   const headObjectCommand = new HeadObjectCommand({ Bucket, Key });
 
@@ -180,10 +208,10 @@ const checkIfDocumentExist = async (Key) => {
     const contentType = data.ContentType;
     const creationDate = data.LastModified;
 
-    if (!contentType.startsWith("application/pdf"))
+    if (!contentType.startsWith("application/json"))
       return { status: false, message: "Invalid document type." };
 
-    if (new Date() - creationDate > 1000 * 60)
+    if (new Date() - creationDate > 2000 * 60)
       return {
         status: false,
         message: "Document was created more than 1 minute ago",
