@@ -43,7 +43,7 @@ COPY views/ views/
 COPY fonts/ fonts/
 
 # Specify the start command
-CMD [ "npm", "build" ]
+CMD [ "npm", "run" , "build" ]
 
 # Expose the application port
 EXPOSE 3000
